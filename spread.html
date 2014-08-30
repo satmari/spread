@@ -1,0 +1,524 @@
+<head>
+  <title>spread</title>
+</head>
+
+<body>
+	{{> nav}}
+  <!--{{> orderList }}-->         <!-- Filter collection list-->
+	<!--{{> orderForm }}-->         <!-- Manual order form (with input fields)-->
+	<!--{{> orderQuickForm }}-->    <!-- AutoForm Quick-->
+	{{> reactiveTebleList }}        <!-- Reactive table list -->
+  <!--{{> orderAutoForm }}-->     <!-- AutoForm - Add order Full(manual fields)-->
+	<!--{{> tmp_AddNewOrder }}-->   <!-- Reactive table - Add order -->
+  <!--{{> tmp_AddNewOrderFull}}--><!-- Reactive table - Add order Full (not fin) -->
+  <!--{{> tmp_EditOrder }}-->     <!-- Reactive table - Edit order Quick-->
+  <!--{{> tmp_EditOrderFull }}--> <!-- Reactive table - Edit order Full(not fin)-->
+	
+</body>
+
+<template name="nav">
+	<div class="navbar navbar-default" role="navigation">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="#">Spread orders</a>
+		<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+			<span class="sr-only"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
+	</div>
+	<div class="navbar-collapse collapse">
+		<ul class="nav navbar-nav" style="margin: 8px;">
+      <div class="navbar-form">
+        <div class="form-group">
+			     {{> loginButtons }}
+        </div>
+      </div>
+		</ul>
+
+    <!--ONLY IF IS ADMIN -->  
+    <ul class="nav navbar-nav">
+      <li><a href="#">|</a></li>
+    </ul>
+    
+    <ul class="nav navbar-nav"><li class="active">
+       <div class="navbar-form">
+        <button id="new_order" class="btn btn-default">Add new order</button> 
+      </div></li>
+    </ul>
+    <ul class="nav navbar-nav"><li class="active">
+       <div class="navbar-form">
+        <button id="export_orders" class="btn btn-default">Export order list</button> 
+      </div></li>
+    </ul>
+    <ul class="nav navbar-nav"><li class="active">
+       <div class="navbar-form">
+        <button id="import_orders" class="btn btn-default">Import order list</button> 
+      </div></li>
+    </ul>
+    <!--
+    <ul class="nav navbar-nav">
+      <li><a href="#"></a></li>
+    </ul>
+    -->
+    <ul class="nav navbar-nav">
+      <div class="navbar-form">
+        <div class="form-group">
+          <li><span style="color: white">Orders without Order Date: </span></li>
+          <li style="padding-left: 50%;"><input type="checkbox" id="orderWithoutDate"/>
+          </li>
+        </div>
+      </div>
+    </ul>
+    
+    <ul class="nav navbar-nav">
+      <li><a href="#">|</a></li>
+    </ul>
+    
+		<!--ONLY IF IS ADMIN -->  
+
+
+    <ul class="nav navbar-nav">
+			<div class="navbar-form">
+        <div class="form-group">
+          <span style="color: white">Filter Order Date : </span>
+          <input type="date" id="filterOrderDate" class="form-control" placeholder="Filter Order Date"/>
+        </div>
+        <button id="btnfilterOrderDate" class="btn btn-default">Clear Filter</button> 
+        <!-- class="navbar-form navbar"  type="submit"-->
+      </div>	
+		</ul>
+    
+    <!--<ul class="nav navbar-nav">
+      <div class="navbar-form">
+        <input type="text" id="filterName" class="form-control" placeholder="Filter Order Name"/>
+      </div>
+    </ul>-->
+		<ul class="nav navbar-nav navbar-right">
+		<!--loginButtons here -->
+		</ul>
+	</div>
+	</div>
+</template>
+
+<template name="orderList">
+  <div>
+    <nav class="navbar navbar-inverse" role="navigation">
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <form class="navbar-form navbar-left" role="search">
+          <h1>Order list with Filter Collection</h1>
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Search" value="{{fcFilterSearchable.criteria}}" data-fc-search-target="search-box">
+          </div>
+          <button type="submit" class="btn btn-success fc-search-trigger" data-fc-search-trigger="search-box">Submit</button>
+          {{#if fcFilterSearchable.criteria}}<button type="button" class="btn btn-danger fc-search-clear">Reset</button>{{/if}}
+        </form>
+
+        <!-- active filters -->
+        {{#if fcFilterActive}}
+          <div class="navbar-form pull-right">
+            {{#each fcFilterActive}}
+              <a href="#" class="btn btn-info fc-filter-clear">{{title}}: {{operator}} {{value}}</a>
+            {{/each}}
+          </div>
+        {{/if}}
+        <!-- /active filters -->
+      </div>
+    </nav>
+  </div>
+  <div lass="table-responsive">
+	 <h2>Order List</h2>
+	 <table class="table table-striped table-hover table-condensed">
+   <tr>
+	  <th class="fc-sort" data-fc-sort="orderDate">
+	  OrderDate
+	  {{#if fcSort.orderDate.desc}}(desc){{/if}}
+	  {{#if fcSort.orderDate.asc}}(asc){{/if}}
+    </th>
+    <th class="fc-sort" data-fc-sort="orderCreated">
+    OrderCreated
+    {{#if fcSort.orderCreated.desc}}(desc){{/if}}
+    {{#if fcSort.orderCreated.asc}}(asc){{/if}}
+    </th>
+    <th class="fc-sort" data-fc-sort="orderName">
+    OrderName
+    {{#if fcSort.orderName.desc}}(desc){{/if}}
+    {{#if fcSort.orderName.asc}}(asc){{/if}}
+    </th>
+    <th class="fc-sort" data-fc-sort="orderFileName">
+    FileName
+    {{#if fcSort.orderFileName.desc}}(desc){{/if}}
+    {{#if fcSort.orderFileName.asc}}(asc){{/if}}
+    </th>
+		<th class="fc-sort" data-fc-sort="orderModel">
+		Model
+		{{#if fcSort.orderModel.desc}}(desc){{/if}}
+		{{#if fcSort.orderModel.asc}}(asc){{/if}}
+    </th>
+		<th class="fc-sort" data-fc-sort="orderFabric">
+		Fabric
+		{{#if fcSort.orderFabric.desc}}(desc){{/if}}
+		{{#if fcSort.orderFabric.asc}}(asc){{/if}}
+    </th>
+		<th class="fc-sort" data-fc-sort="orderBagno">
+		Bagno
+		{{#if fcSort.orderBagno.desc}}(desc){{/if}}
+		{{#if fcSort.orderBagno.asc}}(asc){{/if}}
+    </th>
+		<th class="fc-sort" data-fc-sort="orderLayers">
+		Layers
+		{{#if fcSort.orderLayers.desc}}(desc){{/if}}
+		{{#if fcSort.orderLayers.asc}}(asc){{/if}}
+    </th>
+		<th class="fc-sort" data-fc-sort="orderLength">
+		Length
+		{{#if fcSort.orderLength.desc}}(desc){{/if}}
+		{{#if fcSort.orderLength.asc}}(asc){{/if}}
+    </th>
+		<th class="fc-sort" data-fc-sort="orderExtra">
+		Extra
+		{{#if fcSort.orderExtra.desc}}(desc){{/if}}
+		{{#if fcSort.orderExtra.asc}}(asc){{/if}}
+    </th>
+		<th class="fc-sort" data-fc-sort="orderLengthSum">
+		LengthSum
+		{{#if fcSort.orderLengthSum.desc}}(desc){{/if}}
+		{{#if fcSort.orderLengthSum.asc}}(asc){{/if}}
+    </th>
+		<th class="fc-sort" data-fc-sort="orderPriority">
+		Priority
+		{{#if fcSort.orderPriority.desc}}(desc){{/if}}
+		{{#if fcSort.orderPriority.asc}}(asc){{/if}}
+		</th>
+		<th class="fc-sort" data-fc-sort="orderLoaded">
+		Loaded
+		{{#if fcSort.orderLoaded.desc}}(desc){{/if}}
+		{{#if fcSort.orderLoaded.asc}}(asc){{/if}}
+    </th>
+		<th class="fc-sort" data-fc-sort="orderSpreaded">
+		Spreaded
+		{{#if fcSort.orderSpreaded.desc}}(desc){{/if}}
+		{{#if fcSort.orderSpreaded.asc}}(asc){{/if}}
+    </th>
+		<th></th>
+    </tr>
+  
+	<!--{{#each orders}}--> 
+		<!--{{> order}}-->
+	<!--{{/each}}-->
+	
+	<!--OLD TEMPLATE order -->
+
+		<!--{{#if editing}} -->
+			<!--<input class="editField" type="text" value="{{orderName}}" />-->
+		<!--{{else}} -->
+			<!--<span class="orderName"> {{orderName}} </span>-->
+  			<!--<tbody>-->
+  			{{#each fcResults}}
+    			<tr>
+    				<!--<td>{{formatDate orderDate "long"}}</td>-->
+					<td>{{orderDate}}</td>
+					<td>{{formatDate orderCreated "long"}}</td>
+    		  <td>{{orderName}}</td>
+	   			<td>{{orderFileName}}</td>
+    			<td>{{orderModel}}</td>
+					<td>{{orderFabric}}</td>
+					<td>{{orderBagno}}</td>
+					<td>{{orderLayers}}</td>
+					<td>{{orderLength}}</td>
+					<td>{{orderExtra}}</td>
+					<td>{{orderLengthSum}}</td>
+					<td>{{orderPriority}}</td>
+					<td>{{orderLoaded}}</td>
+					<td>{{orderSpreaded}}</td>
+					<td><button id="deleteOrder">Delete</button></td> <!-- class="btn btn-default" -->
+				</tr>
+    		{{/each}}
+  			<!--</tbody> -->
+		<!-- {{/if}}-->
+			<!--<span class="delete"> |Delete| </span> -->
+	 <!--OLD TEMPLATE-->
+	</table>
+  </div>
+  <div>
+	 <a href="#" class="fc-sort-clear" >Clear sorting</a><!-- to put outside of the <  table></table> balises as all the following elements-->
+  </div>
+
+  {{#if fcPager.pages}}
+ 	  <div class="row">
+    	<div class="col-md-12 text-center">
+      	<!-- numbered pager -->
+	        <ul class="pagination">
+    	    <li><a href="#" class="fc-pager-first">&lt;&lt;</a></li>
+        	  <li><a href="#" class="fc-pager-previous">&lt;</a></li>
+          	{{#each fcPager.pages}}
+	            <li class="{{status}}"><a href="#" class="fc-pager-page" data-fc-pager-page="{{page}}">{{page}}</a></li>
+          	{{/each}}
+          	<li><a href="#" class="fc-pager-next">&gt;</a></li>
+          	<li><a href="#" class="fc-pager-last">&gt;&gt;</a></li>
+        	</ul>
+        	<!-- /numbered pager -->
+
+	        <!-- pager status -->
+    	    <p>
+        	  <strong>{{fcPager.offsetStart}}</strong> to <strong>{{fcPager.offsetEnd}}</strong> of <strong>{{fcPager.totalItems}}</strong> records.
+        	</p>
+        	<!-- /pager status -->
+    	</div>
+  	</div>
+  {{/if}}
+</template>
+
+<template name="orderForm">
+ 	<!--<div class="input-group">-->
+	<div class="input-group-sm">
+    <h1>orderForm</h1>
+		<!--<input type="text" id="orderDate" placeholder="Date"/> -->
+ 		<input type="text" id="orderDate" placeholder="OrderDate" > <!--class="form-control" -->
+		<input type="text" id="orderName" placeholder="OdrerName">
+		<input type="text" id="orderFileName" placeholder="FileName">
+		<input type="text" id="orderModel" placeholder="Model">
+		<input type="text" id="orderFabric" placeholder="Fabric">
+		<input type="text" id="orderBagno" placeholder="Bagno">
+		<input type="text" id="orderLayers" placeholder="Layers">
+		<input type="text" id="orderLength" placeholder="Length">
+		<input type="text" id="orderExtra" placeholder="Extra">
+		<!--<input type="text" id="orderLengthSum" placeholder="LengthSum">-->
+		<input type="text" id="orderPriority" placeholder="Priority">
+		<input type="checkbox" id="orderLoaded" {{showLoadedChecked}}>
+		<input type="checkbox" id="orderSpreaded" {{showSpreadedChecked}}>
+		<button id="addOrder"> Add </button> <!-- class="btn btn-default" -->
+	</div>
+</template>
+
+<template name="orderQuickForm">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<legend>Quick Form title</legend>
+			</div>
+			<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+				{{> quickForm collection="Order" id="insertOrderForm" type='insert' buttonContent="Add Order" omitFields="orderLengthSum,orderCreated"}}
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="reactiveTebleList">
+  <div>
+    <h1>Order table</h1>
+    {{> reactiveTable collection=orders settings=settings}} 
+  </div>
+</template>
+
+<template name="orderAutoForm">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+			<legend>AutoForm Order</legend>
+				{{#autoForm collection="Order" id="insertOrderForm" type='insert' buttonContent="Add Order"}}
+
+					<!-- Quick field in autoform
+					{{>afQuickField name="orderDate" type="date" }} -->
+
+					<!-- autoform -->
+          			<div class="form-group {{#if afFieldIsInvalid name='orderDate'}}has-error{{/if}}">
+            			{{> afFieldLabel name='orderDate'}}*
+            		<!--<span class="help-block">*Requered</span>-->
+            			{{> afFieldInput novalidate="novalidate" name='orderDate' type="date"}}
+                  <!-- Problem with type="date"-->
+      	       		{{#if afFieldIsInvalid name='orderDate'}}
+            		<span class="help-block">{{{afFieldMessage name='orderDate'}}}</span>
+            			{{/if}}
+          			</div>
+
+          			<!--<input type="text" id="orderPickerDate" class="form-control" placeholder="Filter Order Date"/>-->
+          			<div class="form-group {{#if afFieldIsInvalid name='orderName'}}has-error{{/if}}">
+            			{{> afFieldLabel name='orderName'}}*
+            		<!--<span class="help-block">*Requered</span>-->
+            			{{> afFieldInput name='orderName'}}
+      	       		{{#if afFieldIsInvalid name='orderName'}}
+            		<span class="help-block">{{{afFieldMessage name='orderName'}}}</span>
+            			{{/if}}
+          			</div>
+          			<div class="form-group {{#if afFieldIsInvalid name='orderFileName'}}has-error{{/if}}">
+            			{{> afFieldLabel name='orderFileName'}}
+            			{{> afFieldInput name='orderFileName'}}
+      	       		{{#if afFieldIsInvalid name='orderFileName'}}
+            		<span class="help-block">{{{afFieldMessage name='orderFileName'}}}</span>
+            			{{/if}}
+          			</div>
+          			<div class="form-group {{#if afFieldIsInvalid name='orderModel'}}has-error{{/if}}">
+            			{{> afFieldLabel name='orderModel'}}
+            			{{> afFieldInput name='orderModel'}}
+      	       		{{#if afFieldIsInvalid name='orderModel'}}
+            		<span class="help-block">{{{afFieldMessage name='orderModel'}}}</span>
+            			{{/if}}
+          			</div>
+          			<div class="form-group {{#if afFieldIsInvalid name='orderFabric'}}has-error{{/if}}">
+            			{{> afFieldLabel name='orderFabric'}}
+            			{{> afFieldInput name='orderFabric'}}
+      	       		{{#if afFieldIsInvalid name='orderFabric'}}
+            		<span class="help-block">{{{afFieldMessage name='orderFabric'}}}</span>
+            			{{/if}}
+          			</div>
+          			<div class="form-group {{#if afFieldIsInvalid name='orderBagno'}}has-error{{/if}}">
+            			{{> afFieldLabel name='orderBagno'}}
+            			{{> afFieldInput name='orderBagno'}}
+      	       		{{#if afFieldIsInvalid name='orderBagno'}}
+            		<span class="help-block">{{{afFieldMessage name='orderBagno'}}}</span>
+            			{{/if}}
+          			</div>
+          			<div class="form-group {{#if afFieldIsInvalid name='orderLayers'}}has-error{{/if}}">
+            			{{> afFieldLabel name='orderLayers'}}*
+            		<!--<span class="help-block">*Requered</span>-->
+            			{{> afFieldInput name='orderLayers'}}
+      	       		{{#if afFieldIsInvalid name='orderLayers'}}
+            		<span class="help-block">{{{afFieldMessage name='orderLayers'}}}</span>
+            			{{/if}}
+          			</div>
+          			<div class="form-group {{#if afFieldIsInvalid name='orderLength'}}has-error{{/if}}">
+            			{{> afFieldLabel name='orderLength'}}*
+            		<!--<span class="help-block">*Requered</span>-->
+            			{{> afFieldInput name='orderLength'}}
+      	       		{{#if afFieldIsInvalid name='orderLength'}}
+            		<span class="help-block">{{{afFieldMessage name='orderLength'}}}</span>
+            			{{/if}}
+          			</div>
+          			<div class="form-group {{#if afFieldIsInvalid name='orderExtra'}}has-error{{/if}}">
+            			{{> afFieldLabel name='orderExtra'}}*
+            		<!--<span class="help-block">*Requered</span>-->
+            			{{> afFieldInput name='orderExtra'}}
+      	       		{{#if afFieldIsInvalid name='orderExtra'}}
+            		<span class="help-block">{{{afFieldMessage name='orderExtra'}}}</span>
+            			{{/if}}
+          			</div>
+          			<div class="form-group {{#if afFieldIsInvalid name='orderPriority'}}has-error{{/if}}">
+            			{{> afFieldLabel name='orderPriority'}}
+            			{{> afFieldInput name='orderPriority' options="allowed" capitalize="true"}}
+      	       		{{#if afFieldIsInvalid name='orderPriority'}}
+            		<span class="help-block">{{{afFieldMessage name='orderPriority'}}}</span>
+            			{{/if}}
+          			</div>
+          			<div class="form-group {{#if afFieldIsInvalid name='orderLoaded'}}has-error{{/if}}">
+            			<!--{{> afFieldLabel name='orderLoaded'}}-->
+            			{{> afFieldInput name='orderLoaded'}}
+      	       		{{#if afFieldIsInvalid name='orderLoaded'}}
+            		<span class="help-block">{{{afFieldMessage name='orderLoaded'}}}</span>
+            			{{/if}}
+          			</div>
+          			<div class="form-group {{#if afFieldIsInvalid name='orderSpreaded'}}has-error{{/if}}">
+            			<!--{{> afFieldLabel name='orderSpreaded'}}-->
+            			{{> afFieldInput name='orderSpreaded'}}
+      	       		{{#if afFieldIsInvalid name='orderSpreaded'}}
+            		<span class="help-block">{{{afFieldMessage name='orderSpreaded'}}}</span>
+            			{{/if}}
+          			</div>
+          			<button type="submit" class="btn btn-primary">Add Order</button>
+				{{/autoForm}}
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="tmp_AddNewOrder">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <legend></legend>
+      </div>
+      <div class="col-sm-6">
+        {{> quickForm collection="Order" id="insertOrderForm" type="insert" buttonContent="Add Order" omitFields="orderLengthSum,orderCreated"}}
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="tmp_AddNewOrderFull">
+</template>
+
+<template name="tmp_EditOrder">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <legend></legend>
+      </div>
+      <div class="col-sm-6">
+        {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="orderLengthSum,orderCreated"}}
+        
+
+        <!--ONLY IF IS ADMIN -->  
+        <div class="">
+          <br />
+          <button class="btn btn-primary" id="deleteOrder" type="button">Delete order</button>  
+        </div>
+        <!--ONLY IF IS ADMIN -->  
+             
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="tmp_EditOrderFull">
+</template>
+
+<template name="tmp_ExportOrder">
+    <div>
+    <p id="heading">JSON to CSV Converter</p>
+      <hr />
+        <p>Your CSV Code: </p>
+        <!--  <textarea id="json1" class="text" style="width:100%;">
+"_id","orderDate","orderCreated","orderName","orderFileName","orderModel","orderFabric","orderBagno","orderColor","orderLayers","orderLength","orderExtra","orderLengthSum","orderPriority","orderLoaded","orderSpreaded"
+{{#each order}}{{_id}},{{orderDate}},{{orderCreated}},"{{orderName}}","{{orderFileName}}","{{orderModel}}","{{orderFabric}}","{{orderBagno}}","{{orderColor}}",{{orderLayers}},{{orderLength}},{{orderExtra}},{{orderLengthSum}},{{orderPriority}},{{orderLoaded}},{{orderSpreaded}}
+{{/each}}</textarea>-->
+          <textarea id="json1" class="text" style="width:100%;">
+"_id";"orderDate";"orderCreated";"orderName";"orderFileName";"orderModel";"orderFabric";"orderBagno";"orderColor";"orderLayers";"orderLength";"orderExtra";"orderLengthSum";"orderPriority";"orderLoaded";"orderSpreaded"
+{{#each order}}{{_id}};{{orderDate}};{{orderCreated}};"{{orderName}}";"{{orderFileName}}";"{{orderModel}}";"{{orderFabric}}";"{{orderBagno}}";"{{orderColor}}";{{orderLayers}};{{orderLength}};{{orderExtra}};{{orderLengthSum}};{{orderPriority}};{{orderLoaded}};{{orderSpreaded}}
+{{/each}}</textarea>
+          <!--<br />
+          <input id="quote" type="checkbox" checked="true" /> Wrap values in double quotes
+          <br />
+          <input id="labels" type="checkbox" checked="true" /> Include labels in first row
+          <br />
+        <button id="convert1">Convert to CSV</button>
+      &nbsp;&nbsp;-->
+      <button id="download1">Download CSV file</button>
+      <span>* you must put ".csv" at end of download file</span>
+      <br /><br />
+    <!--<textarea id="csv1" class="text" style="width:100%;"></textarea>-->
+  </div>
+  <div>
+    <p id="heading">CSV to JSON Converter</p>
+    <!--<p>Paste Your CSV code:</p> 
+      <textarea id="csv2" class="text" style="width:100%;"></textarea>
+      --><br />
+      <button id="convert2">Convert to JSON code</button>
+        &nbsp;&nbsp;
+      <button id="download2">Show JSON code</button>
+      <br /><br />
+     <textarea id="json2" class="text" style="width:100%;"></textarea>
+  </div>
+</template>
+
+<template name="tmp_ImportOrder">
+  <div>
+    <p id="heading">CSV to JSON Converter</p>
+    <p>Paste Your CSV code:</p> 
+      <textarea id="csv3" class="text" style="width:100%;"></textarea>
+      <br />
+      <button id="convert3">Convert to JSON code</button>
+        &nbsp;&nbsp;
+      <button id="download3">Show JSON code</button>
+      <br /><br />
+     <textarea id="json3" class="text" style="width:100%;"></textarea>
+  </div>
+  <div>
+    <input type="file" id="file"/>
+    <button id="insert-csv-from-code">Insert form textarea</button>
+
+
+
+  </div>
+
+
+</template>
