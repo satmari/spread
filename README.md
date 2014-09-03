@@ -1,0 +1,1 @@
+Create a Meteor app and put the client_/server_ files in a client/server directories. Also, create a public dir to save the uploaded files.

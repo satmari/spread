@@ -1,0 +1,17 @@
+{
+  "packages": {
+    "bootstrap-3": {},
+    "accounts-ui-bootstrap-3": {},
+    "moment": {},
+    "jquery-ui-bootstrap": {},
+    "collection2": {},
+    "autoform": {},
+    "filter-collections": {},
+    "fast-render": {},
+    "reactive-table": {},
+    "reactive-modal": {},
+    "bootstrap3-datepicker": {},
+    "json2csv": {},
+    "meteor-file": {}
+  }
+}
