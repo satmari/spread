@@ -2,16 +2,12 @@
   "meteor": {},
   "dependencies": {
     "basePackages": {
-<<<<<<< HEAD
       "bootstrap-3": {},
       "accounts-ui-bootstrap-3": {},
-=======
->>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
       "moment": {},
       "jquery-ui-bootstrap": {},
       "collection2": {},
       "autoform": {},
-<<<<<<< HEAD
       "filter-collections": {},
       "fast-render": {},
       "reactive-table": {},
@@ -31,15 +27,6 @@
         "tag": "v0.3.5",
         "commit": "bbd0a8a46ae02526c2ebfee05fa8075d8d04a9ba"
       },
-=======
-      "fast-render": {},
-      "reactive-table": {},
-      "reactive-modal": {},
-      "bootstrap-3": {},
-      "jqueryui": {}
-    },
-    "packages": {
->>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
       "moment": {
         "git": "https://github.com/acreeger/meteor-moment.git",
         "tag": "v2.8.1",
@@ -60,14 +47,11 @@
         "tag": "v0.17.1",
         "commit": "a4688e7d77019a68ef43c2a303e905748beeb860"
       },
-<<<<<<< HEAD
       "filter-collections": {
         "git": "https://github.com/julianmontagna/filter-collections.git",
         "tag": "v0.1.4",
         "commit": "87bc9cee7a23459e427d4613383be3f67f29245c"
       },
-=======
->>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
       "fast-render": {
         "git": "https://github.com/arunoda/meteor-fast-render.git",
         "tag": "v1.0.0",
@@ -83,7 +67,6 @@
         "tag": "v0.1.3",
         "commit": "4ec97d8558136730b6178e3f5e470689da6b36a5"
       },
-<<<<<<< HEAD
       "bootstrap3-datepicker": {
         "git": "https://github.com/rajit/bootstrap3-datepicker.git",
         "tag": "v1.3.0-1",
@@ -98,17 +81,6 @@
         "git": "https://github.com/EventedMind/meteor-file.git",
         "tag": "v0.0.7",
         "commit": "5d3edaaccfb9d0995cf848abfb61c3bd101ea507"
-=======
-      "bootstrap-3": {
-        "git": "https://github.com/mangasocial/meteor-bootstrap-3.git",
-        "tag": "v3.2.0-1",
-        "commit": "17a63902fc6cf1096c5289d963c66cf28b474727"
-      },
-      "jqueryui": {
-        "git": "https://github.com/mizzao/meteor-jqueryui.git",
-        "tag": "v1.11.0",
-        "commit": "06194edc0bdbb28c34b3a656bf9cb6a32718b44e"
->>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
       },
       "jquery-ui": {
         "git": "https://github.com/TimHeckel/meteor-jquery-ui.git",
@@ -124,14 +96,6 @@
         "git": "https://github.com/subhog/meteor-just-i18n.git",
         "tag": "v0.3.0",
         "commit": "a60e7f4350fb9648d6f6b4a01acbbc114c4f4343"
-<<<<<<< HEAD
-=======
-      },
-      "build-fetcher": {
-        "git": "https://github.com/mizzao/meteor-build-fetcher.git",
-        "tag": "v0.2.0",
-        "commit": "5202ca83277860d798c6ff2ef1d8fe1bce007d0f"
->>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
       }
     }
   }
