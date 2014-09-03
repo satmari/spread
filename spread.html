@@ -13,12 +13,15 @@
   <!--{{> tmp_AddNewOrderFull}}--><!-- Reactive table - Add order Full (not fin) -->
   <!--{{> tmp_EditOrder }}-->     <!-- Reactive table - Edit order Quick-->
   <!--{{> tmp_EditOrderFull }}--> <!-- Reactive table - Edit order Full(not fin)-->
+<<<<<<< HEAD
 
   <!--{{> jsontocsv}} -->
   <!--{{> csvtojson}} -->
 
   <!--{{> list}} -->
   <!--{{> example}} -->
+=======
+>>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
 	
 </body>
 
@@ -34,14 +37,29 @@
 		</button>
 	</div>
 	<div class="navbar-collapse collapse">
+<<<<<<< HEAD
 		<ul class="nav navbar-nav">
 			<li ><a href="#"></a></li>
+=======
+		<ul class="nav navbar-nav" style="margin: 8px;">
+      <div class="navbar-form">
+        <div class="form-group">
+			     {{> loginButtons }}
+        </div>
+      </div>
+>>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
 		</ul>
 
     <!--ONLY IF IS ADMIN -->  
     <ul class="nav navbar-nav">
+<<<<<<< HEAD
       <li class="active"><a href="#">|</a></li>
     </ul>
+=======
+      <li><a href="#">|</a></li>
+    </ul>
+    
+>>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
     <ul class="nav navbar-nav"><li class="active">
        <div class="navbar-form">
         <button id="new_order" class="btn btn-default">Add new order</button> 
@@ -49,17 +67,32 @@
     </ul>
     <ul class="nav navbar-nav"><li class="active">
        <div class="navbar-form">
+<<<<<<< HEAD
         <button id="export_order" class="btn btn-default">Export order</button> 
+=======
+        <button id="export_orders" class="btn btn-default">Export order list</button> 
+>>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
       </div></li>
     </ul>
     <ul class="nav navbar-nav"><li class="active">
        <div class="navbar-form">
+<<<<<<< HEAD
         <button id="import_order" class="btn btn-default">Import order</button> 
       </div></li>
     </ul>
     <ul class="nav navbar-nav">
       <li><a href="#"></a></li>
     </ul>
+=======
+        <button id="import_orders" class="btn btn-default">Import order list</button> 
+      </div></li>
+    </ul>
+    <!--
+    <ul class="nav navbar-nav">
+      <li><a href="#"></a></li>
+    </ul>
+    -->
+>>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
     <ul class="nav navbar-nav">
       <div class="navbar-form">
         <div class="form-group">
@@ -69,6 +102,7 @@
         </div>
       </div>
     </ul>
+<<<<<<< HEAD
     <!--
     <ul class="nav navbar-nav"><li class="active">
       <div class="navbar-form">
@@ -79,6 +113,13 @@
     <ul class="nav navbar-nav">
       <li class="active"><a href="#">|</a></li>
     </ul>
+=======
+    
+    <ul class="nav navbar-nav">
+      <li><a href="#">|</a></li>
+    </ul>
+    
+>>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
 		<!--ONLY IF IS ADMIN -->  
 
 
@@ -99,7 +140,11 @@
       </div>
     </ul>-->
 		<ul class="nav navbar-nav navbar-right">
+<<<<<<< HEAD
 		{{> loginButtons }} <!-- here -->
+=======
+		<!--loginButtons here -->
+>>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
 		</ul>
 	</div>
 	</div>
@@ -466,6 +511,7 @@
 <template name="tmp_EditOrderFull">
 </template>
 
+<<<<<<< HEAD
 <template name="jsontocsv">
   <!--<p id="heading">JSON to CSV Converter</p>
       <hr />
@@ -535,14 +581,26 @@
 
 </template>
 
+=======
+>>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
 <template name="tmp_ExportOrder">
     <div>
     <p id="heading">JSON to CSV Converter</p>
       <hr />
         <p>Your CSV Code: </p>
+<<<<<<< HEAD
           <textarea id="json1" class="text" style="width:100%;">
 "_id","orderDate","orderCreated","orderName","orderFileName","orderModel","orderFabric","orderBagno","orderColor","orderLayers","orderLength","orderExtra","orderLengthSum","orderPriority","orderLoaded","orderSpreaded"
 {{#each order}}{{_id}},{{orderDate}},{{orderCreated}},"{{orderName}}","{{orderFileName}}","{{orderModel}}","{{orderFabric}}","{{orderBagno}}","{{orderColor}}",{{orderLayers}},{{orderLength}},{{orderExtra}},{{orderLengthSum}},{{orderPriority}},{{orderLoaded}},{{orderSpreaded}}
+=======
+        <!--  <textarea id="json1" class="text" style="width:100%;">
+"_id","orderDate","orderCreated","orderName","orderFileName","orderModel","orderFabric","orderBagno","orderColor","orderLayers","orderLength","orderExtra","orderLengthSum","orderPriority","orderLoaded","orderSpreaded"
+{{#each order}}{{_id}},{{orderDate}},{{orderCreated}},"{{orderName}}","{{orderFileName}}","{{orderModel}}","{{orderFabric}}","{{orderBagno}}","{{orderColor}}",{{orderLayers}},{{orderLength}},{{orderExtra}},{{orderLengthSum}},{{orderPriority}},{{orderLoaded}},{{orderSpreaded}}
+{{/each}}</textarea>-->
+          <textarea id="json1" class="text" style="width:100%;">
+"_id";"orderDate";"orderCreated";"orderName";"orderFileName";"orderModel";"orderFabric";"orderBagno";"orderColor";"orderLayers";"orderLength";"orderExtra";"orderLengthSum";"orderPriority";"orderLoaded";"orderSpreaded"
+{{#each order}}{{_id}};{{orderDate}};{{orderCreated}};"{{orderName}}";"{{orderFileName}}";"{{orderModel}}";"{{orderFabric}}";"{{orderBagno}}";"{{orderColor}}";{{orderLayers}};{{orderLength}};{{orderExtra}};{{orderLengthSum}};{{orderPriority}};{{orderLoaded}};{{orderSpreaded}}
+>>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
 {{/each}}</textarea>
           <!--<br />
           <input id="quote" type="checkbox" checked="true" /> Wrap values in double quotes
@@ -569,6 +627,7 @@
   </div>
 </template>
 
+<<<<<<< HEAD
 <template name="example">
   <input type="file" id="file"/>
 </template>
@@ -592,3 +651,22 @@
 //orderSpreaded
 
 -->
+=======
+<template name="tmp_ImportOrder">
+  <div>
+    <p id="heading">CSV to JSON Converter</p>
+    <p>Paste Your CSV code:</p> 
+      <textarea id="csv3" class="text" style="width:100%;"></textarea>
+      <br />
+      <button id="convert3">Convert to JSON code</button>
+        &nbsp;&nbsp;
+      <button id="download3">Show JSON code</button>
+      <br /><br />
+     <textarea id="json3" class="text" style="width:100%;"></textarea>
+  </div>
+  <div>
+    <input type="file" id="file"/>
+    <button id="insert-csv-from-code">Insert form textarea</button>
+  </div>
+</template>
+>>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6

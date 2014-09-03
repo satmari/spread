@@ -106,6 +106,16 @@ Order = new Meteor.Collection("order", {
         allowedValues: [5, 4, 3, 2, 1],
         max: 10
     },
+<<<<<<< HEAD
+=======
+    'orderAssignSpreader': {
+        type: String,
+        label: "AssignSpreader",
+        optional: true,
+        defaultValue: "",
+        allowedValues: ["", "SP 1", "SP 2"]
+    },
+>>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
 	'orderLoaded': {
 		type: Boolean, 
 		label: "OrderLoaded",
@@ -141,6 +151,10 @@ Order = new Meteor.Collection("order", {
 //orderExtra
 //orderLengthSum
 //orderPriority
+<<<<<<< HEAD
+=======
+//orderAssignSpreader
+>>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
 //orderLoaded
 //orderSpreaded
   		

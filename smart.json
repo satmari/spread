@@ -1,11 +1,15 @@
 {
   "packages": {
+<<<<<<< HEAD
     "bootstrap-3": {},
     "accounts-ui-bootstrap-3": {},
+=======
+>>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
     "moment": {},
     "jquery-ui-bootstrap": {},
     "collection2": {},
     "autoform": {},
+<<<<<<< HEAD
     "filter-collections": {},
     "fast-render": {},
     "reactive-table": {},
@@ -13,5 +17,12 @@
     "bootstrap3-datepicker": {},
     "json2csv": {},
     "meteor-file": {}
+=======
+    "fast-render": {},
+    "reactive-table": {},
+    "reactive-modal": {},
+    "bootstrap-3": {},
+    "jqueryui": {}
+>>>>>>> 40c34e6e30a9e3fbc2badc8d6901ff3e92979ee6
   }
 }
