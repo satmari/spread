@@ -15,8 +15,9 @@ mrt:bootstrap-3
 mrt:moment
 aldeed:collection2
 aldeed:simple-schema
-aldeed:autoform
 meteorhacks:fast-render
 aslagle:reactive-table
 pahans:reactive-modal
 mrt:jquery-csv
+aldeed:autoform
+
