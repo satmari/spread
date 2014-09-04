@@ -49,7 +49,7 @@ if (Meteor.isClient) {
   Template.reactiveTebleList.helpers({
     settings: function () {
       return {
-            rowsPerPage: 10,
+            rowsPerPage: 50,
             showFilter: true,
           showNavigation: 'auto',
           fields: [
@@ -411,7 +411,8 @@ if (Meteor.isClient) {
             console.log(ply);
   
             // One by One
-            //A.insert({SEQ: seq, FILE: all[i]['FILE'], CUT_FILE: all[i]['CUT FILE'], MODEL: all[i]['MODEL'], SPREAD_TYPE: all[i]['SPREAD TYPE'], BAGNO: all[i]['BAGNO'], PLY: ply});    
+            //Order.insert({SEQ: seq, FILE: all[i]['FILE'], CUT_FILE: all[i]['CUT FILE'], MODEL: all[i]['MODEL'], SPREAD_TYPE: all[i]['SPREAD TYPE'], BAGNO: all[i]['BAGNO'], PLY: ply});    
+            Order.insert({orderName: all[i]['FILE'], orderFileName: all[i]['CUT FILE'], orderModel: all[i]['MODEL'], orderFabric: all[i]['SPREAD TYPE'], orderBagno: all[i]['BAGNO'], orderLayers: ply});    
           }
       }
       reader.readAsText(file_a);
@@ -559,12 +560,12 @@ if (Meteor.isServer) {
 // meteor add accounts-password
 // meteor add accounts-ui
 // meteor add jquery
-// meteor mrt:jquery-ui  meteor se
+// meteor mrt:jquery-ui 
 // meteor add glasser:jqueryui
 
 // meteor add mrt:bootstrap-3  // meteor add bootstrap
 //meteor add mrt:jquery-ui-bootstrap 
-// meteor add mrt:accounts-ui-bootstrap-3
+//meteor add mrt:accounts-ui-bootstrap-3
 
 // meteor add mrt:moment
 

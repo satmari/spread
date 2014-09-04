@@ -68,35 +68,35 @@ Order = new Meteor.Collection("order", {
     'orderLayers': {
         type: Number,
         label: "Layers",
-		optional: false,
+		optional: true,
 		decimal: true, 
         min: 0
     },
     'orderLength': {
         type: Number,
         label: "Length",
-		optional: false,	
+		optional: true,	
 		decimal: true, 
         min: 0
     },
     'orderExtra': {
         type: Number,
         label: "Extra",
-		optional: false,
+		optional: true,
 		decimal: true, 
         min: 0
     },
     'orderLengthSum': {
         type: Number,
         label: "LengthSum",	
-		optional: false,
+		optional: true,
 		decimal: true, 
         min: 0,
-        autoValue:function(){
+        /*autoValue:function(){
                 var result = (this.siblingField("orderLength").value + this.siblingField("orderExtra").value) * this.siblingField("orderLayers").value;
                 //console.log(result);
                 return result;
-        }
+        }*/
     },
 	'orderPriority': {
         type: Number,
