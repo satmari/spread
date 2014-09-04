@@ -553,7 +553,7 @@ if (Meteor.isServer) {
 
 }
 
-
+// kill -9 `ps ax | grep node | grep meteor | awk '{print $1}'`
 // export MONGO_URL=mongodb://localhost:27017/spread
 
 // meteor add accounts-base
