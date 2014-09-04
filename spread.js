@@ -351,6 +351,34 @@ if (Meteor.isClient) {
       rd_importOrder.show();
     },
 
+    'click #refresh_sum' : function () {
+      console.log('refresh_sum - click')
+
+      var order_all = Order.find().fetch();
+
+      for (var i = 0; i < order_all.length; i++) {
+        //alert("a")
+        //console.log(order_all[i])
+        //console.log(order_all[i]._id)
+        var length = Number(order_all[i].orderLength)
+        var extra = Number(order_all[i].orderExtra)
+        var layers = Number(order_all[i].orderLayers)
+
+        var sum = Number((length + extra) * layers)
+        var sumf =sum.toFixed(3);
+
+        Order.update({_id: order_all[i]._id},
+          {
+            //$set: { orderLength: 5+5 },
+            $set: { orderLengthSum: sumf },
+          }, 
+          {
+            multi: true,
+          }
+        );
+      }
+    },
+
     'change #orderWithoutDate': function (e, t) {
 
         if ($('#orderWithoutDate').prop('checked')){
@@ -572,7 +600,7 @@ if (Meteor.isServer) {
   });
 
   Meteor.publish("orderWithoutJob", function(){
-    return Order.find({orderAssignSpreader: "no"});
+    return Order.find({orderAssignSpreader: "none"});
   });
 
 }
