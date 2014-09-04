@@ -13,6 +13,8 @@
   <!--{{> tmp_AddNewOrderFull}}--><!-- Reactive table - Add order Full (not fin) -->
   <!--{{> tmp_EditOrder }}-->     <!-- Reactive table - Edit order Quick-->
   <!--{{> tmp_EditOrderFull }}--> <!-- Reactive table - Edit order Full(not fin)-->
+  <!-- {{> tmp_ImportOrderAnalytics}} -->
+
 	
 </body>
 
@@ -44,23 +46,12 @@
     <ul class="nav navbar-nav"><li class="active">
        <div class="navbar-form">
         <button id="new_order" class="btn btn-default">Add new order</button> 
-      </div></li>
-    </ul>
-    <ul class="nav navbar-nav"><li class="active">
-       <div class="navbar-form">
+        <button id="import_orders_analytics" class="btn btn-default">Import orders from MD Analytics</button>
         <button id="export_orders" class="btn btn-default">Export order list</button> 
-      </div></li>
-    </ul>
-    <ul class="nav navbar-nav"><li class="active">
-       <div class="navbar-form">
         <button id="import_orders" class="btn btn-default">Import order list</button> 
       </div></li>
     </ul>
-    <!--
-    <ul class="nav navbar-nav">
-      <li><a href="#"></a></li>
-    </ul>
-    -->
+    
     <ul class="nav navbar-nav">
       <div class="navbar-form">
         <div class="form-group">
@@ -434,9 +425,6 @@
   </div>
 </template>
 
-<template name="tmp_AddNewOrderFull">
-</template>
-
 <template name="tmp_EditOrder">
   <div class="container">
     <div class="row">
@@ -446,7 +434,6 @@
       <div class="col-sm-6">
         {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="orderLengthSum,orderCreated"}}
         
-
         <!--ONLY IF IS ADMIN -->  
         <div class="">
           <br />
@@ -459,19 +446,53 @@
   </div>
 </template>
 
+<template name="tmp_AddNewOrderFull">
+</template>
+
 <template name="tmp_EditOrderFull">
 </template>
 
+<template name="tmp_ImportOrderAnalytics">
+  <!--<div>
+    <p id="heading">Import Orders from MD Analytics</p>
+    <hr />
+  </div>-->
+  <div>
+    <p>Insert from CSV file <b>(MD Analytics file)</b>:</p> 
+    <input type="file" id="file"/>
+    <br />
+    <button id="insert_csv_file">Insert form CSV file</button>
+    <br />
+    <hr />
+  </div>
+  <div>
+    <p>Paste Your CSV code <b>(MD Analytics file)</b>:</p> 
+      <textarea id="csv3" class="text" style="width:100%; height:200px;"></textarea>
+      <br />
+      <button id="insert_csv_text">Import from CSV code</button>
+      <br />
+  </div>
+</template>
+
 <template name="tmp_ExportOrder">
+    <!--<div>
+    <p id="heading">Export Orders from list</p>
+    <hr />
+    </div>-->
     <div>
-    <p id="heading">JSON to CSV Converter</p>
-      <hr />
-        <p>Your CSV Code: </p>
+      <p>Download CSV file (Order list): </p>
+        <button id="download1">Download CSV file</button>
+        <span>* you must put ".csv" at the end of download file</span>
+        <br />
+        <hr />
+    </div>
+    <div>
+      <p>Copy CSV code (Order list): </p>
         <!--  <textarea id="json1" class="text" style="width:100%;">
 "_id","orderDate","orderCreated","orderName","orderFileName","orderModel","orderFabric","orderBagno","orderColor","orderLayers","orderLength","orderExtra","orderLengthSum","orderPriority","orderLoaded","orderSpreaded"
 {{#each order}}{{_id}},{{orderDate}},{{orderCreated}},"{{orderName}}","{{orderFileName}}","{{orderModel}}","{{orderFabric}}","{{orderBagno}}","{{orderColor}}",{{orderLayers}},{{orderLength}},{{orderExtra}},{{orderLengthSum}},{{orderPriority}},{{orderLoaded}},{{orderSpreaded}}
 {{/each}}</textarea>-->
-          <textarea id="json1" class="text" style="width:100%;">
+          <textarea id="json1" class="text" style="width:100%; height:200px;">
 "_id";"orderDate";"orderCreated";"orderName";"orderFileName";"orderModel";"orderFabric";"orderBagno";"orderColor";"orderLayers";"orderLength";"orderExtra";"orderLengthSum";"orderPriority";"orderLoaded";"orderSpreaded"
 {{#each order}}{{_id}};{{orderDate}};{{orderCreated}};"{{orderName}}";"{{orderFileName}}";"{{orderModel}}";"{{orderFabric}}";"{{orderBagno}}";"{{orderColor}}";{{orderLayers}};{{orderLength}};{{orderExtra}};{{orderLengthSum}};{{orderPriority}};{{orderLoaded}};{{orderSpreaded}}
 {{/each}}</textarea>
@@ -482,38 +503,46 @@
           <br />
         <button id="convert1">Convert to CSV</button>
       &nbsp;&nbsp;-->
-      <button id="download1">Download CSV file</button>
-      <span>* you must put ".csv" at end of download file</span>
-      <br /><br />
+      <br />
     <!--<textarea id="csv1" class="text" style="width:100%;"></textarea>-->
   </div>
+
+  <!--
   <div>
     <p id="heading">CSV to JSON Converter</p>
-    <!--<p>Paste Your CSV code:</p> 
+    <p>Paste Your CSV code:</p> 
       <textarea id="csv2" class="text" style="width:100%;"></textarea>
-      --><br />
+      <br />
       <button id="convert2">Convert to JSON code</button>
         &nbsp;&nbsp;
       <button id="download2">Show JSON code</button>
       <br /><br />
      <textarea id="json2" class="text" style="width:100%;"></textarea>
-  </div>
+  </div>-->
 </template>
 
 <template name="tmp_ImportOrder">
-  <div>
+  <!--<div>
     <p id="heading">CSV to JSON Converter</p>
-    <p>Paste Your CSV code:</p> 
-      <textarea id="csv3" class="text" style="width:100%;"></textarea>
-      <br />
-      <button id="convert3">Convert to JSON code</button>
-        &nbsp;&nbsp;
-      <button id="download3">Show JSON code</button>
-      <br /><br />
-     <textarea id="json3" class="text" style="width:100%;"></textarea>
+    <hr />
+  </div>-->
+  <div>
+    <p>Import orders from CSV file:</p> 
+    <input type="file" id="file"/>
+    <br />
+    <button id="insert-csv-from-code">Import from CSV file</button>
+    <br />
+    <hr />
   </div>
   <div>
-    <input type="file" id="file"/>
-    <button id="insert-csv-from-code">Insert form textarea</button>
+    <p>Paste Your CSV code:</p> 
+      <textarea id="csv3" class="text" style="width:100%; height:200px;"></textarea>
+      <br />
+      <button id="convert3">Import from CSV code</button>
+      <!--&nbsp;&nbsp;
+      <button id="download3">Show JSON code</button>
+      <br /><br />
+     <textarea id="json3" class="text" style="width:100%;"></textarea>-->
+     <br />
   </div>
 </template>

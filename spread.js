@@ -240,6 +240,27 @@ if (Meteor.isClient) {
       }
   };
 
+  // Import Order from MD Analytics on click (in nav button) - Reactive Modal
+  var rm_ImportOrderAnalyitics = {
+      template: Template.tmp_ImportOrderAnalytics, 
+      title: "Import orders from MD Analytics",
+      //modalDialogClass: "modal-dialog", //optional
+      //modalBodyClass: "modal-body", //optional
+      //modalFooterClass: "modal-footer",//optional
+      closable: false,
+      buttons: {
+        //"cancel": {
+        //  class: 'btn-danger',
+        //  label: 'Cancel'
+          //},
+          "ok": {
+            closeModalOnClick: true, // if this is false, dialog doesnt close automatically on click
+            class: 'btn-info',
+            label: 'Back'
+          }
+      }
+  };
+
   SimpleSchema.debug = true;
   //UI.registerHelper("Schemas", Schemas);
   
@@ -303,6 +324,14 @@ if (Meteor.isClient) {
           console.log("orderWithoutDate: unchecked");
           Session.set("ses_datenotexist", false);
         }
+    },
+    'click #import_orders_analytics' : function () {
+      console.log('import-click')
+
+      // Define rd_addneworder
+      var rd_importOrderAnalytics = ReactiveModal.initDialog(rm_ImportOrderAnalyitics);
+      // Show rd_addneworder
+      rd_importOrderAnalytics.show();
     },
 
     'click #export_orders' : function () {
