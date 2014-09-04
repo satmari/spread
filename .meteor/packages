@@ -1,0 +1,24 @@
+# Meteor packages used by this project, one per line.
+#
+# 'meteor add' and 'meteor remove' will edit this file for you,
+# but you can also edit it by hand.
+
+standard-app-packages
+insecure
+accounts-base
+accounts-password
+accounts-ui
+jquery
+mrt:jquery-ui
+glasser:jqueryui
+mrt:bootstrap-3
+mrt:accounts-ui-bootstrap-3
+mrt:moment
+aldeed:collection2
+aldeed:simple-schema
+aldeed:autoform
+meteorhacks:fast-render
+aslagle:reactive-table
+pahans:reactive-modal
+mrt:jquery-csv
+

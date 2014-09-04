@@ -1,0 +1,13 @@
+{
+  "packages": {
+    "moment": {},
+    "jquery-ui-bootstrap": {},
+    "collection2": {},
+    "autoform": {},
+    "fast-render": {},
+    "reactive-table": {},
+    "reactive-modal": {},
+    "bootstrap-3": {},
+    "jqueryui": {}
+  }
+}
