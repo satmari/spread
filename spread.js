@@ -20,24 +20,30 @@ if (Meteor.isClient) {
     
     $('#filterOrderDate').val(new Date().toDateInputValue());
     Session.set("ses_datefilter", todayAt02);
-
     Session.set("ses_datenotexist", false);
+    Session.set("ses_jobnotexist", false);
 
   })
 
   Meteor.autosubscribe(function () {
     var ses_datefilter = Session.get("ses_datefilter");
     var ses_existdate = Session.get("ses_datenotexist");
+    var ses_jobnotexist = Session.get("ses_jobnotexist");
     //console.log("Autosubcribe sesion: " + ses + " , typeof: " + typeof ses);
     
-
     if ( ses_existdate == true ) {
       Meteor.subscribe('orderWithoutDate');
+    } else if ( ses_jobnotexist == true ) { 
+      Meteor.subscribe('orderWithoutJob');
     } else if ( ses_datefilter == "" ) { 
       Meteor.subscribe('orderAll');
     } else {
       Meteor.subscribe('order', Session.get("ses_datefilter"));
     }
+
+    /*if ( ses_jobnotexist == true ) { 
+      Meteor.subscribe('orderWithoutJob');
+    }*/
 
   });
 
@@ -294,6 +300,9 @@ if (Meteor.isClient) {
       console.log("Delete-ses_datefilter: " + Session.get("ses_datefilter"));
 
       $('#filterOrderDate').val("");
+
+      //Session.set("ses_datenotexist", false);
+      //Session.set("ses_jobnotexist", false);
     },
 
     'change #filterOrderDate': function (e, t) {
@@ -350,6 +359,17 @@ if (Meteor.isClient) {
         } else {
           console.log("orderWithoutDate: unchecked");
           Session.set("ses_datenotexist", false);
+        }
+    },
+
+    'change #orderWithoutJob': function (e, t) {
+
+        if ($('#orderWithoutJob').prop('checked')){
+          console.log("orderWithoutJob: checked");
+          Session.set("ses_jobnotexist", true);
+        } else {
+          console.log("orderWithoutJob: unchecked");
+          Session.set("ses_jobnotexist", false);
         }
     },
 
@@ -549,6 +569,10 @@ if (Meteor.isServer) {
 
   Meteor.publish("orderWithoutDate", function(){
     return Order.find({orderDate: { $exists: false }});
+  });
+
+  Meteor.publish("orderWithoutJob", function(){
+    return Order.find({orderAssignSpreader: "no"});
   });
 
 }

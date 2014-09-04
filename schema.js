@@ -110,8 +110,8 @@ Order = new Meteor.Collection("order", {
         type: String,
         label: "AssignSpreader",
         optional: true,
-        defaultValue: "",
-        allowedValues: ["", "SP 1", "SP 2"]
+        defaultValue: "no",
+        allowedValues: ["no", "SP 1", "SP 2"]
     },
 	'orderLoaded': {
 		type: Boolean, 
