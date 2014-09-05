@@ -1,10 +1,17 @@
 Order = new Meteor.Collection("order", {
   schema: {
-    'orderDate': {
+    'No': {
+        type: Number,
+        label: "No",
+        optional: false,
+        decimal: false, 
+        min: 0
+    },
+    'Date': {
         //blackbox: true, 
         type: Date,
-        label: "OrderDate",
-    optional: true,
+        label: "Date",
+        optional: true,
         /* If take value from datepicker
         autoValue:function(){
                var oDate = $('#orderPickerDate').datepicker().val();
@@ -13,10 +20,10 @@ Order = new Meteor.Collection("order", {
                 return oDate;
         }*/
     },
-  'orderCreated': {
+  'Created': {
         type: Date,
-        label: "OrderCreated",
-    autoValue: function() {
+        label: "Created",
+         autoValue: function() {
             if (this.isInsert) {
                 return new Date;
                 //console.log("OrderCreated" + new Date);
@@ -29,68 +36,74 @@ Order = new Meteor.Collection("order", {
             }
         }
     },
-    'orderName': {
+    'Komesa': {
         type: String,
-        label: "OrderName",
-    optional: false,
-    max: 20
-    },
-  'orderFileName': {
-        type: String,
-        label: "FileName",
-    optional: true,
-        max: 50
-    },
-    'orderModel': {
-        type: String,
-        label: "Model",
-    optional: true,
-    max: 10
-    },
-  'orderFabric': {
-        type: String,
-        label: "Fabric",
-    optional: true,
+        label: "Komesa",
+        optional: false,
         max: 10
     },
-    'orderBagno': {
+    'Marker': {
+        type: String,
+        label: "Marker",
+        optional: true,
+        max: 50
+    },
+    'Style': {
+        type: String,
+        label: "Style",
+        optional: true,
+        max: 10
+    },
+    'Fabric': {
+        type: String,
+        label: "Fabric",
+        optional: true,
+        max: 10
+    },
+    'ColorCode': {
+        type: String,
+        label: "ColorCode",
+        optional: true,
+        max: 10
+    },
+    'ColorDesc': {
+        type: String,
+        label: "ColorDesc",
+        optional: true,
+        max: 30
+    },
+    'Bagno': {
         type: String,
         label: "Bagno",
-    optional: true,
-    max: 10
-    },
-    'orderColor': {
-        type: String,
-        label: "Color",
         optional: true,
-        max: 20
+        max: 10
     },
-    'orderLayers': {
+    'Layers': {
         type: Number,
         label: "Layers",
-    optional: true,
-    decimal: true, 
+        optional: true,
+        decimal: true, 
         min: 0
     },
-    'orderLength': {
+    'Length': {
         type: Number,
         label: "Length",
-    optional: true, 
-    decimal: true, 
+        optional: true, 
+        decimal: true, 
         min: 0
     },
-    'orderExtra': {
+    'Extra': {
         type: Number,
         label: "Extra",
-    optional: true,
-    decimal: true, 
+        optional: true,
+        decimal: true, 
         min: 0
     },
-    'orderLengthSum': {
+    'LengthSum': {
         type: Number,
         label: "LengthSum", 
-    optional: true,
-    decimal: true, 
+        optional: true,
+        decimal: true, 
         min: 0,
         //max: 10000,
         /*autoValue:function(){
@@ -99,30 +112,58 @@ Order = new Meteor.Collection("order", {
                 return result;
         }*/
     },
-  'orderPriority': {
+    'Width': {
         type: Number,
-        label: "Priority",
-    optional: false,
-    defaultValue: 3,
-        allowedValues: [5, 4, 3, 2, 1],
-        max: 10
+        label: "Width",
+        optional: true,
+        decimal: true, 
+        min: 0
     },
-    'orderAssignSpreader': {
+    'S': {
+        type: Number,
+        label: "S",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'M': {
+        type: Number,
+        label: "M",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'L': {
+        type: Number,
+        label: "L",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'AssignSpreader': {
         type: String,
         label: "AssignSpreader",
         optional: true,
         defaultValue: "none",
         allowedValues: ["none", "SP 1", "SP 2"]
     },
-  'orderLoaded': {
-    type: Boolean, 
-    label: "OrderLoaded",
-    optional: true,
-  },
-  'orderSpreaded': {
-    type: Boolean, 
-    label: "OrderSpreaded",
-    optional: true,
+    'Priority': {
+        type: Number,
+        label: "Priority",
+        optional: false,
+        defaultValue: 3,
+        allowedValues: [5, 4, 3, 2, 1],
+        max: 10
+    },
+    'Loaded': {
+        type: Boolean, 
+        label: "Loaded",
+        optional: true,
+    },
+    'Spreaded': {
+        type: Boolean, 
+        label: "Spreaded",
+        optional: true,
   },
   }
 });
@@ -134,21 +175,28 @@ Order = new Meteor.Collection("order", {
 //novalidate="novalidate" //inside input
 //allowedValues: ['red', 'green', 'blue']
 
-// Potrebno 
+/* Potrebno 
+No
+Date
+Created
+Komesa
+Marker
+Style
+Fabric
+ColorCode
+ColorDesc
+Bagno
+Layers
+Length
+Extra
+LengthSum
+Width
+S
+M
+L
+AssignSpreader
+Priority
+Loaded
+Spreaded
 
-//_id
-//orderDate
-//orderCreated 
-//orderName
-//orderFileName
-//orderModel
-//orderFabric
-//orderBagno
-//orderLayers
-//orderLength
-//orderExtra
-//orderLengthSum
-//orderPriority
-//orderAssignSpreader
-//orderLoaded
-//orderSpreaded
+*/

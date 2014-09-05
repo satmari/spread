@@ -14,7 +14,7 @@
   <!--{{> tmp_EditOrder }}-->     <!-- Reactive table - Edit order Quick-->
   <!--{{> tmp_EditOrderFull }}--> <!-- Reactive table - Edit order Full(not fin)-->
   <!-- {{> tmp_ImportOrderAnalytics}} -->
-
+  <!-- {{> tmp_ImportPlannedMarkers}} -->
   
 </body>
 
@@ -46,7 +46,8 @@
     <ul class="nav navbar-nav"><li class="active">
        <div class="navbar-form">
         <button id="new_order" class="btn btn-default">Add new order</button> 
-        <button id="import_orders_analytics" class="btn btn-default">Import orders from Analytics</button>
+        <!--<button id="import_orders_analytics" class="btn btn-default">Import orders from Analytics</button>-->
+        <button id="import_from_planned_markers" class="btn btn-default">Import from Planned Markers</button>
         <button id="export_orders" class="btn btn-info">Export order</button> 
         <button id="import_orders" class="btn btn-info">Import order</button>
         <button id="refresh_sum" class="btn btn-success">Refresh Sum</button>
@@ -482,6 +483,28 @@
   </div>
 </template>
 
+<template name="tmp_ImportPlannedMarkers">
+  <!--<div>
+    <p id="heading">Import Orders from MD Analytics</p>
+    <hr />
+  </div>-->
+  <div>
+    <p>Insert from CSV file <b>(Planned Markers file)</b>:</p> 
+    <input type="file" id="files_planned_markers" name="files[]" enctype="multipart/form-data" />
+    <br />
+    <!--<button id="insert_csv_file">Insert form CSV file</button>-->
+    <br />
+    <hr />
+  </div>
+  <div>
+    <p>Paste Your CSV code <b>(Planned Markers file)</b>:</p> 
+      <textarea id="csv3" class="text" style="width:100%; height:200px;"></textarea>
+      <br />
+      <button id="insert_csv_text">Import from CSV code</button>
+      <br />
+  </div>
+</template>
+
 <template name="tmp_ImportOrder">
   <!--<div>
     <p id="heading">CSV to JSON Converter</p>
@@ -522,11 +545,7 @@
     </div>
     <div>
       <p>Copy CSV code (Order list): </p>
-        <!--  <textarea id="json1" class="text" style="width:100%;">
-"_id","orderDate","orderCreated","orderName","orderFileName","orderModel","orderFabric","orderBagno","orderColor","orderLayers","orderLength","orderExtra","orderLengthSum","orderPriority","orderLoaded","orderSpreaded"
-{{#each order}}{{_id}},{{orderDate}},{{orderCreated}},"{{orderName}}","{{orderFileName}}","{{orderModel}}","{{orderFabric}}","{{orderBagno}}","{{orderColor}}",{{orderLayers}},{{orderLength}},{{orderExtra}},{{orderLengthSum}},{{orderPriority}},{{orderLoaded}},{{orderSpreaded}}
-{{/each}}</textarea>-->
-          <textarea id="json1" class="text" style="width:100%; height:200px;">
+      <textarea id="json1" class="text" style="width:100%; height:200px;">
 "_id";"orderDate";"orderCreated";"orderName";"orderFileName";"orderModel";"orderFabric";"orderBagno";"orderColor";"orderLayers";"orderLength";"orderExtra";"orderLengthSum";"orderAssignSpreader";"orderPriority";"orderLoaded";"orderSpreaded"
 {{#each order}}{{_id}};{{orderDate}};{{orderCreated}};"{{orderName}}";"{{orderFileName}}";"{{orderModel}}";"{{orderFabric}}";"{{orderBagno}}";"{{orderColor}}";{{orderLayers}};{{orderLength}};{{orderExtra}};{{orderLengthSum}};{{orderAssignSpreader}};{{orderPriority}};{{orderLoaded}};{{orderSpreaded}}
 {{/each}}</textarea>
