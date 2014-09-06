@@ -57,7 +57,7 @@ if (Meteor.isClient) {
           showNavigation: 'auto',
           fields: [
           //{ key: '_id', label: '_ID' },
-          { key: 'No', label: 'No' },
+          { key: 'No', label: 'No', sort: 'ascending' },
           { key: 'Date', label: 'Date',
             fn: function (value) {
               if (value){
@@ -66,7 +66,7 @@ if (Meteor.isClient) {
                 return "";
               }
               //return moment(value).format("DD-MM-YYYY");
-            }, sort: 'descending'
+            }//, sort: 'descending' // ascending
            },
           //{ key: 'Created', label: 'Created' },
           { key: 'Komesa', label: 'Komesa' },
@@ -394,12 +394,21 @@ if (Meteor.isClient) {
         //alert("a")
         //console.log(order_all[i])
         //console.log(order_all[i]._id)
-        var length = Number(order_all[i].Length)
-        var extra = Number(order_all[i].Extra)
-        var layers = Number(order_all[i].Layers)
+        var length = Number(order_all[i].Length);
+        //console.log(length);
+        var extra = Number(order_all[i].Extra);
+        //console.log(extra);
+        var layers = Number(order_all[i].Layers);
+        //console.log(layers);
 
-        var sum = Number((length + extra) * layers)
+        var sum = Number((length + extra) * layers);
+        //console.log(sum);
         var sumf =sum.toFixed(3);
+        //console.log(sumf);
+
+        if (sumf == "NaN") {
+          sumf = 0;
+        }
 
         Order.update({_id: order_all[i]._id},
           {
@@ -411,6 +420,7 @@ if (Meteor.isClient) {
           }
         );
       }
+      alert("LengthSum fields are refreshed! \n ______________________________ \n If LengthSum is 0, that's because some fields \n(Length, Extra or Layers) are missing!  ");
     },
 
     'change #orderWithoutDate': function (e, t) {
