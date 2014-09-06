@@ -502,8 +502,6 @@ if (Meteor.isClient) {
 
       var reader = new FileReader();
 
-      console.log("pre reader.onload")
-          
       reader.onload = function (e) { 
         //alert("reader.onloadend");
         var text = e.target.result;

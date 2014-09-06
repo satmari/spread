@@ -428,7 +428,7 @@
         <legend></legend>
       </div>
       <div class="col-sm-6">
-        {{> quickForm collection="Order" id="insertOrderForm" type="insert" buttonContent="Add Order" omitFields="orderLengthSum,orderCreated"}}
+        {{> quickForm collection="Order" id="insertOrderForm" type="insert" buttonContent="Add Order" omitFields="LengthSum,Created"}}
       </div>
     </div>
   </div>
@@ -441,7 +441,7 @@
         <legend></legend>
       </div>
       <div class="col-sm-6">
-        {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="orderLengthSum,orderCreated"}}
+        {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="LengthSum,Created"}}
         
         <!--ONLY IF IS ADMIN -->  
         <div class="">

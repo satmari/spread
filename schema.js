@@ -2,6 +2,7 @@ Order = new Meteor.Collection("order", {
   schema: {
     'No': {
         type: Number,
+        unique: true,
         label: "No",
         optional: false,
         decimal: false, 
@@ -12,13 +13,6 @@ Order = new Meteor.Collection("order", {
         type: Date,
         label: "Date",
         optional: true,
-        /* If take value from datepicker
-        autoValue:function(){
-               var oDate = $('#orderPickerDate').datepicker().val();
-                console.log(oDate);
-               //console.log(Date(oDate));
-                return oDate;
-        }*/
     },
   'Created': {
         type: Date,
@@ -26,13 +20,10 @@ Order = new Meteor.Collection("order", {
          autoValue: function() {
             if (this.isInsert) {
                 return new Date;
-                //console.log("OrderCreated" + new Date);
             } else if (this.isUpsert) {
                 return {$setOnInsert: new Date};
-                //console.log("OrderCreated" + new Date);
             } else {
                 this.unset();
-                //console.log("OrderCreated" + new Date);
             }
         }
     },
@@ -105,7 +96,6 @@ Order = new Meteor.Collection("order", {
         optional: true,
         decimal: true, 
         min: 0,
-        //max: 10000,
         /*autoValue:function(){
                 var result = (this.siblingField("orderLength").value + this.siblingField("orderExtra").value) * this.siblingField("orderLayers").value;
                 //console.log(result);
@@ -198,5 +188,4 @@ AssignSpreader
 Priority
 Loaded
 Spreaded
-
 */
