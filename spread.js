@@ -444,7 +444,6 @@ if (Meteor.isClient) {
           Session.set("ses_jobnotexist", false);
         }
     },
-
   });
   
   Template.tmp_EditOrder.events({
@@ -453,12 +452,12 @@ if (Meteor.isClient) {
       console.log("orderToDelete" + orderToDelete);
 
       Order.remove({_id: orderToDelete});
-      //rd_editorder.hide();
+      rm_EditOrder.hide();
     }
   });
 
   Template.tmp_ImportOrderAnalytics.events({
-    'change #files_analytics': function (e) {
+    /*'change #files_analytics': function (e) {
       //alert("change a")
       //var files_a = e.target.files || e.dataTransfer.files;
 
@@ -495,10 +494,9 @@ if (Meteor.isClient) {
           }
       }
       reader.readAsText(file_a);
-
-    }
+      rm_ImportOrderAnalyitics.hide();
+    }*/
   });
-
 
   Template.tmp_ImportPlannedMarkers.events({
     'change #files_planned_markers': function (e) {
@@ -540,22 +538,72 @@ if (Meteor.isClient) {
             var m = Number(all[i]['M']);
             var l = Number(all[i]['L']);
 
-            // One by One
+            //One by One
             //Order.insert({SEQ: seq, FILE: all[i]['FILE'], CUT_FILE: all[i]['CUT FILE'], MODEL: all[i]['MODEL'], SPREAD_TYPE: all[i]['SPREAD TYPE'], BAGNO: all[i]['BAGNO'], PLY: ply});    
             //Order.insert({orderName: all[i]['FILE'], orderFileName: all[i]['CUT FILE'], orderModel: all[i]['MODEL'], orderFabric: all[i]['SPREAD TYPE'], orderBagno: all[i]['BAGNO'], orderLayers: ply});
             Order.insert({No: no, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l });    
           }
       }
       reader.readAsText(file_a);
-
+      rm_ImportPlannedMarkers.hide();
     }
   });
 
-    Template.tmp_ImportOrder.events({
+  Template.tmp_ImportOrder.events({
     'change #files': function (e) {
-      //alert("change")
-      var files = e.target.files || e.dataTransfer.files;
+      //alert("Ne radi jos")
+      //var files = e.target.files || e.dataTransfer.files;
 
+      var files_a = e.target.files;
+      //console.log("files_a:" + files_a);
+      var file_a = files_a[0];           
+      //console.log("file_a:" + file_a);
+
+      var reader = new FileReader();
+
+      reader.onload = function (e) { 
+        //alert("reader.onloadend");
+        var text = e.target.result;
+        //alert(text);
+        //var all = $.csv.toObjects(text);
+        var all = $.csv.toObjects(text, {
+            delimiter:"'",
+            separator:';',
+        });
+
+          console.log("all: "+all);
+
+          for (var i = 0; i < all.length; i++) {
+            console.log(all[i]);
+
+            var no  = Number(all[i]["No"]);
+            console.log("all[i]['No']" + all[i]["No"]);
+            console.log("Number: " + no);
+         
+
+            var layers = Number(all[i]['Layers']);
+
+            var length = Number(all[i]['Length']);
+            //length = length.replace(",", ".");
+                        
+            var extra = Number(all[i]['Extra']);
+            var lengthsumX = Number((length + extra) * layers);
+            var lengthsum = lengthsumX.toFixed(3);
+
+            var width = Number(all[i]['Width']);
+            var s = Number(all[i]['S']);
+            var m = Number(all[i]['M']);
+            var l = Number(all[i]['L']);
+
+            var priority = Number(all[i]['Priority']);
+
+            //One by One
+            //Order.insert({No: no, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l });    
+            Order.insert({_id: all[i]['_id'], No: no, Date: all[i]['Date'], Created: all[i]['Created'], Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,AssignSpreader: all[i]['AssignSpreader'], Priority: priority, Loaded: all[i]['Loaded'], Spreaded: all[i]['Spreaded']});    
+          }
+      }
+      reader.readAsText(file_a);
+      rm_ImportOrder.hide();
     }
   });
 
@@ -564,58 +612,51 @@ if (Meteor.isClient) {
   }
 
   Template.tmp_ExportOrder.events({
-      'click #convert1' : function (e, t) {
-
-          //var json = $.parseJSON($("#json").val());
-          //var csv = JSON2CSV(json);
-          //$("#csv").val(csv);
-
-          //var listo  = $("#listo").val();
-          //console.log(listo);
-
-          //for example
-          //Order.insert(
-          //[
-          //{orderName:"import1",orderLayers:"5",orderLength:"5",orderExtra:"5",orderPriority:"5"},
-          //{orderName:"import2",orderLayers:1,orderLength:1,orderExtra:1}
-          //]
-            //)
-
-      },
-      'click #download1' : function (e, t) {
+      'click #download_from_textarea' : function (e, t) {
         //var json = $.parseJSON($("#json").val());
         //var csv = JSON2CSV(json);
         
         //var listo  = $("#listo").val();
-        var json1  = $("#json1").val();
+        var textarea_json  = $("#textarea_json").val();
           //console.log(listo);
-        window.open("data:text/csv;charset=utf-8," + escape(json1))
+        window.open("data:text/csv;charset=utf-8," + escape(textarea_json))
+        rm_ExportOrder.hide();
 
+      },
+      'click #convert1' : function (e, t) {
+        /*
+          var json = $.parseJSON($("#json").val());
+          var csv = JSON2CSV(json);
+          $("#csv").val(csv);
+
+          var listo  = $("#listo").val();
+          console.log(listo);
+        */
       },
       'click #convert2' : function (e, t) {
-        //alert('convert2');
-        var csv2 = $("#json1").val();
-        //alert(csv2)
-
-        if (csv2 == "") {
-          return alert('empty field');
-        } else {
+        /*
+          alert('convert2');
+          var csv2 = $("#json1").val();
+          if (csv2 == "") {
+            return alert('empty field');
+          } else {
             var json2 = CSV2JSON(csv2);
             $("#json2").val(json2);
-        }
-
+          }
+        */
       },
       'click #download2' : function (e, t) {
-        //alert('download2');
-        var csv2 = $("#json1").val();
-        //alert(csv2)
-
-        if (csv2 == "") {
-          return alert('empty field');
-        } else {
-          var json2 = CSV2JSON(csv2);
-          window.open("data:text/json;charset=utf-8," + escape(json2))  
-        }
+        /*
+          alert('download2');
+          var csv2 = $("#json1").val();
+          alert(csv2)
+          if (csv2 == "") {
+            return alert('empty field');
+          } else {
+            var json2 = CSV2JSON(csv2);
+            window.open("data:text/json;charset=utf-8," + escape(json2))  
+          }
+        */
       }
   });
 
