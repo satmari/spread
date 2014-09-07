@@ -597,10 +597,26 @@ if (Meteor.isClient) {
 
             var priority = Number(all[i]['Priority']);
 
+            var orderDate = all[i]['Date'];
+            var orderDateP = Date.parse(orderDate);
+            var orderDateM = moment(all[i]['Date']).format("YYYY-MM-DD")
+
+            console.log('direct: ' + Date(all[i]['Date']) + " : " + all[i]['Date'].typeof);
+            console.log('orderDate: ' + Date(orderDate) + " : " + orderDate.typeof);
+            console.log('orderDateP: ' + Date(orderDateP) + " : " + orderDateP.typeof);
+            console.log('orderDateM: ' + Date(orderDateM) + " : " + orderDateM.typeof);
+
+            var orderCreated = all[i]['Created'];
+            console.log('orderCreated: ' + orderCreated + " : " + orderCreated.typeof);
+
             //One by One
             //Order.insert({No: no, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l });    
-            Order.insert({_id: all[i]['_id'], No: no, Date: all[i]['Date'], Created: all[i]['Created'], Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,AssignSpreader: all[i]['AssignSpreader'], Priority: priority, Loaded: all[i]['Loaded'], Spreaded: all[i]['Spreaded']});    
-          }
+            //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,AssignSpreader: all[i]['AssignSpreader'], Priority: priority});    
+            //_id: all[i]['_id'],
+            //Loaded: all[i]['Loaded'], Spreaded: all[i]['Spreaded']
+
+
+          } 
       }
       reader.readAsText(file_a);
       rm_ImportOrder.hide();
