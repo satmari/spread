@@ -524,24 +524,28 @@ if (Meteor.isClient) {
             //console.log(all[i]);
 
             var no  = Number(all[i]['No']);
+            var komesa = all[i]['Komesa'];
+            var marker = all[i]['Marker Name'];
+            var style = all[i]['Style'];
+            var fabric = all[i]['Fabric'];
+            var colorcode = all[i]['Color Code'];
+            var colordesc = all[i]['Color Description'];
+            var bagno = all[i]['Bagno'];
             var layers = Number(all[i]['Layers']);
-
-            var lengthS = all[i]['Length'];
-            length = lengthS.replace(",", ".");
-                        
-            var extra = Number(all[i]['Extra']);
+            var lengthS = all[i]['Marker Length [mt]'];
+            var length = lengthS.replace(",", ".");
+            var extra = Number(all[i]['Length All. [cm]']);
             var lengthsumX = Number((length + extra) * layers);
             var lengthsum = lengthsumX.toFixed(3);
-
-            var width = Number(all[i]['Width']);
-            var s = Number(all[i]['S']);
-            var m = Number(all[i]['M']);
-            var l = Number(all[i]['L']);
+            var width = Number(all[i]['Marker Width [cm]']);
+            var s = Number(all[i]['tot S']);
+            var m = Number(all[i]['tot M']);
+            var l = Number(all[i]['tot L']);
 
             //One by One
             //Order.insert({SEQ: seq, FILE: all[i]['FILE'], CUT_FILE: all[i]['CUT FILE'], MODEL: all[i]['MODEL'], SPREAD_TYPE: all[i]['SPREAD TYPE'], BAGNO: all[i]['BAGNO'], PLY: ply});    
             //Order.insert({orderName: all[i]['FILE'], orderFileName: all[i]['CUT FILE'], orderModel: all[i]['MODEL'], orderFabric: all[i]['SPREAD TYPE'], orderBagno: all[i]['BAGNO'], orderLayers: ply});
-            Order.insert({No: no, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l });    
+            Order.insert({No: no, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l });    
           }
       }
       reader.readAsText(file_a);
@@ -576,20 +580,21 @@ if (Meteor.isClient) {
           for (var i = 0; i < all.length; i++) {
             console.log(all[i]);
 
-            var no  = Number(all[i]["No"]);
-            console.log("all[i]['No']" + all[i]["No"]);
-            console.log("Number: " + no);
-         
-
+            var no  = Number(all[i]['No']);
+            var komesa = all[i]['Komesa'];
+            var marker = all[i]['Marker'];
+            var style = all[i]['Style'];
+            var fabric = all[i]['Fabric'];
+            var colorcode = all[i]['ColorCode'];
+            var colordesc = all[i]['ColorDesc'];
+            var bagno = all[i]['Bagno'];
             var layers = Number(all[i]['Layers']);
-
-            var length = Number(all[i]['Length']);
-            //length = length.replace(",", ".");
-                        
+            var length = all[i]['Length'];
+            //var length = lengthS.replace(",", ".");
             var extra = Number(all[i]['Extra']);
-            var lengthsumX = Number((length + extra) * layers);
-            var lengthsum = lengthsumX.toFixed(3);
-
+            //var lengthsumX = Number((length + extra) * layers);
+            //var lengthsum = lengthsumX.toFixed(3);
+            var lengthsum = Number(all[i]['LengthSum']);
             var width = Number(all[i]['Width']);
             var s = Number(all[i]['S']);
             var m = Number(all[i]['M']);
@@ -597,25 +602,39 @@ if (Meteor.isClient) {
 
             var priority = Number(all[i]['Priority']);
 
+            var a = new Date('08-09-2014');
+            console.log("a: " + a + " , " + a.typeof);
             var orderDate = all[i]['Date'];
+            var orderDate2 = new Date(orderDate2);
             var orderDateP = Date.parse(orderDate);
-            var orderDateM = moment(all[i]['Date']).format("YYYY-MM-DD")
+            var orderDateM = moment(all[i]['Date']).format("YYYY-MM-DD");
+            var orderDateM2 = new Date(orderDateM);
 
-            console.log('direct: ' + Date(all[i]['Date']) + " : " + all[i]['Date'].typeof);
-            console.log('orderDate: ' + Date(orderDate) + " : " + orderDate.typeof);
-            console.log('orderDateP: ' + Date(orderDateP) + " : " + orderDateP.typeof);
-            console.log('orderDateM: ' + Date(orderDateM) + " : " + orderDateM.typeof);
+            //var df = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss z");
+            //var d1 = df.parse(orderDate);
+            //console.log("d1: " + d1 + " : " + d1.typeof);
+            
+
+            console.log('direct: ' + all[i]['Date'] + " : " + all[i]['Date'].typeof);
+            console.log('orderDate: ' + orderDate + " : " + orderDate.typeof);
+            console.log('orderDate2: ' + orderDate2 + " : " + orderDate2.typeof);
+            console.log('orderDateP: ' + orderDateP + " : " + orderDateP.typeof);
+            console.log('orderDateM: ' + orderDateM + " : " + orderDateM.typeof);
+            console.log('orderDateM2: ' + orderDateM2 + " : " + orderDateM2.typeof);
 
             var orderCreated = all[i]['Created'];
+            var orderCreated2 = new Date(orderCreated);
             console.log('orderCreated: ' + orderCreated + " : " + orderCreated.typeof);
+            console.log('orderCreated2: ' + orderCreated2 + " : " + orderCreated2.typeof);
 
             //One by One
             //Order.insert({No: no, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l });    
             //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,AssignSpreader: all[i]['AssignSpreader'], Priority: priority});    
+            //Order.insert({No: no, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l });    
             //_id: all[i]['_id'],
             //Loaded: all[i]['Loaded'], Spreaded: all[i]['Spreaded']
 
-
+            Order.insert({1: orderDate, 2: orderDate2,3: orderDateP, 4: orderDateM, 5: orderDateM2 });
           } 
       }
       reader.readAsText(file_a);
