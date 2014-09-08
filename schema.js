@@ -146,15 +146,20 @@ Order = new Meteor.Collection("order", {
         max: 10
     },
     'Loaded': {
-        type: Boolean, 
+        type: String, 
         label: "Loaded",
         optional: true,
     },
     'Spreaded': {
-        type: Boolean, 
+        type: String, 
         label: "Spreaded",
         optional: true,
-  },
+    },
+    'Comment' : {
+        type: String,
+        label: "Comment",
+        optional: true,
+    }
   }
 });
 
@@ -188,4 +193,5 @@ AssignSpreader
 Priority
 Loaded
 Spreaded
+Comment
 */

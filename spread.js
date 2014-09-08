@@ -56,60 +56,63 @@ if (Meteor.isClient) {
           showFilter: true,
           showNavigation: 'auto',
           fields: [
-          //{ key: '_id', label: '_ID' },
-          { key: 'No', label: 'No', sort: 'ascending' },
-          { key: 'Date', label: 'Date',
-            fn: function (value) {
-              if (value){
-                return moment(value).format("YYYY-MM-DD");
-              } else {
-                return "";
+            //{ key: '_id', label: '_ID' },
+            { key: 'No', label: 'No', sort: 'ascending' },
+            { key: 'Date', label: 'Date',
+              fn: function (value) {
+                if (value){
+                  return moment(value).format("YYYY-MM-DD");
+                } else {
+                  return "";
+                }
+                //return moment(value).format("DD-MM-YYYY");
+              }//, sort: 'descending' // ascending
+            },
+            //{ key: 'Created', label: 'Created' },
+            { key: 'Komesa', label: 'Komesa' },
+            { key: 'Marker', label: 'Marker' },
+            { key: 'Style', label: 'Style' },
+            { key: 'Fabric', label: 'Fabric' },
+            { key: 'ColorCode', label: 'ColorCode' },
+            { key: 'ColorDesc', label: 'ColorDesc' },
+            { key: 'Bagno', label: 'Bagno' },
+            { key: 'Layers', label: 'Layers' },
+            { key: 'Length', label: 'Length' },
+            { key: 'Extra', label: 'Extra' },
+            { key: 'LengthSum', label: 'LengthSum' },
+            { key: 'Width', label: 'Width' },
+            { key: 'S', label: 'S' },
+            { key: 'M', label: 'M' },
+            { key: 'L', label: 'L' },
+            { key: 'AssignSpreader', label: 'Assign',
+              fn: function (value) {
+                if (value == "SP 1") {
+                  return "SP 1";
+                }
+                else if (value == "SP 2") {
+                  return "SP 2";
+                }
+                else {
+                  return "Not Assigned";
+                }
               }
-              //return moment(value).format("DD-MM-YYYY");
-            }//, sort: 'descending' // ascending
-           },
-          //{ key: 'Created', label: 'Created' },
-          { key: 'Komesa', label: 'Komesa' },
-          { key: 'Marker', label: 'Marker' },
-          { key: 'Style', label: 'Style' },
-          { key: 'Fabric', label: 'Fabric' },
-          { key: 'ColorCode', label: 'ColorCode' },
-          { key: 'ColorDesc', label: 'ColorDesc' },
-          { key: 'Bagno', label: 'Bagno' },
-          { key: 'Layers', label: 'Layers' },
-          { key: 'Length', label: 'Length' },
-          { key: 'Extra', label: 'Extra' },
-          { key: 'LengthSum', label: 'LengthSum' },
-          { key: 'Width', label: 'Width' },
-          { key: 'S', label: 'S' },
-          { key: 'M', label: 'M' },
-          { key: 'L', label: 'L' },
-          { key: 'AssignSpreader', label: 'Assign',
-            fn: function (value) {
-              if (value == "SP 1") {
-                return "SP 1";
-              }
-              else if (value == "SP 2") {
-                return "SP 2";
-              }
-              else {
-                return "Not Assigned";
-              }
-            }
-           },
-          { key: 'Priority', label: 'Priority' },
-          { key: 'Loaded', label: 'Loaded',
-            fn: function (value){ 
-              if (value == true) {
-                return "Loaded";
-              };
-          } },
-          { key: 'Spreaded', label: 'Spreaded', 
-            fn: function (value){
-              if (value == true) {
-                return "Spreaded";
-              };
-          } },
+            },
+            { key: 'Priority', label: 'Priority' },
+            { key: 'Loaded', label: 'Loaded',
+              /*fn: function (value){ 
+                if (value == true) {
+                  return "Loaded";
+                };
+              }*/
+            },
+            { key: 'Spreaded', label: 'Spreaded', 
+              /*fn: function (value){
+                if (value == true) {
+                  return "Spreaded";
+                };
+              }*/
+            },
+            { key: 'Comment', label: 'Comment' },
           ],
 
           //useFontAwesome: true,
@@ -524,24 +527,28 @@ if (Meteor.isClient) {
             //console.log(all[i]);
 
             var no  = Number(all[i]['No']);
+            var komesa = all[i]['Komesa'];
+            var marker = all[i]['Marker Name'];
+            var style = all[i]['Style'];
+            var fabric = all[i]['Fabric'];
+            var colorcode = all[i]['Color Code'];
+            var colordesc = all[i]['Color Description'];
+            var bagno = all[i]['Bagno'];
             var layers = Number(all[i]['Layers']);
-
-            var lengthS = all[i]['Length'];
-            length = lengthS.replace(",", ".");
-                        
-            var extra = Number(all[i]['Extra']);
+            var lengthS = all[i]['Marker Length [mt]'];
+            var length = lengthS.replace(",", ".");
+            var extra = Number(all[i]['Length All. [cm]']);
             var lengthsumX = Number((length + extra) * layers);
             var lengthsum = lengthsumX.toFixed(3);
-
-            var width = Number(all[i]['Width']);
-            var s = Number(all[i]['S']);
-            var m = Number(all[i]['M']);
-            var l = Number(all[i]['L']);
+            var width = Number(all[i]['Marker Width [cm]']);
+            var s = Number(all[i]['tot S']);
+            var m = Number(all[i]['tot M']);
+            var l = Number(all[i]['tot L']);
 
             //One by One
             //Order.insert({SEQ: seq, FILE: all[i]['FILE'], CUT_FILE: all[i]['CUT FILE'], MODEL: all[i]['MODEL'], SPREAD_TYPE: all[i]['SPREAD TYPE'], BAGNO: all[i]['BAGNO'], PLY: ply});    
             //Order.insert({orderName: all[i]['FILE'], orderFileName: all[i]['CUT FILE'], orderModel: all[i]['MODEL'], orderFabric: all[i]['SPREAD TYPE'], orderBagno: all[i]['BAGNO'], orderLayers: ply});
-            Order.insert({No: no, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l });    
+            Order.insert({No: no, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l });    
           }
       }
       reader.readAsText(file_a);
@@ -576,46 +583,60 @@ if (Meteor.isClient) {
           for (var i = 0; i < all.length; i++) {
             console.log(all[i]);
 
-            var no  = Number(all[i]["No"]);
-            console.log("all[i]['No']" + all[i]["No"]);
-            console.log("Number: " + no);
-         
-
+            var id = all[i]['_id'];
+            var no  = Number(all[i]['No']);
+            var komesa = all[i]['Komesa'];
+            var marker = all[i]['Marker'];
+            var style = all[i]['Style'];
+            var fabric = all[i]['Fabric'];
+            var colorcode = all[i]['ColorCode'];
+            var colordesc = all[i]['ColorDesc'];
+            var bagno = all[i]['Bagno'];
             var layers = Number(all[i]['Layers']);
-
-            var length = Number(all[i]['Length']);
-            //length = length.replace(",", ".");
-                        
+            var length = all[i]['Length'];
+            //var length = lengthS.replace(",", ".");
             var extra = Number(all[i]['Extra']);
-            var lengthsumX = Number((length + extra) * layers);
-            var lengthsum = lengthsumX.toFixed(3);
-
+            //var lengthsumX = Number((length + extra) * layers);
+            //var lengthsum = lengthsumX.toFixed(3);
+            var lengthsum = Number(all[i]['LengthSum']);
             var width = Number(all[i]['Width']);
             var s = Number(all[i]['S']);
             var m = Number(all[i]['M']);
             var l = Number(all[i]['L']);
+            var assignespreader = all[i]['AssignSpreader'];
+            var priority = all[i]['Priority'];
+            var loaded = all[i]['Loaded'];
+            var spreaded = all[i]['Spreaded'];
+            var comment = all[i]['Comment'];
 
             var priority = Number(all[i]['Priority']);
 
             var orderDate = all[i]['Date'];
-            var orderDateP = Date.parse(orderDate);
-            var orderDateM = moment(all[i]['Date']).format("YYYY-MM-DD")
+            var orderDate2 = new Date(orderDate);
+            //var orderDateP = Date.parse(orderDate);
+            //var orderDateM = moment(all[i]['Date']).format("DD-MM-YYYY");
+            //var orderDateM2 = new Date(orderDateM);
 
-            console.log('direct: ' + Date(all[i]['Date']) + " : " + all[i]['Date'].typeof);
-            console.log('orderDate: ' + Date(orderDate) + " : " + orderDate.typeof);
-            console.log('orderDateP: ' + Date(orderDateP) + " : " + orderDateP.typeof);
-            console.log('orderDateM: ' + Date(orderDateM) + " : " + orderDateM.typeof);
+            
+            //console.log('direct: ' + all[i]['Date'] + " : " + all[i]['Date'].typeof);
+            //console.log('orderDate: ' + orderDate + " : " + orderDate.typeof);
+            //console.log('orderDate2: ' + orderDate2 + " : " + orderDate2.typeof);
+            //console.log('orderDateP: ' + orderDateP + " : " + orderDateP.typeof);
+            //console.log('orderDateM: ' + orderDateM + " : " + orderDateM.typeof);
+            //console.log('orderDateM2: ' + orderDateM2 + " : " + orderDateM2.typeof);
 
             var orderCreated = all[i]['Created'];
-            console.log('orderCreated: ' + orderCreated + " : " + orderCreated.typeof);
+            var orderCreated2 = new Date(orderCreated);
+            //console.log('orderCreated: ' + orderCreated + " : " + orderCreated.typeof);
+            //console.log('orderCreated2: ' + orderCreated2 + " : " + orderCreated2.typeof);
 
             //One by One
-            //Order.insert({No: no, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l });    
             //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,AssignSpreader: all[i]['AssignSpreader'], Priority: priority});    
-            //_id: all[i]['_id'],
-            //Loaded: all[i]['Loaded'], Spreaded: all[i]['Spreaded']
-
-
+            Order.insert({No: no, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l, AssignSpreader: assignespreader, Loaded: loaded, Spreaded: spreaded, Comment: comment }); 
+            // Can not insert order created and _id , this values is automaticali created
+            //Created: orderCreated2  
+            //_id: id
+            
           } 
       }
       reader.readAsText(file_a);
