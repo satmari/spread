@@ -20,6 +20,22 @@ if (Meteor.isClient) {
     Session.set("ses_datenotexist", false);
     Session.set("ses_jobnotexist", false);
 
+
+    // User auth
+    var loggedUserId = Session.get("loggedUserId");
+    console.log("ses_loggedUserId: " + loggedUserId);
+    var userId = Meteor.userId();
+    console.log("userId: " + userId);
+
+    if (userId || loggedUserId) {
+        var User = Meteor.users.findOne({_id: userId});
+
+        Session.set("loggedUserId", User._id);
+        Session.set("loggedUserName", User.username);
+        console.log("UserId: " + User._id);
+        console.log("UserName: " + User.username);
+    }
+
   })
 
   Meteor.autosubscribe(function () {
@@ -38,25 +54,26 @@ if (Meteor.isClient) {
       Meteor.subscribe('order', Session.get("ses_datefilter"));
     }
 
-  
+    /*
+    var UserIdA = Meteor.userId();
 
-  var userId = Meteor.userId();
-    //Session.set("Meteor.userId()", userId);
-    //console.log("userId: " +  userId);
-    
-    //console.log("Meteor.user(): " + user['_id'] );
-    //console.log("Meteor.user(): " + user['username'] );
-
-    if (userId) {
-      //var loggedUser = Meteor.users.find({_id: userId});
-      //console.log("loggedUser: " + loggedUser['username']);
-
-      var user = Meteor.user();
-      console.dir(user)
-      console.log("_id: " + user[_id] );
-      console.log("username: " + user[username] );
+    if (UserIdA) {
+      var UserA = Meteor.users.findOne({_id: UserIdA});
+      console.log("UserId_A: " + UserA._id);
+      console.log("UserName_A: " + UserA.username);
     }
-    
+    */
+    /*
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if (User._id == "hzsGmdDpJXrDFiujZ") {
+          console.log('admin je ulogovan');
+        } else {
+          console.log('NIJE admin je ulogovan');
+        }
+      }
+    */
     /*
     if (Session.get("userId") === adminId) {
       console.log("Wellcome admin");
@@ -66,6 +83,22 @@ if (Meteor.isClient) {
 
   });
     
+  Template.nav.helpers ({
+    isAdmin: function() {
+      //var loggedUserName = Session.get("loggedUserName");
+      //console.log(loggedUserName);
+
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if (User.username == "admin") {
+          return true;
+        } else {
+          return false;  
+        }
+      }
+    },
+  });
     
   // Reactive-table
   Template.reactiveTebleList.orders = function () {
