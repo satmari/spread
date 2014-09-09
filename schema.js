@@ -149,11 +149,15 @@ Order = new Meteor.Collection("order", {
         type: String, 
         label: "Loaded",
         optional: true,
+        defaultValue: "",
+        allowedValues: ["SP1-1", "SP1-2", "SP2-1", "SP2-2"]
     },
     'Spreaded': {
         type: String, 
         label: "Spreaded",
         optional: true,
+        defaultValue: "",
+        allowedValues: ["SP1-1", "SP1-2", "SP2-1", "SP2-2"]
     },
     'Comment' : {
         type: String,

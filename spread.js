@@ -38,11 +38,32 @@ if (Meteor.isClient) {
       Meteor.subscribe('order', Session.get("ses_datefilter"));
     }
 
-    /*if ( ses_jobnotexist == true ) { 
-      Meteor.subscribe('orderWithoutJob');
-    }*/
+     
 
   });
+    /*
+    var userId = Meteor.userId();
+    //Session.set("Meteor.userId()", userId);
+    //console.log("userId: " +  userId);
+    
+    //console.log("Meteor.user(): " + user['_id'] );
+    //console.log("Meteor.user(): " + user['username'] );
+
+    if (userId) {
+      var loggedUser = Meteor.users.find({_id: userId});
+      console.log("loggedUser: " + loggedUser['username']);
+
+      var user = Meteor.user();
+      console.log("_id: " + user['_id'] );
+      console.log("username: " + user['username'] );
+    }
+    */
+    /*
+    if (Session.get("userId") === adminId) {
+      console.log("Wellcome admin");
+      Session.set("logged", "admin");
+    }     
+    */
 
   // Reactive-table
   Template.reactiveTebleList.orders = function () {
@@ -52,7 +73,7 @@ if (Meteor.isClient) {
   Template.reactiveTebleList.helpers({
     settings: function () {
       return {
-          rowsPerPage: 50,
+          rowsPerPage: 30,
           showFilter: true,
           showNavigation: 'auto',
           fields: [
@@ -763,6 +784,12 @@ if (Meteor.isServer) {
   });
 
 }
+
+var adminId = "nBp5wtNy2nnbYJJKL"; //123123
+var sp11 = "";  // 111111
+var sp12 = "";  // 121212
+var sp21 = "";  // 212121
+var sp22 = "";  // 222222
 
 // kill -9 `ps ax | grep node | grep meteor | awk '{print $1}'`
 // export MONGO_URL=mongodb://localhost:27017/spread
