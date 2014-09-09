@@ -38,11 +38,9 @@ if (Meteor.isClient) {
       Meteor.subscribe('order', Session.get("ses_datefilter"));
     }
 
-     
+  
 
-  });
-    /*
-    var userId = Meteor.userId();
+  var userId = Meteor.userId();
     //Session.set("Meteor.userId()", userId);
     //console.log("userId: " +  userId);
     
@@ -50,21 +48,25 @@ if (Meteor.isClient) {
     //console.log("Meteor.user(): " + user['username'] );
 
     if (userId) {
-      var loggedUser = Meteor.users.find({_id: userId});
-      console.log("loggedUser: " + loggedUser['username']);
+      //var loggedUser = Meteor.users.find({_id: userId});
+      //console.log("loggedUser: " + loggedUser['username']);
 
       var user = Meteor.user();
-      console.log("_id: " + user['_id'] );
-      console.log("username: " + user['username'] );
+      console.dir(user)
+      console.log("_id: " + user[_id] );
+      console.log("username: " + user[username] );
     }
-    */
+    
     /*
     if (Session.get("userId") === adminId) {
       console.log("Wellcome admin");
       Session.set("logged", "admin");
     }     
-    */
+    */     
 
+  });
+    
+    
   // Reactive-table
   Template.reactiveTebleList.orders = function () {
       return Order.find();
