@@ -100,76 +100,91 @@ if (Meteor.isClient) {
     },
   });
     
+
   // Reactive-table
   Template.reactiveTebleList.orders = function () {
       return Order.find();
   }
 
   Template.reactiveTebleList.helpers({
-    settings: function () {
+    isAdmin: function() {
+        //var loggedUserName = Session.get("loggedUserName");
+        //console.log(loggedUserName);
+
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "admin") {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+    },
+    settingsAdmin: function () {
       return {
-          rowsPerPage: 30,
-          showFilter: true,
-          showNavigation: 'auto',
-          fields: [
-            //{ key: '_id', label: '_ID' },
-            { key: 'No', label: 'No', sort: 'ascending' },
-            { key: 'Date', label: 'Date',
-              fn: function (value) {
-                if (value){
-                  return moment(value).format("YYYY-MM-DD");
-                } else {
-                  return "";
-                }
-                //return moment(value).format("DD-MM-YYYY");
-              }//, sort: 'descending' // ascending
-            },
-            //{ key: 'Created', label: 'Created' },
-            { key: 'Komesa', label: 'Komesa' },
-            { key: 'Marker', label: 'Marker' },
-            { key: 'Style', label: 'Style' },
-            { key: 'Fabric', label: 'Fabric' },
-            { key: 'ColorCode', label: 'ColorCode' },
-            { key: 'ColorDesc', label: 'ColorDesc' },
-            { key: 'Bagno', label: 'Bagno' },
-            { key: 'Layers', label: 'Layers' },
-            { key: 'Length', label: 'Length' },
-            { key: 'Extra', label: 'Extra' },
-            { key: 'LengthSum', label: 'LengthSum' },
-            { key: 'Width', label: 'Width' },
-            { key: 'S', label: 'S' },
-            { key: 'M', label: 'M' },
-            { key: 'L', label: 'L' },
-            { key: 'AssignSpreader', label: 'Assign',
-              fn: function (value) {
-                if (value == "SP 1") {
-                  return "SP 1";
-                }
-                else if (value == "SP 2") {
-                  return "SP 2";
-                }
-                else {
-                  return "Not Assigned";
-                }
+        rowsPerPage: 30,
+        showFilter: true,
+        showNavigation: 'auto',
+        fields: [
+          //{ key: '_id', label: '_ID' },
+          { key: 'No', label: 'No', sort: 'ascending' },
+          { key: 'Date', label: 'Date',
+            fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD");
+              } else {
+                return "";
               }
-            },
-            { key: 'Priority', label: 'Priority' },
-            { key: 'Loaded', label: 'Loaded',
-              /*fn: function (value){ 
-                if (value == true) {
-                  return "Loaded";
-                };
-              }*/
-            },
-            { key: 'Spreaded', label: 'Spreaded', 
-              /*fn: function (value){
-                if (value == true) {
-                  return "Spreaded";
-                };
-              }*/
-            },
-            { key: 'Comment', label: 'Comment' },
-          ],
+              //return moment(value).format("DD-MM-YYYY");
+            }//, sort: 'descending' // ascending
+          },
+          //{ key: 'Created', label: 'Created' },
+          { key: 'Komesa', label: 'Komesa' },
+          { key: 'Marker', label: 'Marker' },
+          { key: 'Style', label: 'Style' },
+          { key: 'Fabric', label: 'Fabric' },
+          { key: 'ColorCode', label: 'ColorCode' },
+          { key: 'ColorDesc', label: 'ColorDesc' },
+          { key: 'Bagno', label: 'Bagno' },
+          { key: 'Layers', label: 'Layers' },
+          { key: 'Length', label: 'Length' },
+          { key: 'Extra', label: 'Extra' },
+          { key: 'LengthSum', label: 'LengthSum' },
+          { key: 'Width', label: 'Width' },
+          { key: 'S', label: 'S' },
+          { key: 'M', label: 'M' },
+          { key: 'L', label: 'L' },
+          { key: 'AssignSpreader', label: 'Assign',
+            fn: function (value) {
+              if (value == "SP 1") {
+                return "SP 1";
+              }
+              else if (value == "SP 2") {
+                return "SP 2";
+              }
+              else {
+                return "Not Assigned";
+              }
+            }
+          },
+          { key: 'Priority', label: 'Priority' },
+          { key: 'Loaded', label: 'Loaded',
+            /*fn: function (value){ 
+              if (value == true) {
+                return "Loaded";
+              };
+            }*/
+          },
+          { key: 'Spreaded', label: 'Spreaded', 
+            /*fn: function (value){
+              if (value == true) {
+                return "Spreaded";
+              };
+            }*/
+          },
+          { key: 'Comment', label: 'Comment' },
+        ],
 
           //useFontAwesome: true,
           //group: 'orderExtra'
@@ -192,9 +207,99 @@ if (Meteor.isClient) {
             } else {
 
             }
-        },
-        };
-      } 
+          },
+      };
+    },
+    settingsUser: function () {
+      return {
+          rowsPerPage: 10,
+          showFilter: false,
+          showNavigation: 'auto',
+          fields: [
+            //{ key: '_id', label: '_ID' },
+            { key: 'No', label: 'No', sort: 'ascending' },
+            { key: 'Date', label: 'Date',
+              fn: function (value) {
+                if (value){
+                  return moment(value).format("DD-MMM");
+                } else {
+                  return "";
+                }
+                //return moment(value).format("DD-MM-YYYY");
+              }//, sort: 'descending' // ascending
+            },
+            //{ key: 'Created', label: 'Created' },
+            { key: 'Komesa', label: 'Komesa' },
+            { key: 'Marker', label: 'Marker' },
+            { key: 'Style', label: 'Style' },
+            { key: 'Fabric', label: 'Fabric' },
+            { key: 'ColorCode', label: 'ColorCode' },
+            { key: 'ColorDesc', label: 'ColorDesc' },
+            { key: 'Bagno', label: 'Bagno' },
+            { key: 'Layers', label: 'Layers' },
+            { key: 'Length', label: 'Length' },
+            //{ key: 'Extra', label: 'Extra' },
+            { key: 'LengthSum', label: 'LengthSum' },
+            { key: 'Width', label: 'Width' },
+            //{ key: 'S', label: 'S' },
+            //{ key: 'M', label: 'M' },
+            //{ key: 'L', label: 'L' },
+            /*{ key: 'AssignSpreader', label: 'Assign',
+              fn: function (value) {
+                if (value == "SP 1") {
+                  return "SP 1";
+                }
+                else if (value == "SP 2") {
+                  return "SP 2";
+                }
+                else {
+                  return "Not Assigned";
+                }
+              }
+            },*/
+            { key: 'Priority', label: 'Priority' },
+            { key: 'Loaded', label: 'Loaded',
+              /*fn: function (value){ 
+                if (value == true) {
+                  return "Loaded";
+                };
+              }*/
+            },
+            { key: 'Spreaded', label: 'Spreaded', 
+              /*fn: function (value){
+                if (value == true) {
+                  return "Spreaded";
+                };
+              }*/
+            },
+            { key: 'Comment', label: 'Comment' },
+          ],
+
+            //useFontAwesome: true,
+            //group: 'orderExtra' 
+            //rowClass: "warning", //warning, danger
+          rowClass: function(item) {
+            var priority = item.Priority;
+            var loaded = item.Loaded;
+            var spreaded = item.Spreaded;
+            
+            // treba da se doradi
+
+            if (spreaded == true)  {
+              return 'success';
+            } else if (loaded == true) {
+              return 'info';
+            } else if (priority == 4) {
+              return 'warning';
+            } else if (priority == 5){
+              return 'danger'; //info, success, active, warning, danger
+            } else {
+
+            }
+          },
+      };
+    } 
+    
   });
 
   // Reactive Table events

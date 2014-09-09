@@ -79,7 +79,7 @@
     <!--ONLY IF IS ADMIN -->  
 
 
-    <ul class="nav navbar-nav">
+    <ul class="n<h2>Order table</h2>av navbar-nav">
       <div class="navbar-form">
         <div class="form-group">
           <span style="color: white">Filter Order Date : </span>
@@ -307,8 +307,13 @@
 
 <template name="reactiveTebleList">
   <div>
-    <h1>Order table</h1>
-    {{> reactiveTable collection=orders settings=settings}} 
+  {{#if isAdmin}}
+    <h3>Order table</h3>
+    {{> reactiveTable collection=orders settings=settingsAdmin}} 
+  {{else}}
+    <h3>Order table</h3>
+    {{> reactiveTable collection=orders settings=settingsUser}} 
+  {{/if}}
   </div>
 </template>
 
