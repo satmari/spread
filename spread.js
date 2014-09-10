@@ -62,9 +62,9 @@ if (Meteor.isClient) {
 
     //console.log("Autosubcribe sesion: " + ses + " , typeof: " + typeof ses);
     
-    if (ses_loggedUserName == 'SP 1'){
+    if ((ses_loggedUserName == "sp11") || (ses_loggedUserName == "sp12")){
       Meteor.subscribe('spreader1');
-    } else if (ses_loggedUserName == 'SP 2'){
+    } else if ((ses_loggedUserName == "sp21") || (ses_loggedUserName == "sp22")){
       Meteor.subscribe('spreader2');
     } else if ( ses_existdate == true ) {
       Meteor.subscribe('orderWithoutDate');
@@ -73,9 +73,12 @@ if (Meteor.isClient) {
     } else if ( ses_datefilter == "" ) { 
       Meteor.subscribe('orderAll');
     } else {
-      Meteor.subscribe('order', Session.get("ses_datefilter"));
+      //Meteor.subscribe('order', Session.get("ses_datefilter"));
     }
     
+    if (ses_datefilter) {
+      Meteor.subscribe('order', Session.get("ses_datefilter"));
+    }
     /*
       var userId = Meteor.userId();
       if (userId) {
@@ -175,10 +178,10 @@ if (Meteor.isClient) {
           { key: 'ColorDesc', label: 'ColorDesc' },
           { key: 'Bagno', label: 'Bagno' },
           { key: 'Layers', label: 'Layers' },
-          { key: 'Length', label: 'Length' },
-          { key: 'Extra', label: 'Extra' },
-          { key: 'LengthSum', label: 'LengthSum' },
-          { key: 'Width', label: 'Width' },
+          { key: 'Length', label: 'Length (m)' },
+          { key: 'Extra', label: 'Extra (cm)' },
+          { key: 'LengthSum', label: 'LengthSum (m)' },
+          { key: 'Width', label: 'Width (cm)' },
           { key: 'S', label: 'S' },
           { key: 'M', label: 'M' },
           { key: 'L', label: 'L' },
@@ -264,10 +267,10 @@ if (Meteor.isClient) {
             { key: 'ColorDesc', label: 'ColorDesc' },
             { key: 'Bagno', label: 'Bagno' },
             { key: 'Layers', label: 'Layers' },
-            { key: 'Length', label: 'Length' },
-            //{ key: 'Extra', label: 'Extra' },
-            { key: 'LengthSum', label: 'LengthSum' },
-            { key: 'Width', label: 'Width' },
+            { key: 'Length', label: 'Length (m)' },
+            //{ key: 'Extra', label: 'Extra (cm)' },
+            { key: 'LengthSum', label: 'LengthSum (m)' },
+            { key: 'Width', label: 'Width (cm)' },
             //{ key: 'S', label: 'S' },
             //{ key: 'M', label: 'M' },
             //{ key: 'L', label: 'L' },
@@ -312,9 +315,9 @@ if (Meteor.isClient) {
             
             // treba da se doradi
 
-            if (spreaded == true)  {
+            if (spreaded)  {
               return 'success';
-            } else if (loaded == true) {
+            } else if (loaded) {
               return 'info';
             } else if (priority == 4) {
               return 'warning';
@@ -592,7 +595,7 @@ if (Meteor.isClient) {
         var layers = Number(order_all[i].Layers);
         //console.log(layers);
 
-        var sum = Number((length + extra) * layers);
+        var sum = Number((length + (extra/100)) * layers);
         //console.log(sum);
         var sumf =sum.toFixed(3);
         //console.log(sumf);
@@ -715,7 +718,7 @@ if (Meteor.isClient) {
             //console.log(all[i]);
 
             var no  = Number(all[i]['No']);
-            var komesa = all[i]['Komesa'];
+            var komesa = all[i]['KOMESA'];
             var marker = all[i]['Marker Name'];
             var style = all[i]['Style'];
             var fabric = all[i]['Fabric'];
@@ -724,10 +727,14 @@ if (Meteor.isClient) {
             var bagno = all[i]['Bagno'];
             var layers = Number(all[i]['Layers']);
             var lengthS = all[i]['Marker Length [mt]'];
-            var length = lengthS.replace(",", ".");
+            //console.log(lengthS);
+            var lengthR = lengthS.replace(",", ".");
+            //console.log(lengthR);
+            var length = Number(lengthR);
+            //console.log(length);
             var extra = Number(all[i]['Length All. [cm]']);
-            var lengthsumX = Number((length + extra) * layers);
-            var lengthsum = lengthsumX.toFixed(3);
+            var lengthsumX = Number((length + (extra/100)) * layers);
+            var lengthsum = Number(lengthsumX).toFixed(3);
             var width = Number(all[i]['Marker Width [cm]']);
             var s = Number(all[i]['tot S']);
             var m = Number(all[i]['tot M']);
@@ -766,10 +773,10 @@ if (Meteor.isClient) {
             separator:';',
         });
 
-          console.log("all: "+all);
+          //console.log("all: "+all);
 
           for (var i = 0; i < all.length; i++) {
-            console.log(all[i]);
+            //console.log(all[i]);
 
             var id = all[i]['_id'];
             var no  = Number(all[i]['No']);
@@ -781,7 +788,7 @@ if (Meteor.isClient) {
             var colordesc = all[i]['ColorDesc'];
             var bagno = all[i]['Bagno'];
             var layers = Number(all[i]['Layers']);
-            var length = all[i]['Length'];
+            var length = Number(all[i]['Length']);
             //var length = lengthS.replace(",", ".");
             var extra = Number(all[i]['Extra']);
             //var lengthsumX = Number((length + extra) * layers);
@@ -800,10 +807,16 @@ if (Meteor.isClient) {
             var priority = Number(all[i]['Priority']);
 
             var orderDate = all[i]['Date'];
-            var orderDate2 = new Date(orderDate);
-            //var orderDateP = Date.parse(orderDate);
-            //var orderDateM = moment(all[i]['Date']).format("DD-MM-YYYY");
-            //var orderDateM2 = new Date(orderDateM);
+            if (orderDate) {
+              var orderDate2 = new Date(orderDate);  
+              //var orderDateP = Date.parse(orderDate);
+              //var orderDateM = moment(all[i]['Date']).format("DD-MM-YYYY");
+              //var orderDateM2 = new Date(orderDateM);
+            } else {
+              orderDate2 = "";
+            }
+            
+
 
             
             //console.log('direct: ' + all[i]['Date'] + " : " + all[i]['Date'].typeof);
