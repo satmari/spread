@@ -53,8 +53,8 @@ if (Meteor.isClient) {
 
       var user = Meteor.user();
       console.dir(user)
-      console.log("_id: " + user[_id] );
-      console.log("username: " + user[username] );
+      console.log("_id: " + user['_id'] );
+      console.log("username: " + user['username'] );
     }
     
     /*
