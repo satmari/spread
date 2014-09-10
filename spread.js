@@ -23,28 +23,50 @@ if (Meteor.isClient) {
 
     // User auth
     var loggedUserId = Session.get("loggedUserId");
-    console.log("ses_loggedUserId: " + loggedUserId);
+    //console.log("ses_loggedUserId: " + loggedUserId);
     var userId = Meteor.userId();
-    console.log("userId: " + userId);
+    //console.log("userId: " + userId);
 
     if (userId || loggedUserId) {
         var User = Meteor.users.findOne({_id: userId});
 
         Session.set("loggedUserId", User._id);
         Session.set("loggedUserName", User.username);
-        console.log("UserId: " + User._id);
-        console.log("UserName: " + User.username);
+        console.log("Startup: UserId: " + User._id);
+        console.log("Startup: UserName: " + User.username);
     }
 
   })
 
   Meteor.autosubscribe(function () {
+
+    var user = Meteor.user();
+    //console.log("user: " + user);
+    //console.log("_id: " + user._id );
+    //console.log("username: " + user.username );
+
+    if (user) {
+      var UserId = Meteor.userId();
+      var UserA = Meteor.users.findOne({_id: UserId});
+      console.log("Autosubscribe = UserA_Id: " + UserA._id);
+      console.log("Autosubscribe = UserNameA: " + UserA.username);
+
+      Session.set("ses_loggedUserId", UserA._id);
+      Session.set("ses_loggedUserName", UserA.username);
+    }
+
+    var ses_loggedUserName = Session.get("ses_loggedUserName");
     var ses_datefilter = Session.get("ses_datefilter");
     var ses_existdate = Session.get("ses_datenotexist");
     var ses_jobnotexist = Session.get("ses_jobnotexist");
+
     //console.log("Autosubcribe sesion: " + ses + " , typeof: " + typeof ses);
     
-    if ( ses_existdate == true ) {
+    if (ses_loggedUserName == 'SP 1'){
+      Meteor.subscribe('spreader1');
+    } else if (ses_loggedUserName == 'SP 2'){
+      Meteor.subscribe('spreader2');
+    } else if ( ses_existdate == true ) {
       Meteor.subscribe('orderWithoutDate');
     } else if ( ses_jobnotexist == true ) { 
       Meteor.subscribe('orderWithoutJob');
@@ -53,23 +75,7 @@ if (Meteor.isClient) {
     } else {
       Meteor.subscribe('order', Session.get("ses_datefilter"));
     }
-
-    /*
-    var UserIdA = Meteor.userId();
-
-<<<<<<< HEAD
-      var user = Meteor.user();
-      console.dir(user)
-      console.log("_id: " + user['_id'] );
-      console.log("username: " + user['username'] );
-=======
-    if (UserIdA) {
-      var UserA = Meteor.users.findOne({_id: UserIdA});
-      console.log("UserId_A: " + UserA._id);
-      console.log("UserName_A: " + UserA.username);
->>>>>>> dca4ab3cf7685b9040b40ce2cb1c2c423d43b2a5
-    }
-    */
+    
     /*
       var userId = Meteor.userId();
       if (userId) {
@@ -128,9 +134,23 @@ if (Meteor.isClient) {
           }
         }
     },
+    isUser: function() {
+        //var loggedUserName = Session.get("loggedUserName");
+        //console.log(loggedUserName);
+
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username) {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+    },
     settingsAdmin: function () {
       return {
-        rowsPerPage: 30,
+        rowsPerPage: 100,
         showFilter: true,
         showNavigation: 'auto',
         fields: [
@@ -203,9 +223,9 @@ if (Meteor.isClient) {
             
             // treba da se doradi
 
-            if (spreaded == true)  {
+            if (spreaded)  {
               return 'success';
-            } else if (loaded == true) {
+            } else if (loaded) {
               return 'info';
             } else if (priority == 4) {
               return 'warning';
@@ -219,13 +239,13 @@ if (Meteor.isClient) {
     },
     settingsUser: function () {
       return {
-          rowsPerPage: 10,
+          rowsPerPage: 8,
           showFilter: false,
           showNavigation: 'auto',
           fields: [
             //{ key: '_id', label: '_ID' },
             { key: 'No', label: 'No', sort: 'ascending' },
-            { key: 'Date', label: 'Date',
+            /*{ key: 'Date', label: 'Date',
               fn: function (value) {
                 if (value){
                   return moment(value).format("DD-MMM");
@@ -234,7 +254,7 @@ if (Meteor.isClient) {
                 }
                 //return moment(value).format("DD-MM-YYYY");
               }//, sort: 'descending' // ascending
-            },
+            },*/
             //{ key: 'Created', label: 'Created' },
             { key: 'Komesa', label: 'Komesa' },
             { key: 'Marker', label: 'Marker' },
@@ -279,11 +299,11 @@ if (Meteor.isClient) {
                 };
               }*/
             },
-            { key: 'Comment', label: 'Comment' },
+            //{ key: 'Comment', label: 'Comment' },
           ],
 
             //useFontAwesome: true,
-            //group: 'orderExtra' 
+            //group: 'Komesa', 
             //rowClass: "warning", //warning, danger
           rowClass: function(item) {
             var priority = item.Priority;
@@ -930,6 +950,13 @@ if (Meteor.isServer) {
     return Order.find({AssignSpreader: "none"});
   });
 
+  Meteor.publish("spreader1", function(){
+    return Order.find({AssignSpreader: "SP 1"});
+  });
+
+  Meteor.publish("spreader2", function(){
+    return Order.find({AssignSpreader: "SP 2"});
+  });
 }
 
 var adminId = "nBp5wtNy2nnbYJJKL"; //123123

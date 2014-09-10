@@ -307,13 +307,18 @@
 
 <template name="reactiveTebleList">
   <div>
-  {{#if isAdmin}}
-    <h3>Order table</h3>
-    {{> reactiveTable collection=orders settings=settingsAdmin}} 
+  {{#if isUser}}
+    {{#if isAdmin}}
+      <h3>Order table</h3>
+      {{> reactiveTable collection=orders settings=settingsAdmin}} 
+    {{else}}
+      {{> reactiveTable collection=orders settings=settingsUser}} 
+    {{/if}}
+
   {{else}}
-    <h3>Order table</h3>
-    {{> reactiveTable collection=orders settings=settingsUser}} 
+      <h3>Please login</h3>
   {{/if}}
+
   </div>
 </template>
 
