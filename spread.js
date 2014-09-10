@@ -1,5 +1,7 @@
 if (Meteor.isClient) {
-
+  SimpleSchema.debug = true;
+  //UI.registerHelper("Schemas", Schemas);
+  
   Meteor.startup(function () {
     //Session.set("ses_namefilter", "");
     //Session.set("ses_datefilter", "");
@@ -35,7 +37,6 @@ if (Meteor.isClient) {
         console.log("Startup: UserId: " + User._id);
         console.log("Startup: UserName: " + User.username);
     }
-
   })
 
   Meteor.autosubscribe(function () {
@@ -63,9 +64,9 @@ if (Meteor.isClient) {
     //console.log("Autosubcribe sesion: " + ses + " , typeof: " + typeof ses);
     
     if ((ses_loggedUserName == "sp11") || (ses_loggedUserName == "sp12")){
-      Meteor.subscribe('spreader1');
+      Meteor.subscribe('spreader1', Session.get("ses_datefilter"));
     } else if ((ses_loggedUserName == "sp21") || (ses_loggedUserName == "sp22")){
-      Meteor.subscribe('spreader2');
+      Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
     } else if ( ses_existdate == true ) {
       Meteor.subscribe('orderWithoutDate');
     } else if ( ses_jobnotexist == true ) { 
@@ -73,12 +74,13 @@ if (Meteor.isClient) {
     } else if ( ses_datefilter == "" ) { 
       Meteor.subscribe('orderAll');
     } else {
-      //Meteor.subscribe('order', Session.get("ses_datefilter"));
+      Meteor.subscribe('order', Session.get("ses_datefilter"));
     }
-    
+    /*
     if (ses_datefilter) {
       Meteor.subscribe('order', Session.get("ses_datefilter"));
     }
+    */
     /*
       var userId = Meteor.userId();
       if (userId) {
@@ -96,7 +98,6 @@ if (Meteor.isClient) {
       Session.set("logged", "admin");
     }     
     */     
-
   });
     
   Template.nav.helpers ({
@@ -114,9 +115,15 @@ if (Meteor.isClient) {
         }
       }
     },
+    User: function(){
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        return User;
+      }
+    }
   });
     
-
   // Reactive-table
   Template.reactiveTebleList.orders = function () {
       return Order.find();
@@ -329,7 +336,6 @@ if (Meteor.isClient) {
           },
       };
     } 
-    
   });
 
   // Reactive Table events
@@ -486,9 +492,6 @@ if (Meteor.isClient) {
       }
   };
 
-  SimpleSchema.debug = true;
-  //UI.registerHelper("Schemas", Schemas);
-  
   // Accounts base - Only Username and pass requered
   Accounts.ui.config({
     passwordSignupFields: 'USERNAME_ONLY'
@@ -940,8 +943,6 @@ if (Meteor.isClient) {
       return str;
   }
 
-
-
 }
 
 // Meteor Server side
@@ -963,12 +964,12 @@ if (Meteor.isServer) {
     return Order.find({AssignSpreader: "none"});
   });
 
-  Meteor.publish("spreader1", function(){
-    return Order.find({AssignSpreader: "SP 1"});
+  Meteor.publish("spreader1", function(dateFilter){
+    return Order.find({AssignSpreader: "SP 1", Date: dateFilter});
   });
 
-  Meteor.publish("spreader2", function(){
-    return Order.find({AssignSpreader: "SP 2"});
+  Meteor.publish("spreader2", function(dateFilter){
+    return Order.find({AssignSpreader: "SP 2", Date: dateFilter});
   });
 }
 
