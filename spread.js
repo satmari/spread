@@ -496,7 +496,7 @@ if (Meteor.isClient) {
 
   var rm_Statistics = {
      template: Template.tmp_Statistics, 
-      title: "Statistic for active table",
+      title: "Statistic for order table",
       //modalDialogClass: "modal-dialog", //optional
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
