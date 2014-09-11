@@ -52,6 +52,7 @@
         <button id="export_orders" class="btn btn-info">Export order</button> 
         <button id="import_orders" class="btn btn-info">Import order</button>
         <button id="refresh_sum" class="btn btn-success">Refresh Sum</button>
+        <button id="statistics" class="btn btn-warning">Statistics</button>
       </div></li>
     </ul>
 
@@ -587,4 +588,36 @@ _id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;
       <br /><br />
      <textarea id="json2" class="text" style="width:100%;"></textarea>
   </div>-->
+</template>
+
+<template name="tmp_Statistics">
+
+  <div>
+    <ul>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Number of rolls</th>
+            <th>Number of all Layers</th>
+            <th>Sum of all Lengths</th>
+            <th>S</th>
+            <th>M</th>
+            <th>L</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{noRolls}}</td>
+            <td>{{allLayers}}</td>
+            <td>{{allLengths}}</td>
+            <td>{{allS}}</td>
+            <td>{{allM}}</td>
+            <td>{{allL}}</td>
+          </tr>
+        </tbody>
+      </table>
+      
+    </ul>
+  </div>
+
 </template>

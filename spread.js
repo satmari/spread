@@ -1,5 +1,5 @@
 if (Meteor.isClient) {
-  SimpleSchema.debug = true;
+  //SimpleSchema.debug = true;
   //UI.registerHelper("Schemas", Schemas);
   
   Meteor.startup(function () {
@@ -121,7 +121,8 @@ if (Meteor.isClient) {
         var User = Meteor.users.findOne({_id: userId});
         return User;
       }
-    }
+    },
+    
   });
     
   // Reactive-table
@@ -335,7 +336,8 @@ if (Meteor.isClient) {
             }
           },
       };
-    } 
+    },
+    
   });
 
   // Reactive Table events
@@ -492,6 +494,97 @@ if (Meteor.isClient) {
       }
   };
 
+  var rm_Statistics = {
+     template: Template.tmp_Statistics, 
+      title: "Statistic for active table",
+      //modalDialogClass: "modal-dialog", //optional
+      //modalBodyClass: "modal-body", //optional
+      //modalFooterClass: "modal-footer",//optional
+      closable: false,
+      buttons: {
+        //"cancel": {
+        //  class: 'btn-danger',
+        //  label: 'Cancel'
+          //},
+          "ok": {
+            closeModalOnClick: true, // if this is false, dialog doesnt close automatically on click
+            class: 'btn-info',
+            label: 'Back'
+          }
+      } 
+  };
+
+  Template.tmp_Statistics.helpers({
+    noRolls: function (){
+      var noRolls = Order.find();
+      //console.log("noRolls: "+ noRolls.count());
+      return noRolls.count();
+    },
+    allLayers: function(){
+      //var allLayers = Order.distinct("Layers");
+      var order = Order.find().fetch();
+      /*var allLayers = order.aggregate([
+          //{ $match : {} },
+          { $group : {
+              AssignSpreader: "$AssignSpreader",
+              total: {$sum: "LengthSum"}
+            }
+          },
+          //{ $sort: {AssignSpreader: "SP 1"}}
+      ]);
+      */
+
+      var sumLayers = 0;
+      for (var i = 0; i < order.length; i++) {
+        sumLayers += order[i].Layers;
+      }
+
+      //console.log(order);
+      //console.log("order count: " + order.length);
+      //console.log("sum layers: " + sumLayers);
+      return sumLayers;
+
+    },
+    allLengths: function(){
+      var order = Order.find().fetch();
+
+      var sumLengths = 0;
+      for (var i = 0; i < order.length; i++) {
+        sumLengths += order[i].LengthSum;
+      }
+      return sumLengths;
+    },
+    allS: function(){
+      var order = Order.find().fetch();
+
+      var sumS = 0;
+      for (var i = 0; i < order.length; i++) {
+        sumS += order[i].S;
+      }
+      return sumS;
+    },
+    allM: function(){
+      var order = Order.find().fetch();
+
+      var sumM = 0;
+      for (var i = 0; i < order.length; i++) {
+        sumM += order[i].M;
+      }
+      return sumM;
+    },
+    allL: function(){
+      var order = Order.find().fetch();
+
+      var sumL = 0;
+      for (var i = 0; i < order.length; i++) {
+        sumL += order[i].L;
+      }
+      return sumL;
+    },
+
+  });
+
+
   // Accounts base - Only Username and pass requered
   Accounts.ui.config({
     passwordSignupFields: 'USERNAME_ONLY'
@@ -618,6 +711,15 @@ if (Meteor.isClient) {
         );
       }
       alert("LengthSum fields are refreshed! \n ______________________________ \n If LengthSum is 0, that's because some fields \n(Length, Extra or Layers) are missing!  ");
+    },
+
+    'click #statistics' : function (e, t) {
+      console.log('statistics - click')
+
+      // Define rd_addneworder
+      var rd_statistics = ReactiveModal.initDialog(rm_Statistics);
+      // Show rd_addneworder
+      rd_statistics.show();
     },
 
     'change #orderWithoutDate': function (e, t) {
@@ -818,10 +920,7 @@ if (Meteor.isClient) {
             } else {
               orderDate2 = "";
             }
-            
 
-
-            
             //console.log('direct: ' + all[i]['Date'] + " : " + all[i]['Date'].typeof);
             //console.log('orderDate: ' + orderDate + " : " + orderDate.typeof);
             //console.log('orderDate2: ' + orderDate2 + " : " + orderDate2.typeof);
