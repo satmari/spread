@@ -382,8 +382,37 @@ if (Meteor.isClient) {
   // Reactive table helper (for update/edit orders)
   Template.tmp_EditOrder.helpers({
       editingDoc: function editingDocHelper() {
+        var User 
         return Order.findOne({_id: Session.get("selectedDocId")});
-      }
+      },
+      isAdmin: function() {
+        //var loggedUserName = Session.get("loggedUserName");
+        //console.log(loggedUserName);
+
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "admin") {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+    },
+    isUser: function() {
+        //var loggedUserName = Session.get("loggedUserName");
+        //console.log(loggedUserName);
+
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username) {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+    },
   });
 
   // Add New Order on click (in nav button) - Reactive Modal
