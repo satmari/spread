@@ -543,7 +543,6 @@ if (Meteor.isClient) {
       //console.log("order count: " + order.length);
       //console.log("sum layers: " + sumLayers);
       return sumLayers;
-
     },
     allLengths: function(){
       var order = Order.find().fetch();
@@ -552,6 +551,8 @@ if (Meteor.isClient) {
       for (var i = 0; i < order.length; i++) {
         sumLengths += order[i].LengthSum;
       }
+      sumLengths = Number(sumLengths);
+      sumLengths = sumLengths.toFixed(3);
       return sumLengths;
     },
     allS: function(){
@@ -581,7 +582,126 @@ if (Meteor.isClient) {
       }
       return sumL;
     },
-
+    SP1noRolls: function (){
+      var order = Order.find({AssignSpreader: "SP 1"});
+      return order.count();
+    },
+    SP2noRolls: function (){
+      var order = Order.find({AssignSpreader: "SP 2"});
+      return order.count();
+    },
+    SP1noLoadRollsShift1: function (){
+      var order = Order.find({Loaded: "SP 1-1"});
+      return order.count();
+    },
+    SP1noLoadRollsShift2: function (){
+      var order = Order.find({Loaded: "SP 1-2"});
+      return order.count();
+    },
+    SP2noLoadRollsShift1: function (){
+      var order = Order.find({Loaded: "SP 2-1"});
+      return order.count();
+    },
+    SP2noLoadRollsShift2: function (){
+      var order = Order.find({Loaded: "SP 2-2"});
+      return order.count();
+    },
+    SP1noSpreadRollsShift1: function (){
+      var order = Order.find({Spreaded: "SP 1-1"});
+      return order.count();
+    },
+    SP1noSpreadRollsShift2: function (){
+      var order = Order.find({Spreaded: "SP 1-2"});
+      return order.count();
+    },
+    SP2noSpreadRollsShift1: function (){
+      var order = Order.find({Spreaded: "SP 2-1"});
+      return order.count();
+    },
+    SP2noSpreadRollsShift2: function (){
+      var order = Order.find({Spreaded: "SP 2-2"});
+      return order.count();
+    },
+    SP1LoadMetShift1: function (){
+      var order = Order.find({Loaded: "SP 1-1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    SP1LoadMetShift2: function (){
+      var order = Order.find({Loaded: "SP 1-2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    SP2LoadMetShift1: function (){
+      var order = Order.find({Loaded: "SP 2-1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    SP2LoadMetShift2: function (){
+      var order = Order.find({Loaded: "SP 2-2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    SP1SpreadMetShift1: function (){
+      var order = Order.find({Spreaded: "SP 1-1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    SP1SpreadMetShift2: function (){
+      var order = Order.find({Spreaded: "SP 1-2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    SP2SpreadMetShift1: function (){
+      var order = Order.find({Spreaded: "SP 2-1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    SP2SpreadMetShift2: function (){
+      var order = Order.find({Spreaded: "SP 2-2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
   });
 
 

@@ -593,8 +593,8 @@ _id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;
 <template name="tmp_Statistics">
 
   <div>
-    <ul>
-      Stastistic for - All rolls in table
+    
+      Stastistic for - All orders in table
       <table class="table table-hover">
         <thead>
           <tr>
@@ -620,53 +620,70 @@ _id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;
       <br />
       <hr />
 
-      Stastistic for - Spreader 1
-      <div class="panel panel-default">
+      <p><b>Stastistic for - Spreader 1</b></p>
+      <!--<small>All, menas all order assigned to Spreader 1</small><br />
+      <small>Shift 1/Shift 2, means all "finished" orders by Spreader 1</small>-->
       <!-- Table -->
-        <table class="table">
+      Assigned orders: {{SP1noRolls}}
+      <table class="table table-bordered table-hover">
           <thead>
             <tr>
               <th></th>
-              <th>Load rolls</th>
-              <th>Load meters</th>
-              <th>Spread rolls</th>
-              <th>Spread meters</th>
+              <th>Loaded orders</th>
+              <th>Loaded meters</th>
+              <th>Spreaded orders</th>
+              <th>Spreaded meters</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>Shift 1</td>
+              <td>{{SP1noLoadRollsShift1}}</td>
+              <td>{{SP1LoadMetShift1}}</td>
+              <td>{{SP1noSpreadRollsShift1}}</td>
+              <td>{{SP1SpreadMetShift1}}</td>
             </tr>
             <tr>
               <td>Shift 2</td>
+              <td>{{SP1noLoadRollsShift2}}</td>
+              <td>{{SP1LoadMetShift2}}</td>
+              <td>{{SP1noSpreadRollsShift2}}</td>
+              <td>{{SP1SpreadMetShift2}}</td>
             </tr>
           </tbody>
-        </table>
-      </div>
+      </table>
       <hr />
-      
-      Stastistic for - Spreader 2 
+
+      <p><b>Stastistic for - Spreader 2</b></p>
+      <!--<small>All, menas all order assigned to Spreader 2</small><br />
+      <small>Shift 1/Shift 2, means all "finished" orders by Spreader 2</small>-->
+      Assigned orders: {{SP2noRolls}}
       <table class="table table-bordered table-hover">
         <thead>
           <tr>
             <th></th>
-            <th>Load rolls</th>
-            <th>Load meters</th>
-            <th>Spread rolls</th>
-            <th>Spread meters</th>
+            <th>Loaded orders</th>
+            <th>Loaded meters</th>
+            <th>Spreaded oredrs</th>
+            <th>Spreaded meters</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>Shift 1</td>
+            <td>{{SP2noLoadRollsShift1}}</td>
+            <td>{{SP2LoadMetShift1}}</td>
+            <td>{{SP2noSpreadRollsShift1}}</td>
+            <td>{{SP2SpreadMetShift1}}</td>
           </tr>
           <tr>
             <td>Shift 2</td>
+            <td>{{SP2noLoadRollsShift2}}</td>
+            <td>{{SP2LoadMetShift2}}</td>
+            <td>{{SP2noSpreadRollsShift2}}</td>
+            <td>{{SP2SpreadMetShift2}}</td>
           </tr>
         </tbody>
       </table>
-      
-    </ul>
   </div>
-
 </template>
