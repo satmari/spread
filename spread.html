@@ -452,13 +452,14 @@
 
 <template name="tmp_EditOrder">
   <div class="container">
-        <div class="row">-->
+        <div class="row" style="width:550px">
           <!--
           <div class="col-sm-12">
             <legend></legend>
           </div>
           -->
-          <div class="col-sm-6">
+          <!--<div class="col-sm-8">-->
+          <div>
           {{#if isUser}}
             {{#if isAdmin}}
               {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="LengthSum,Created"}}
@@ -467,13 +468,38 @@
                 <button class="btn btn-primary" id="deleteOrder" type="button">Delete order</button>  
               </div> 
             {{else}}
-              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Update Order" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,M,L,AssignSpreader,Priority,LengthSum,Created"}}
+              <!--{{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Update Order" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,M,L,AssignSpreader,Priority,LengthSum,Created"}}-->
+              
+                <table class="table" style="width:550px">
+                  <tbody>
+                    <p>User:  <b>{{User}}</b></p>
+                    <tr>
+                      <td>
+                      <a href="#" id="loadOrder" class="btn btn-default btn-lg btn-block btn-primary">
+                      Load Order</a>
+                      </td>
+                    </tr>
+                    <br />
+                    <tr>
+                      <td>
+                        <a href="#" id="spreadOrder" class="btn btn-default btn-lg btn-block btn-success"> Spread Order</a>
+                      </td>
+                    </tr>
+                    <br />
+                    <tr>
+                      <p>Insert comment:</p>
+                       <textarea class="form-control" rows="2" id="commentOrder" value="{{Comment}}"></textarea>
+                       <br />
+                       <button class="btn btn-default btn-sm" id="saveCommentOrder" type="button">Save comment</button>
+                    </tr>
+                  </tbody>
+                </table>
             {{/if}}
             {{else}}
             <p>Please log in!</p>
           {{/if}}
           </div>
-        <!--</div>-->
+        </div>
     </div>
 </template>
 

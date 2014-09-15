@@ -398,8 +398,8 @@ if (Meteor.isClient) {
             return false;  
           }
         }
-    },
-    isUser: function() {
+       },
+      isUser: function() {
         //var loggedUserName = Session.get("loggedUserName");
         //console.log(loggedUserName);
 
@@ -412,7 +412,28 @@ if (Meteor.isClient) {
             return false;  
           }
         }
-    },
+      },
+      User: function() {
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username) {
+            return User.username;
+          }
+        }
+      },
+      Comment: function (){
+        var editingDoc = Session.get("selectedDocId");
+        if (editingDoc) {
+            var editingDocAll = Order.findOne({_id: editingDoc});
+            console.log(editingDocAll);
+            var commentEditing = editingDocAll['comment'];
+            console.log(commentEditing);
+
+        }
+        
+      
+      }
   });
 
   // Add New Order on click (in nav button) - Reactive Modal
@@ -901,7 +922,34 @@ if (Meteor.isClient) {
 
       Order.remove({_id: orderToDelete});
       rm_EditOrder.hide();
-    }
+    },
+    'click #loadOrder': function (){
+      console.log("click load Order");
+      var orderToEdit = Session.get("selectedDocId");
+      
+      var edit = Order.find({_id: Session.get("selectedDocId")}).fetch();
+
+      console.log(edit[0].Comment);
+      
+      for (var i = 0; i < edit.length; i++) {
+        console.log("loadOrder: " + edit);
+        console.log("loadOrder.Comment: " + edit[i].Comment);
+      }
+      
+      //Order.update({_ID: orderToEdit} );
+    },
+    'click #spreadOrder': function (){
+      console.log("click spread Order");
+      var orderToEdit = Session.get("selectedDocId");
+
+    },
+    'click #saveCommentOrder': function (){
+      console.log("click save Comment");
+      var orderToEdit = Session.get("selectedDocId");
+
+
+
+    },
   });
 
   Template.tmp_ImportOrderAnalytics.events({
