@@ -487,10 +487,13 @@
                     </tr>
                     <br />
                     <tr>
-                      <p>Insert comment:</p>
-                       <textarea class="form-control" rows="2" id="commentOrder" value="{{Comment}}"></textarea>
+                      <!--
+                      <p>Insert comment: </p>
+                       <textarea class="form-control" rows="2" id="commentOrder" value="">{{Comment}}</textarea>
                        <br />
                        <button class="btn btn-default btn-sm" id="saveCommentOrder" type="button">Save comment</button>
+                       -->
+                       {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save comment" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,M,L,AssignSpreader,Priority,LengthSum,Created,Loaded,Spreaded"}}
                     </tr>
                   </tbody>
                 </table>

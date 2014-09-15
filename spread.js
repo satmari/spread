@@ -50,7 +50,7 @@ if (Meteor.isClient) {
       var UserId = Meteor.userId();
       var UserA = Meteor.users.findOne({_id: UserId});
       console.log("Autosubscribe = UserA_Id: " + UserA._id);
-      console.log("Autosubscribe = UserNameA: " + UserA.username);
+      console.log("Autosubscribe = UserName: " + UserA.username);
 
       Session.set("ses_loggedUserId", UserA._id);
       Session.set("ses_loggedUserName", UserA.username);
@@ -316,7 +316,7 @@ if (Meteor.isClient) {
             //useFontAwesome: true,
             //group: 'Komesa', 
             //rowClass: "warning", //warning, danger
-          rowClass: function(item) {
+            rowClass: function(item) {
             var priority = item.Priority;
             var loaded = item.Loaded;
             var spreaded = item.Spreaded;
@@ -349,7 +349,7 @@ if (Meteor.isClient) {
         Session.set('selectedDocId', click_id);
 
         // Define rd_editorder
-      var rd_editorder = ReactiveModal.initDialog(rm_EditOrder);
+        var rd_editorder = ReactiveModal.initDialog(rm_EditOrder);
         // show rd_editorder
         rd_editorder.show();
       }
@@ -382,7 +382,6 @@ if (Meteor.isClient) {
   // Reactive table helper (for update/edit orders)
   Template.tmp_EditOrder.helpers({
       editingDoc: function editingDocHelper() {
-        var User 
         return Order.findOne({_id: Session.get("selectedDocId")});
       },
       isAdmin: function() {
@@ -422,18 +421,20 @@ if (Meteor.isClient) {
           }
         }
       },
-      Comment: function (){
+      Comment: function() {
         var editingDoc = Session.get("selectedDocId");
         if (editingDoc) {
-            var editingDocAll = Order.findOne({_id: editingDoc});
-            console.log(editingDocAll);
-            var commentEditing = editingDocAll['comment'];
-            console.log(commentEditing);
-
+            var editingDocAll = Order.find({_id: editingDoc}).fetch();
+            
+            for (var i = 0; i < editingDocAll.length; i++) {
+              var commentEditing = editingDocAll[0].Comment;
+              //console.log(commentEditing);
+            }
+            //console.log("in Comment: " + editingDocAll.Comment);
+            return commentEditing;
         }
-        
-      
       }
+
   });
 
   // Add New Order on click (in nav button) - Reactive Modal
@@ -918,38 +919,81 @@ if (Meteor.isClient) {
   Template.tmp_EditOrder.events({
     'click #deleteOrder': function (e, t) {
       var orderToDelete = Session.get("selectedDocId");
-      console.log("orderToDelete" + orderToDelete);
+      //console.log("orderToDelete" + orderToDelete);
 
       Order.remove({_id: orderToDelete});
       rm_EditOrder.hide();
     },
     'click #loadOrder': function (){
-      console.log("click load Order");
+      //console.log("click load Order");
       var orderToEdit = Session.get("selectedDocId");
-      
-      var edit = Order.find({_id: Session.get("selectedDocId")}).fetch();
+      //console.log("orderToEdit: " + orderToEdit);
+      var userEdit = Session.get("ses_loggedUserName");
+      //console.log("userEdit: " + userEdit);
+      var userEditLoad;
 
-      console.log(edit[0].Comment);
-      
-      for (var i = 0; i < edit.length; i++) {
-        console.log("loadOrder: " + edit);
-        console.log("loadOrder.Comment: " + edit[i].Comment);
+      if (userEdit == "sp11"){
+        userEditLoad = "SP 1-1";
+      } else if (userEdit == "sp12") {
+        userEditLoad = "SP 1-2";
+      } else if (userEdit == "sp21") {
+        userEditLoad = "SP 2-1";
+      } else if (userEdit == "sp22") {
+        userEditLoad = "SP 2-2";
       }
-      
-      //Order.update({_ID: orderToEdit} );
+
+      //console.log("userEditLoad: " + userEditLoad);
+      //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
+      //console.log(orderToEdit[0]._id);
+
+      Order.update({_id: orderToEdit},{$set: {Loaded: userEditLoad}});
+      rm_EditOrder.hide();
     },
     'click #spreadOrder': function (){
-      console.log("click spread Order");
+      //console.log("click spread Order");
       var orderToEdit = Session.get("selectedDocId");
+      //console.log("orderToEdit: " + orderToEdit);
+      var userEdit = Session.get("ses_loggedUserName");
+      //console.log("userEdit: " + userEdit);
+      var userEditSpread;
 
+      if (userEdit == "sp11"){
+        userEditSpread = "SP 1-1";
+      } else if (userEdit == "sp12") {
+        userEditSpread = "SP 1-2";
+      } else if (userEdit == "sp21") {
+        userEditSpread = "SP 2-1";
+      } else if (userEdit == "sp22") {
+        userEditSpread = "SP 2-2";
+      }
+
+      //console.log("userEditSpread: " + userEditSpread);
+      //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
+      //console.log(orderToEdit[0]._id);
+
+      Order.update({_id: orderToEdit},{$set: {Spreaded: userEditSpread}});
+      rm_EditOrder.hide();
     },
+    /*
     'click #saveCommentOrder': function (){
       console.log("click save Comment");
       var orderToEdit = Session.get("selectedDocId");
 
+      var newComment = $('#commentOrder').val();
+      console.log("newComment: " + newComment);
 
-
+      Order.update({_id: orderToEdit},{$set: {Comment: newComment}});
+      newComment = ""
+      //alert("Comment saved");
+      //rm_EditOrder.hide();
     },
+    'keyup #commentOrder': function(e, v){
+        //console.log("e: " + e);
+        //console.log("v: " + v);
+        var newComment = $('#commentOrder').val();
+        console.log("newComment: " + newComment);
+    }*/
+    
   });
 
   Template.tmp_ImportOrderAnalytics.events({
@@ -1145,7 +1189,7 @@ if (Meteor.isClient) {
   });
 
   Template.tmp_ExportOrder.order = function() {
-      return Order.find();
+    return Order.find();
   }
 
   Template.tmp_ExportOrder.events({
@@ -1238,7 +1282,6 @@ if (Meteor.isClient) {
       }
       return str;
   }
-
 }
 
 // Meteor Server side
