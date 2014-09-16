@@ -6377,3 +6377,13 @@ input:focus {
 .popover {
   color: #2c3e50;
 }
+
+.reactive-table-navigation .form-inline input {
+  width: 60px;
+}
+
+body {
+  background: transparent url("/background/subtle_white_feathers.png") repeat;
+  /*background: transparent url("/background/gordon.png") top right no-repeat;
+  background-position:fixed;*/
+}

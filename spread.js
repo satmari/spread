@@ -1056,8 +1056,10 @@ if (Meteor.isClient) {
         //alert(text);
         //var all = $.csv.toObjects(text);
         var all = $.csv.toObjects(text, {
-            delimiter:"'",
-            separator:';',
+            /*delimiter:"'",
+            separator:';',*/
+            delimiter:";",
+            separator:',',
         });
 
           for (var i = 0; i < all.length; i++) {
@@ -1074,9 +1076,9 @@ if (Meteor.isClient) {
             var layers = Number(all[i]['Layers']);
             var lengthS = all[i]['Marker Length [mt]'];
             //console.log(lengthS);
-            var lengthR = lengthS.replace(",", ".");
+            //var lengthR = lengthS.replace(",", ".");
             //console.log(lengthR);
-            var length = Number(lengthR);
+            var length = Number(lengthS);
             //console.log(length);
             var extra = Number(all[i]['Length All. [cm]']);
             var lengthsumX = Number((length + (extra/100)) * layers);

@@ -55,11 +55,11 @@
         <button id="statistics" class="btn btn-warning">Statistics</button>
       </div></li>
     </ul>
-
+    <!--
     <ul class="nav navbar-nav">
       <li><a href="#">|</a></li>
     </ul>
-    
+    -->
     <ul class="nav navbar-nav">
       <div class="navbar-form">
         <div class="form-group">
@@ -72,10 +72,11 @@
         </div>
       </div>
     </ul>
-    
+    <!--
     <ul class="nav navbar-nav">
       <li><a href="#">|</a></li>
     </ul>
+    -->
     {{/if}}
     <!--ONLY IF IS ADMIN -->  
 
@@ -626,14 +627,12 @@ _id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;
 </template>
 
 <template name="tmp_Statistics">
-
   <div>
-    
       Stastistic for - All orders in table
       <table class="table table-hover">
         <thead>
           <tr>
-            <th>Number of rolls</th>
+            <th>Number of Orders</th>
             <th>Number of all Layers</th>
             <th>Sum of all Lengths</th>
             <th>S</th>
@@ -654,7 +653,6 @@ _id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;
       </table>
       <br />
       <hr />
-
       <p><b>Stastistic for - Spreader 1</b></p>
       <!--<small>All, menas all order assigned to Spreader 1</small><br />
       <small>Shift 1/Shift 2, means all "finished" orders by Spreader 1</small>-->
@@ -688,7 +686,6 @@ _id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;
           </tbody>
       </table>
       <hr />
-
       <p><b>Stastistic for - Spreader 2</b></p>
       <!--<small>All, menas all order assigned to Spreader 2</small><br />
       <small>Shift 1/Shift 2, means all "finished" orders by Spreader 2</small>-->
