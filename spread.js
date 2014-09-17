@@ -161,7 +161,7 @@ if (Meteor.isClient) {
     },
     settingsAdmin: function () {
       return {
-        rowsPerPage: 100,
+        rowsPerPage: 50,
         showFilter: true,
         showNavigation: 'auto',
         fields: [
@@ -250,7 +250,7 @@ if (Meteor.isClient) {
     },
     settingsUser: function () {
       return {
-          rowsPerPage: 8,
+          rowsPerPage: 10,
           showFilter: false,
           showNavigation: 'auto',
           fields: [
