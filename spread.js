@@ -199,11 +199,11 @@ if (Meteor.isClient) {
           { key: 'LengthSum', label: 'LengthSum (m)' },
           { key: 'Width', label: 'Width (cm)' },
           { key: 'S', label: 'S' },
-          { key: 'SonLayer', label: 'S on Layer'},
+          /*{ key: 'SonLayer', label: 'S on Layer'},*/
           { key: 'M', label: 'M' },
-          { key: 'MonLayer', label: 'M on Layer'},
+          /*{ key: 'MonLayer', label: 'M on Layer'},*/
           { key: 'L', label: 'L' },
-          { key: 'LonLayer', label: 'L on layer'},
+          /*{ key: 'LonLayer', label: 'L on layer'},*/
           { key: 'AssignSpreader', label: 'Assign',
             fn: function (value) {
               if (value == "SP 1") {
@@ -286,6 +286,15 @@ if (Meteor.isClient) {
             { key: 'ColorDesc', label: 'ColorDesc' },
             { key: 'Bagno', label: 'Bagno' },
             { key: 'Layers', label: 'Layers' },
+            { key: 'LayersActual', label: 'Layers Actual',
+              fn: function (value){
+                if (value == 0) {
+                  return "";
+                } else {
+                  return value ;
+                };
+              }
+            },
             { key: 'Length', label: 'Length (m)' },
             //{ key: 'Extra', label: 'Extra (cm)' },
             { key: 'LengthSum', label: 'LengthSum (m)' },
