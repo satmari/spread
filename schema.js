@@ -76,6 +76,13 @@ Order = new Meteor.Collection("order", {
         decimal: true, 
         min: 0
     },
+    'LayersActual': {
+        type: Number,
+        label: "LayersActual",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
     'Length': {
         type: Number,
         label: "Length",

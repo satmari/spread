@@ -160,12 +160,12 @@ if (Meteor.isClient) {
     },
     settingsAdmin: function () {
       return {
-        rowsPerPage: 50,
+        rowsPerPage: 500,
         showFilter: true,
         showNavigation: 'auto',
         fields: [
           //{ key: '_id', label: '_ID' },
-          { key: 'No', label: 'No', sort: 'ascending' },
+          { key: 'No', label: 'No', sort: 'descending' },
           { key: 'Date', label: 'Date',
             fn: function (value) {
               if (value){
@@ -185,6 +185,15 @@ if (Meteor.isClient) {
           { key: 'ColorDesc', label: 'ColorDesc' },
           { key: 'Bagno', label: 'Bagno' },
           { key: 'Layers', label: 'Layers' },
+          { key: 'LayersActual', label: 'Layers Actual',
+            fn: function (value){
+              if (value == 0) {
+                return "";
+              } else {
+                return value ;
+              };
+            }
+          },
           { key: 'Length', label: 'Length (m)' },
           { key: 'Extra', label: 'Extra (cm)' },
           { key: 'LengthSum', label: 'LengthSum (m)' },
@@ -863,8 +872,20 @@ if (Meteor.isClient) {
         //console.log(extra);
         var layers = Number(order_all[i].Layers);
         //console.log(layers);
+        var layersactual = Number(order_all[i].LayersActual);
+        //console.log(layers);
+        var sonlayer = Number(order_all[i].SonLayer);
+        var monlayer = Number(order_all[i].MonLayer);
+        var lonlayer = Number(order_all[i].LonLayer);
 
-        var sum = Number((length + (extra/100)) * layers);
+        if (layersactual) {
+          LayersToCount = layersactual;
+        } else {
+          LayersToCount = layers;
+        }
+
+        //LengthSum
+        var sum = Number((length + (extra/100)) * LayersToCount);
         //console.log(sum);
         var sumf =sum.toFixed(3);
         //console.log(sumf);
@@ -873,10 +894,15 @@ if (Meteor.isClient) {
           sumf = 0;
         }
 
+        //S M L 
+        var Snew = Number(sonlayer * LayersToCount);
+        var Mnew = Number(monlayer * LayersToCount);
+        var Lnew = Number(lonlayer * LayersToCount);
+
         Order.update({_id: order_all[i]._id},
           {
             //$set: { orderLength: 5+5 },
-            $set: { LengthSum: sumf },
+            $set: { LengthSum: sumf, S: Snew, M: Mnew, L: Lnew },
           }, 
           {
             multi: true,
@@ -923,8 +949,15 @@ if (Meteor.isClient) {
       var orderToDelete = Session.get("selectedDocId");
       //console.log("orderToDelete" + orderToDelete);
 
-      Order.remove({_id: orderToDelete});
-      rm_EditOrder.hide();
+      if (confirm('Are you sure you want to DELETE this Order?')) {
+        // Save it!
+        Order.remove({_id: orderToDelete});
+        rm_EditOrder.hide();
+      } else {
+        // Do nothing!
+        rm_EditOrder.hide();
+      }
+
     },
     'click #loadOrder': function (){
       //console.log("click load Order");
@@ -1140,6 +1173,7 @@ if (Meteor.isClient) {
             var colordesc = all[i]['ColorDesc'];
             var bagno = all[i]['Bagno'];
             var layers = Number(all[i]['Layers']);
+            var layersactual = Number(all[i]['LayersActual']);
             var length = Number(all[i]['Length']);
             //var length = lengthS.replace(",", ".");
             var extra = Number(all[i]['Extra']);
@@ -1185,7 +1219,7 @@ if (Meteor.isClient) {
 
             //One by One
             //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,AssignSpreader: all[i]['AssignSpreader'], Priority: priority});    
-            Order.insert({No: no, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, AssignSpreader: assignespreader, Loaded: loaded, Spreaded: spreaded, Comment: comment }); 
+            Order.insert({No: no, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, AssignSpreader: assignespreader, Loaded: loaded, Spreaded: spreaded, Comment: comment }); 
             // Can not insert order created and _id , this values is automaticali created
             //Created: orderCreated2  
             //_id: id
