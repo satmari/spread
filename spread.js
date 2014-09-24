@@ -121,8 +121,7 @@ if (Meteor.isClient) {
         var User = Meteor.users.findOne({_id: userId});
         return User;
       }
-    },
-    
+    }, 
   });
     
   // Reactive-table
@@ -191,8 +190,11 @@ if (Meteor.isClient) {
           { key: 'LengthSum', label: 'LengthSum (m)' },
           { key: 'Width', label: 'Width (cm)' },
           { key: 'S', label: 'S' },
+          { key: 'SonLayer', label: 'S on Layer'},
           { key: 'M', label: 'M' },
+          { key: 'MonLayer', label: 'M on Layer'},
           { key: 'L', label: 'L' },
+          { key: 'LonLayer', label: 'L on layer'},
           { key: 'AssignSpreader', label: 'Assign',
             fn: function (value) {
               if (value == "SP 1") {
@@ -337,7 +339,6 @@ if (Meteor.isClient) {
           },
       };
     },
-    
   });
 
   // Reactive Table events
@@ -434,7 +435,6 @@ if (Meteor.isClient) {
             return commentEditing;
         }
       }
-
   });
 
   // Add New Order on click (in nav button) - Reactive Modal
@@ -504,7 +504,8 @@ if (Meteor.isClient) {
   };
 
   // Import Order from MD Analytics on click (in nav button) - Reactive Modal
-  /*var rm_ImportOrderAnalyitics = {
+  var rm_ImportOrderAnalyitics = {
+      /*
       template: Template.tmp_ImportOrderAnalytics, 
       title: "Import orders from MD Analytics",
       //modalDialogClass: "modal-dialog", //optional
@@ -522,7 +523,8 @@ if (Meteor.isClient) {
             label: 'Back'
           }
       }
-  };*/
+    */
+  };
 
   // Import Order from Planned Markers file (in nav button) - Reactive Modal
   var rm_ImportPlannedMarkers = {
@@ -993,7 +995,6 @@ if (Meteor.isClient) {
         var newComment = $('#commentOrder').val();
         console.log("newComment: " + newComment);
     }*/
-    
   });
 
   Template.tmp_ImportOrderAnalytics.events({
@@ -1085,13 +1086,16 @@ if (Meteor.isClient) {
             var lengthsum = Number(lengthsumX).toFixed(3);
             var width = Number(all[i]['Marker Width [cm]']);
             var s = Number(all[i]['tot S']);
+            var sonlayer = Number(all[i]['S']);
             var m = Number(all[i]['tot M']);
+            var monlayer = Number(all[i]['M']);
             var l = Number(all[i]['tot L']);
+            var lonlayer = Number(all[i]['L']);
 
             //One by One
             //Order.insert({SEQ: seq, FILE: all[i]['FILE'], CUT_FILE: all[i]['CUT FILE'], MODEL: all[i]['MODEL'], SPREAD_TYPE: all[i]['SPREAD TYPE'], BAGNO: all[i]['BAGNO'], PLY: ply});    
             //Order.insert({orderName: all[i]['FILE'], orderFileName: all[i]['CUT FILE'], orderModel: all[i]['MODEL'], orderFabric: all[i]['SPREAD TYPE'], orderBagno: all[i]['BAGNO'], orderLayers: ply});
-            Order.insert({No: no, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l });    
+            Order.insert({No: no, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer});    
           }
       }
       reader.readAsText(file_a);
@@ -1144,8 +1148,11 @@ if (Meteor.isClient) {
             var lengthsum = Number(all[i]['LengthSum']);
             var width = Number(all[i]['Width']);
             var s = Number(all[i]['S']);
+            var sonlayer = Number(all[i]['SonLayer']);
             var m = Number(all[i]['M']);
+            var monlayer = Number(all[i]['MonLayer']);
             var l = Number(all[i]['L']);
+            var lonlayer = Number(all[i]['LonLayer']);
             var assignespreader = all[i]['AssignSpreader'];
             var priority = all[i]['Priority'];
             var loaded = all[i]['Loaded'];
@@ -1178,7 +1185,7 @@ if (Meteor.isClient) {
 
             //One by One
             //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,AssignSpreader: all[i]['AssignSpreader'], Priority: priority});    
-            Order.insert({No: no, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l, AssignSpreader: assignespreader, Loaded: loaded, Spreaded: spreaded, Comment: comment }); 
+            Order.insert({No: no, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, AssignSpreader: assignespreader, Loaded: loaded, Spreaded: spreaded, Comment: comment }); 
             // Can not insert order created and _id , this values is automaticali created
             //Created: orderCreated2  
             //_id: id
@@ -1314,7 +1321,7 @@ if (Meteor.isServer) {
   });
 }
 
-var adminId = "nBp5wtNy2nnbYJJKL"; //123123
+var adminId = ""; //123123
 var sp11 = "";  // 111111
 var sp12 = "";  // 121212
 var sp21 = "";  // 212121

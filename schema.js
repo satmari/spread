@@ -116,6 +116,13 @@ Order = new Meteor.Collection("order", {
         decimal: true, 
         min: 0
     },
+    'SonLayer': {
+        type: Number,
+        label: "SonLayer",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
     'M': {
         type: Number,
         label: "M",
@@ -123,9 +130,23 @@ Order = new Meteor.Collection("order", {
         decimal: true, 
         min: 0
     },
+    'MonLayer': {
+        type: Number,
+        label: "MonLayer",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
     'L': {
         type: Number,
         label: "L",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'LonLayer': {
+        type: Number,
+        label: "LonLayer",
         optional: true,
         decimal: true, 
         min: 0
