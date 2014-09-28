@@ -334,21 +334,9 @@ if (Meteor.isClient) {
               }
             },*/
             { key: 'Priority', label: 'Priority' },
-            { key: 'Load', label: 'Load',
-              /*fn: function (value){ 
-                if (value == true) {
-                  return "Load";
-                };
-              }*/
-            },
-            { key: 'Spread', label: 'Spread', 
-              /*fn: function (value){
-                if (value == true) {
-                  return "Spread";
-                };
-              }*/
-            },
-            { key: 'Cut', label: 'Cut' },
+            { key: 'Load', label: 'Load'},
+            { key: 'Spread', label: 'Spread'},
+            //{ key: 'Cut', label: 'Cut' },
             //{ key: 'Comment', label: 'Comment' },
           ],
 
@@ -436,20 +424,8 @@ if (Meteor.isClient) {
               }
             },*/
             { key: 'Priority', label: 'Priority' },
-            { key: 'Load', label: 'Load',
-              /*fn: function (value){ 
-                if (value == true) {
-                  return "Load";
-                };
-              }*/
-            },
-            { key: 'Spread', label: 'Spread', 
-              /*fn: function (value){
-                if (value == true) {
-                  return "Spread";
-                };
-              }*/
-            },
+            /*{ key: 'Load', label: 'Load'},*/
+            /*{ key: 'Spread', label: 'Spread'},*/
             { key: 'Cut', label: 'Cut' },
             //{ key: 'Comment', label: 'Comment' },
           ],
