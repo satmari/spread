@@ -173,19 +173,26 @@ Order = new Meteor.Collection("order", {
         allowedValues: [5, 4, 3, 2, 1],
         max: 10
     },
-    'Loaded': {
+    'Load': {
         type: String, 
-        label: "Loaded",
+        label: "Load",
         optional: true,
         defaultValue: "",
         allowedValues: ["", "SP 1-1", "SP 1-2", "SP 2-1", "SP 2-2"]
     },
-    'Spreaded': {
+    'Spread': {
         type: String, 
-        label: "Spreaded",
+        label: "Spread",
         optional: true,
         defaultValue: "",
         allowedValues: ["", "SP 1-1", "SP 1-2", "SP 2-1", "SP 2-2"]
+    },
+    'Cut': {
+        type: String, 
+        label: "Cut",
+        optional: true,
+        defaultValue: "",
+        allowedValues: ["", "CUT 1", "CUT 2"]
     },
     'Comment' : {
         type: String,
@@ -214,16 +221,21 @@ ColorCode
 ColorDesc
 Bagno
 Layers
+LayersActual
 Length
 Extra
 LengthSum
 Width
 S
+SonLayer
 M
+MonLayer
 L
+LonLayer
 AssignSpreader
 Priority
-Loaded
-Spreaded
+Load
+Spread
+Cut
 Comment
 */

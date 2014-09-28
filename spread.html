@@ -1,5 +1,5 @@
 <head>
-  <title>spread</title>
+  <title>Gordon Spread Orders - Web application </title>
 </head>
 
 <body>
@@ -197,15 +197,15 @@
     {{#if fcSort.orderPriority.desc}}(desc){{/if}}
     {{#if fcSort.orderPriority.asc}}(asc){{/if}}
     </th>
-    <th class="fc-sort" data-fc-sort="orderLoaded">
-    Loaded
-    {{#if fcSort.orderLoaded.desc}}(desc){{/if}}
-    {{#if fcSort.orderLoaded.asc}}(asc){{/if}}
+    <th class="fc-sort" data-fc-sort="orderLoad">
+    Load
+    {{#if fcSort.orderLoad.desc}}(desc){{/if}}
+    {{#if fcSort.orderLoad.asc}}(asc){{/if}}
     </th>
-    <th class="fc-sort" data-fc-sort="orderSpreaded">
-    Spreaded
-    {{#if fcSort.orderSpreaded.desc}}(desc){{/if}}
-    {{#if fcSort.orderSpreaded.asc}}(asc){{/if}}
+    <th class="fc-sort" data-fc-sort="orderSpread">
+    Spread
+    {{#if fcSort.orderSpread.desc}}(desc){{/if}}
+    {{#if fcSort.orderSpread.asc}}(asc){{/if}}
     </th>
     <th></th>
     </tr>
@@ -236,8 +236,8 @@
           <td>{{orderExtra}}</td>
           <td>{{orderLengthSum}}</td>
           <td>{{orderPriority}}</td>
-          <td>{{orderLoaded}}</td>
-          <td>{{orderSpreaded}}</td>
+          <td>{{orderLoad}}</td>
+          <td>{{orderSpread}}</td>
           <td><button id="deleteOrder">Delete</button></td> <!-- class="btn btn-default" -->
         </tr>
         {{/each}}
@@ -292,8 +292,8 @@
     <input type="text" id="orderExtra" placeholder="Extra">
     <!--<input type="text" id="orderLengthSum" placeholder="LengthSum">-->
     <input type="text" id="orderPriority" placeholder="Priority">
-    <input type="checkbox" id="orderLoaded" {{showLoadedChecked}}>
-    <input type="checkbox" id="orderSpreaded" {{showSpreadedChecked}}>
+    <input type="checkbox" id="orderLoad" {{showLoadChecked}}>
+    <input type="checkbox" id="orderSpread" {{showSpreadChecked}}>
     <button id="addOrder"> Add </button> <!-- class="btn btn-default" -->
   </div>
 </template>
@@ -313,7 +313,7 @@
 
 <template name="reactiveTebleList">
   <div>
-  {{#if isUser}}
+  <!--{{#if isUser}}
     {{#if isAdmin}}
       <h3>Order table</h3>
       {{> reactiveTable collection=orders settings=settingsAdmin}} 
@@ -323,6 +323,21 @@
 
   {{else}}
       <h3>Please login</h3>
+  {{/if}}
+  -->
+  {{#if isAdmin}}
+    <h3>Order table</h3>
+    {{> reactiveTable collection=orders settings=settingsAdmin}}
+  {{/if}}
+
+  {{#if isUserSp}}
+    <h3>Order table</h3>
+    {{> reactiveTable collection=orders settings=settingsUserSp}}
+  {{/if}}
+
+  {{#if isUserCut}}
+    <h3>Order table</h3>
+    {{> reactiveTable collection=orders settings=settingsUserCut}}
   {{/if}}
 
   </div>
@@ -417,18 +432,18 @@
                 <span class="help-block">{{{afFieldMessage name='orderPriority'}}}</span>
                   {{/if}}
                 </div>
-                <div class="form-group {{#if afFieldIsInvalid name='orderLoaded'}}has-error{{/if}}">
-                  <!--{{> afFieldLabel name='orderLoaded'}}-->
-                  {{> afFieldInput name='orderLoaded'}}
-                  {{#if afFieldIsInvalid name='orderLoaded'}}
-                <span class="help-block">{{{afFieldMessage name='orderLoaded'}}}</span>
+                <div class="form-group {{#if afFieldIsInvalid name='orderLoad'}}has-error{{/if}}">
+                  <!--{{> afFieldLabel name='orderLoad'}}-->
+                  {{> afFieldInput name='orderLoad'}}
+                  {{#if afFieldIsInvalid name='orderLoad'}}
+                <span class="help-block">{{{afFieldMessage name='orderLoad'}}}</span>
                   {{/if}}
                 </div>
-                <div class="form-group {{#if afFieldIsInvalid name='orderSpreaded'}}has-error{{/if}}">
-                  <!--{{> afFieldLabel name='orderSpreaded'}}-->
-                  {{> afFieldInput name='orderSpreaded'}}
-                  {{#if afFieldIsInvalid name='orderSpreaded'}}
-                <span class="help-block">{{{afFieldMessage name='orderSpreaded'}}}</span>
+                <div class="form-group {{#if afFieldIsInvalid name='orderSpread'}}has-error{{/if}}">
+                  <!--{{> afFieldLabel name='orderSpread'}}-->
+                  {{> afFieldInput name='orderSpread'}}
+                  {{#if afFieldIsInvalid name='orderSpread'}}
+                <span class="help-block">{{{afFieldMessage name='orderSpread'}}}</span>
                   {{/if}}
                 </div>
                 <button type="submit" class="btn btn-primary">Add Order</button>
@@ -451,7 +466,7 @@
   </div>
 </template>
 
-<template name="tmp_EditOrder">
+<template name="tmp_EditOrder_OLD">
   <div class="container">
         <div class="row" style="width:550px">
           <!--
@@ -488,7 +503,7 @@
                     </tr>
                     <br />
                     <tr>
-                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save comment" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,AssignSpreader,Priority,LengthSum,Created,Loaded,Spreaded"}}
+                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save comment" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,AssignSpreader,Priority,LengthSum,Created,Load,Spread,Cut"}}
                     </tr>
                   </tbody>
                 </table>
@@ -498,6 +513,64 @@
           {{/if}}
           </div>
         </div>
+    </div>
+</template>
+
+<template name="tmp_EditOrder">
+  <div class="container">
+      <div class="row" style="width:550px">
+          <div>
+            {{#if isAdmin}}
+              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="LengthSum,Created,S,M,L"}}
+              <div class="">
+                <br />
+                <button class="btn btn-primary" id="deleteOrder" type="button">Delete order</button>  
+              </div> 
+            {{/if}}
+
+            {{#if isUserSp}}  
+                <table class="table" style="width:550px">
+                  <tbody>
+                    <p>User:  <b>{{User}}</b></p>
+                    <tr>
+                      <td>
+                      <a href="#" id="loadOrder" class="btn btn-default btn-lg btn-block btn-primary">
+                      Load Order</a>
+                      </td>
+                    </tr>
+                    <br />
+                    <tr>
+                      <td>
+                        <a href="#" id="spreadOrder" class="btn btn-default btn-lg btn-block btn-success"> Spread Order</a>
+                      </td>
+                    </tr>
+                    <br />
+                    <tr>
+                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,AssignSpreader,Priority,LengthSum,Created,Load,Spread,Cut"}}
+                    </tr>
+                  </tbody>
+                </table>
+            {{/if}}
+            
+            {{#if isUserCut}}
+              <table class="table" style="width:550px">
+                  <tbody>
+                    <p>User:  <b>{{User}}</b></p>
+                    <tr>
+                      <td>
+                        <a href="#" id="cutOrder" class="btn btn-default btn-lg btn-block btn-success">Cut Order</a>
+                      </td>
+                    </tr>
+                    <br />
+                    <tr>
+                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,LayersActual,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,AssignSpreader,Priority,LengthSum,Created,Load,Spread,Cut"}}
+                    </tr>
+                  </tbody>
+                </table>
+            {{/if}}
+
+        </div>
+      </div>
     </div>
 </template>
 
@@ -592,8 +665,8 @@
     <div>
       <p>Copy CSV code (Order list): </p>
       <textarea id="textarea_json" class="text" style="width:100%; height:200px;">
-_id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;M;MonLayer;L;LonLayer;AssignSpreader;Priority;Loaded;Spreaded;Comment
-{{#each order}}{{_id}};{{No}};{{Date}};{{Created}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{Length}};{{Extra}};{{LengthSum}};{{Width}};{{S}};{{SonLayer}};{{M}};{{MonLayer}};{{L}};{{LonLayer}};{{AssignSpreader}};{{Priority}};{{Loaded}};{{Spreaded}};{{Comment}}
+_id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;M;MonLayer;L;LonLayer;AssignSpreader;Priority;Load;Spread;Cut;Comment
+{{#each order}}{{_id}};{{No}};{{Date}};{{Created}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{Length}};{{Extra}};{{LengthSum}};{{Width}};{{S}};{{SonLayer}};{{M}};{{MonLayer}};{{L}};{{LonLayer}};{{AssignSpreader}};{{Priority}};{{Load}};{{Spread}};{{Cut}};{{Comment}}
 {{/each}}</textarea>
           <!--<br />
           <input id="quote" type="checkbox" checked="true" /> Wrap values in double quotes
@@ -656,10 +729,10 @@ _id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;
           <thead>
             <tr>
               <th></th>
-              <th>Loaded orders</th>
-              <th>Loaded meters</th>
-              <th>Spreaded orders</th>
-              <th>Spreaded meters</th>
+              <th>Load orders</th>
+              <th>Load meters</th>
+              <th>Spread orders</th>
+              <th>Spread meters</th>
             </tr>
           </thead>
           <tbody>
@@ -688,10 +761,10 @@ _id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;
         <thead>
           <tr>
             <th></th>
-            <th>Loaded orders</th>
-            <th>Loaded meters</th>
-            <th>Spreaded oredrs</th>
-            <th>Spreaded meters</th>
+            <th>Load orders</th>
+            <th>Load meters</th>
+            <th>Spread oredrs</th>
+            <th>Spread meters</th>
           </tr>
         </thead>
         <tbody>

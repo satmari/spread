@@ -144,14 +144,28 @@ if (Meteor.isClient) {
           }
         }
     },
-    isUser: function() {
+    isUserSp: function() {
         //var loggedUserName = Session.get("loggedUserName");
         //console.log(loggedUserName);
 
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if (User.username) {
+          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp21") || (User.username == "sp22")) {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+    },
+    isUserCut: function() {
+        //var loggedUserName = Session.get("loggedUserName");
+        //console.log(loggedUserName);
+
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if ((User.username == "cut1") || (User.username == "cut2")) {
             return true;
           } else {
             return false;  
@@ -181,8 +195,8 @@ if (Meteor.isClient) {
           { key: 'Marker', label: 'Marker' },
           { key: 'Style', label: 'Style' },
           { key: 'Fabric', label: 'Fabric' },
-          { key: 'ColorCode', label: 'ColorCode' },
-          { key: 'ColorDesc', label: 'ColorDesc' },
+          { key: 'ColorCode', label: 'Color Code' },
+          { key: 'ColorDesc', label: 'Color Desc' },
           { key: 'Bagno', label: 'Bagno' },
           { key: 'Layers', label: 'Layers' },
           { key: 'LayersActual', label: 'Layers Actual',
@@ -218,20 +232,21 @@ if (Meteor.isClient) {
             }
           },
           { key: 'Priority', label: 'Priority' },
-          { key: 'Loaded', label: 'Loaded',
+          { key: 'Load', label: 'Load',
             /*fn: function (value){ 
               if (value == true) {
-                return "Loaded";
+                return "Load";
               };
             }*/
           },
-          { key: 'Spreaded', label: 'Spreaded', 
+          { key: 'Spread', label: 'Spread', 
             /*fn: function (value){
               if (value == true) {
-                return "Spreaded";
+                return "Spread";
               };
             }*/
           },
+          { key: 'Cut', label: 'Cut' },
           { key: 'Comment', label: 'Comment' },
         ],
 
@@ -240,15 +255,18 @@ if (Meteor.isClient) {
           //rowClass: "warning", //warning, danger
           rowClass: function(item) {
             var priority = item.Priority;
-            var loaded = item.Loaded;
-            var spreaded = item.Spreaded;
+            var load = item.Load;
+            var spread = item.Spread;
+            var cut = item.Cut;
             
             // treba da se doradi
 
-            if (spreaded)  {
-              return 'active';
-            } else if (loaded) {
+            if (cut)  {
+              return 'success';
+            } else if (spread) {
               return 'info';
+            } else if (load) {
+              return 'active';
             } else if (priority == 4) {
               return 'warning';
             } else if (priority == 5){
@@ -259,7 +277,7 @@ if (Meteor.isClient) {
           },
       };
     },
-    settingsUser: function () {
+    settingsUserSp: function () {
       return {
           rowsPerPage: 10,
           showFilter: false,
@@ -282,8 +300,8 @@ if (Meteor.isClient) {
             { key: 'Marker', label: 'Marker' },
             { key: 'Style', label: 'Style' },
             { key: 'Fabric', label: 'Fabric' },
-            { key: 'ColorCode', label: 'ColorCode' },
-            { key: 'ColorDesc', label: 'ColorDesc' },
+            { key: 'ColorCode', label: 'Color Code' },
+            { key: 'ColorDesc', label: 'Color Desc' },
             { key: 'Bagno', label: 'Bagno' },
             { key: 'Layers', label: 'Layers' },
             { key: 'LayersActual', label: 'Layers Actual',
@@ -316,20 +334,21 @@ if (Meteor.isClient) {
               }
             },*/
             { key: 'Priority', label: 'Priority' },
-            { key: 'Loaded', label: 'Loaded',
+            { key: 'Load', label: 'Load',
               /*fn: function (value){ 
                 if (value == true) {
-                  return "Loaded";
+                  return "Load";
                 };
               }*/
             },
-            { key: 'Spreaded', label: 'Spreaded', 
+            { key: 'Spread', label: 'Spread', 
               /*fn: function (value){
                 if (value == true) {
-                  return "Spreaded";
+                  return "Spread";
                 };
               }*/
             },
+            { key: 'Cut', label: 'Cut' },
             //{ key: 'Comment', label: 'Comment' },
           ],
 
@@ -338,19 +357,124 @@ if (Meteor.isClient) {
             //rowClass: "warning", //warning, danger
             rowClass: function(item) {
             var priority = item.Priority;
-            var loaded = item.Loaded;
-            var spreaded = item.Spreaded;
-            
+            var load = item.Load;
+            var spread = item.Spread;
+            var cut = item.Cut;
+
             // treba da se doradi
 
-            if (spreaded)  {
-              return 'default';
-            } else if (loaded) {
+            if (cut)  {
+              return 'success';
+            } else if (spread) {
               return 'info';
+            } else if (load) {
+              return 'active';
             } else if (priority == 4) {
               return 'warning';
             } else if (priority == 5){
-              return 'danger'; //info, success, active, warning, danger
+              return 'danger'; //active, success, info, warning, danger
+            } else {
+
+            }
+          },
+      };
+    },
+    settingsUserCut: function () {
+      return {
+          rowsPerPage: 10,
+          showFilter: false,
+          showNavigation: 'auto',
+          fields: [
+            //{ key: '_id', label: '_ID' },
+            { key: 'No', label: 'No', sort: 'ascending' },
+            /*{ key: 'Date', label: 'Date',
+              fn: function (value) {
+                if (value){
+                  return moment(value).format("DD-MMM");
+                } else {
+                  return "";
+                }
+                //return moment(value).format("DD-MM-YYYY");
+              }//, sort: 'descending' // ascending
+            },*/
+            //{ key: 'Created', label: 'Created' },
+            { key: 'Komesa', label: 'Komesa' },
+            { key: 'Marker', label: 'Marker' },
+            { key: 'Style', label: 'Style' },
+            { key: 'Fabric', label: 'Fabric' },
+            { key: 'ColorCode', label: 'Color Code' },
+            { key: 'ColorDesc', label: 'Color Desc' },
+            { key: 'Bagno', label: 'Bagno' },
+            { key: 'Layers', label: 'Layers' },
+            { key: 'LayersActual', label: 'Layers Actual',
+              fn: function (value){
+                if (value == 0) {
+                  return "";
+                } else {
+                  return value ;
+                };
+              }
+            },
+            { key: 'Length', label: 'Length (m)' },
+            //{ key: 'Extra', label: 'Extra (cm)' },
+            { key: 'LengthSum', label: 'LengthSum (m)' },
+            { key: 'Width', label: 'Width (cm)' },
+            //{ key: 'S', label: 'S' },
+            //{ key: 'M', label: 'M' },
+            //{ key: 'L', label: 'L' },
+            /*{ key: 'AssignSpreader', label: 'Assign',
+              fn: function (value) {
+                if (value == "SP 1") {
+                  return "SP 1";
+                }
+                else if (value == "SP 2") {
+                  return "SP 2";
+                }
+                else {
+                  return "Not Assigned";
+                }
+              }
+            },*/
+            { key: 'Priority', label: 'Priority' },
+            { key: 'Load', label: 'Load',
+              /*fn: function (value){ 
+                if (value == true) {
+                  return "Load";
+                };
+              }*/
+            },
+            { key: 'Spread', label: 'Spread', 
+              /*fn: function (value){
+                if (value == true) {
+                  return "Spread";
+                };
+              }*/
+            },
+            { key: 'Cut', label: 'Cut' },
+            //{ key: 'Comment', label: 'Comment' },
+          ],
+
+            //useFontAwesome: true,
+            //group: 'Komesa', 
+            //rowClass: "warning", //warning, danger
+            rowClass: function(item) {
+            var priority = item.Priority;
+            var load = item.Load;
+            var spread = item.Spread;
+            var cut = item.Cut;
+
+            // treba da se doradi
+
+            if (cut)  {
+              return 'success';
+            } else if (spread) {
+              return 'info';
+            } else if (load) {
+              return 'active';
+            } else if (priority == 4) {
+              return 'warning';
+            } else if (priority == 5){
+              return 'danger'; //active, success, info, warning, danger
             } else {
 
             }
@@ -417,14 +541,28 @@ if (Meteor.isClient) {
           }
         }
        },
-      isUser: function() {
+      isUserSp: function() {
         //var loggedUserName = Session.get("loggedUserName");
         //console.log(loggedUserName);
 
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if (User.username) {
+          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp21") || (User.username == "sp22")) {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+      },
+      isUserCut: function() {
+        //var loggedUserName = Session.get("loggedUserName");
+        //console.log(loggedUserName);
+
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if ((User.username == "cut1") || (User.username == "cut2")) {
             return true;
           } else {
             return false;  
@@ -440,7 +578,7 @@ if (Meteor.isClient) {
           }
         }
       },
-      Comment: function() {
+      /*Comment: function() {
         var editingDoc = Session.get("selectedDocId");
         if (editingDoc) {
             var editingDocAll = Order.find({_id: editingDoc}).fetch();
@@ -452,7 +590,7 @@ if (Meteor.isClient) {
             //console.log("in Comment: " + editingDocAll.Comment);
             return commentEditing;
         }
-      }
+      }*/
   });
 
   // Add New Order on click (in nav button) - Reactive Modal
@@ -662,39 +800,39 @@ if (Meteor.isClient) {
       return order.count();
     },
     SP1noLoadRollsShift1: function (){
-      var order = Order.find({Loaded: "SP 1-1"});
+      var order = Order.find({Load: "SP 1-1"});
       return order.count();
     },
     SP1noLoadRollsShift2: function (){
-      var order = Order.find({Loaded: "SP 1-2"});
+      var order = Order.find({Load: "SP 1-2"});
       return order.count();
     },
     SP2noLoadRollsShift1: function (){
-      var order = Order.find({Loaded: "SP 2-1"});
+      var order = Order.find({Load: "SP 2-1"});
       return order.count();
     },
     SP2noLoadRollsShift2: function (){
-      var order = Order.find({Loaded: "SP 2-2"});
+      var order = Order.find({Load: "SP 2-2"});
       return order.count();
     },
     SP1noSpreadRollsShift1: function (){
-      var order = Order.find({Spreaded: "SP 1-1"});
+      var order = Order.find({Spread: "SP 1-1"});
       return order.count();
     },
     SP1noSpreadRollsShift2: function (){
-      var order = Order.find({Spreaded: "SP 1-2"});
+      var order = Order.find({Spread: "SP 1-2"});
       return order.count();
     },
     SP2noSpreadRollsShift1: function (){
-      var order = Order.find({Spreaded: "SP 2-1"});
+      var order = Order.find({Spread: "SP 2-1"});
       return order.count();
     },
     SP2noSpreadRollsShift2: function (){
-      var order = Order.find({Spreaded: "SP 2-2"});
+      var order = Order.find({Spread: "SP 2-2"});
       return order.count();
     },
     SP1LoadMetShift1: function (){
-      var order = Order.find({Loaded: "SP 1-1"}).fetch();
+      var order = Order.find({Load: "SP 1-1"}).fetch();
       var sum = 0;
       for (var i = 0; i < order.length; i++) {
         sum += order[i].LengthSum;
@@ -704,7 +842,7 @@ if (Meteor.isClient) {
       return sum;
     },
     SP1LoadMetShift2: function (){
-      var order = Order.find({Loaded: "SP 1-2"}).fetch();
+      var order = Order.find({Load: "SP 1-2"}).fetch();
       var sum = 0;
       for (var i = 0; i < order.length; i++) {
         sum += order[i].LengthSum;
@@ -714,7 +852,7 @@ if (Meteor.isClient) {
       return sum;
     },
     SP2LoadMetShift1: function (){
-      var order = Order.find({Loaded: "SP 2-1"}).fetch();
+      var order = Order.find({Load: "SP 2-1"}).fetch();
       var sum = 0;
       for (var i = 0; i < order.length; i++) {
         sum += order[i].LengthSum;
@@ -724,7 +862,7 @@ if (Meteor.isClient) {
       return sum;
     },
     SP2LoadMetShift2: function (){
-      var order = Order.find({Loaded: "SP 2-2"}).fetch();
+      var order = Order.find({Load: "SP 2-2"}).fetch();
       var sum = 0;
       for (var i = 0; i < order.length; i++) {
         sum += order[i].LengthSum;
@@ -734,7 +872,7 @@ if (Meteor.isClient) {
       return sum;
     },
     SP1SpreadMetShift1: function (){
-      var order = Order.find({Spreaded: "SP 1-1"}).fetch();
+      var order = Order.find({Spread: "SP 1-1"}).fetch();
       var sum = 0;
       for (var i = 0; i < order.length; i++) {
         sum += order[i].LengthSum;
@@ -744,7 +882,7 @@ if (Meteor.isClient) {
       return sum;
     },
     SP1SpreadMetShift2: function (){
-      var order = Order.find({Spreaded: "SP 1-2"}).fetch();
+      var order = Order.find({Spread: "SP 1-2"}).fetch();
       var sum = 0;
       for (var i = 0; i < order.length; i++) {
         sum += order[i].LengthSum;
@@ -754,7 +892,7 @@ if (Meteor.isClient) {
       return sum;
     },
     SP2SpreadMetShift1: function (){
-      var order = Order.find({Spreaded: "SP 2-1"}).fetch();
+      var order = Order.find({Spread: "SP 2-1"}).fetch();
       var sum = 0;
       for (var i = 0; i < order.length; i++) {
         sum += order[i].LengthSum;
@@ -764,7 +902,7 @@ if (Meteor.isClient) {
       return sum;
     },
     SP2SpreadMetShift2: function (){
-      var order = Order.find({Spreaded: "SP 2-2"}).fetch();
+      var order = Order.find({Spread: "SP 2-2"}).fetch();
       var sum = 0;
       for (var i = 0; i < order.length; i++) {
         sum += order[i].LengthSum;
@@ -990,7 +1128,7 @@ if (Meteor.isClient) {
       //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
       //console.log(orderToEdit[0]._id);
 
-      Order.update({_id: orderToEdit},{$set: {Loaded: userEditLoad}});
+      Order.update({_id: orderToEdit},{$set: {Load: userEditLoad}});
       rm_EditOrder.hide();
     },
     'click #spreadOrder': function (){
@@ -1015,9 +1153,30 @@ if (Meteor.isClient) {
       //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
       //console.log(orderToEdit[0]._id);
 
-      Order.update({_id: orderToEdit},{$set: {Spreaded: userEditSpread}});
+      Order.update({_id: orderToEdit},{$set: {Spread: userEditSpread}});
       rm_EditOrder.hide();
     },
+    'click #cutOrder': function (){
+      //console.log("click spread Order");
+      var orderToEdit = Session.get("selectedDocId");
+      //console.log("orderToEdit: " + orderToEdit);
+      var userEdit = Session.get("ses_loggedUserName");
+      //console.log("userEdit: " + userEdit);
+      var userEditCut;
+
+      if (userEdit == "cut1"){
+        userEditCut = "CUT 1";
+      } else if (userEdit == "cut2") {
+        userEditCut = "CUT 2";
+      } 
+
+      //console.log("userEditSpread: " + userEditSpread);
+      //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
+      //console.log(orderToEdit[0]._id);
+
+      Order.update({_id: orderToEdit},{$set: {Cut: userEditCut}});
+      rm_EditOrder.hide();
+    }
     /*
     'click #saveCommentOrder': function (){
       console.log("click save Comment");
@@ -1207,8 +1366,8 @@ if (Meteor.isClient) {
             var lonlayer = Number(all[i]['LonLayer']);
             var assignespreader = all[i]['AssignSpreader'];
             var priority = all[i]['Priority'];
-            var loaded = all[i]['Loaded'];
-            var spreaded = all[i]['Spreaded'];
+            var load = all[i]['Load'];
+            var spread = all[i]['Spread'];
             var comment = all[i]['Comment'];
 
             var priority = Number(all[i]['Priority']);
@@ -1237,7 +1396,7 @@ if (Meteor.isClient) {
 
             //One by One
             //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,AssignSpreader: all[i]['AssignSpreader'], Priority: priority});    
-            Order.insert({No: no, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, AssignSpreader: assignespreader, Loaded: loaded, Spreaded: spreaded, Comment: comment }); 
+            Order.insert({No: no, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, AssignSpreader: assignespreader, Load: load, Spread: spread, Comment: comment }); 
             // Can not insert order created and _id , this values is automaticali created
             //Created: orderCreated2  
             //_id: id
@@ -1378,6 +1537,8 @@ var sp11 = "";  // 111111
 var sp12 = "";  // 121212
 var sp21 = "";  // 212121
 var sp22 = "";  // 222222
+var cut1 = "";  // c1c1c1
+var cut2 = "";  // c2c2c2
 
 // kill -9 `ps ax | grep node | grep meteor | awk '{print $1}'`
 // export MONGO_URL=mongodb://localhost:27017/spread
