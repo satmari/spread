@@ -160,7 +160,7 @@ if (Meteor.isClient) {
     },
     settingsAdmin: function () {
       return {
-        rowsPerPage: 500,
+        rowsPerPage: 100,
         showFilter: true,
         showNavigation: 'auto',
         fields: [
@@ -246,13 +246,13 @@ if (Meteor.isClient) {
             // treba da se doradi
 
             if (spreaded)  {
-              return 'success';
+              return 'active';
             } else if (loaded) {
               return 'info';
             } else if (priority == 4) {
               return 'warning';
             } else if (priority == 5){
-              return 'danger'; //info, success, active, warning, danger
+              return 'danger'; //active, success, info, warning, danger
             } else {
 
             }
@@ -344,7 +344,7 @@ if (Meteor.isClient) {
             // treba da se doradi
 
             if (spreaded)  {
-              return 'success';
+              return 'default';
             } else if (loaded) {
               return 'info';
             } else if (priority == 4) {
@@ -1133,11 +1133,20 @@ if (Meteor.isClient) {
             var monlayer = Number(all[i]['M']);
             var l = Number(all[i]['tot L']);
             var lonlayer = Number(all[i]['L']);
+            var spreader = Number(all[i]['SPREADER']);
+            if (spreader == 1 ){
+              spreader = 'SP 1';
+            } else if (spreader == 2 ){
+              spreader = 'SP 2';
+            } 
+            var orderdate = new Date(all[i]['DATE']);
+            orderdate.setHours(2,0,0,0);
+            //console.log("orderdate: " + orderdate);
 
             //One by One
             //Order.insert({SEQ: seq, FILE: all[i]['FILE'], CUT_FILE: all[i]['CUT FILE'], MODEL: all[i]['MODEL'], SPREAD_TYPE: all[i]['SPREAD TYPE'], BAGNO: all[i]['BAGNO'], PLY: ply});    
             //Order.insert({orderName: all[i]['FILE'], orderFileName: all[i]['CUT FILE'], orderModel: all[i]['MODEL'], orderFabric: all[i]['SPREAD TYPE'], orderBagno: all[i]['BAGNO'], orderLayers: ply});
-            Order.insert({No: no, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer});    
+            Order.insert({No: no, Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, AssignSpreader: spreader});    
           }
       }
       reader.readAsText(file_a);

@@ -8,6 +8,14 @@
  * Based on Bootstrap
 */
 /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
+
+/*table .active, .table .active {
+  color: #000;
+  background-color: #217dbb !important;
+  border-color: #2077b2 !important;
+
+}*/
+
 html {
   font-family: sans-serif;
   -ms-text-size-adjust: 100%;
