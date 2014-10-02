@@ -62,11 +62,14 @@ if (Meteor.isClient) {
     var ses_jobnotexist = Session.get("ses_jobnotexist");
 
     //console.log("Autosubcribe sesion: " + ses + " , typeof: " + typeof ses);
-    
-    if ((ses_loggedUserName == "sp11") || (ses_loggedUserName == "sp12")){
-      Meteor.subscribe('spreader1', Session.get("ses_datefilter"));
+    if ((ses_loggedUserName == "cut1") || (ses_loggedUserName == "cut2")){
+      Meteor.subscribe('cutter');
+    } else if ((ses_loggedUserName == "sp11") || (ses_loggedUserName == "sp12")){
+      //Meteor.subscribe('spreader1', Session.get("ses_datefilter"));
+      Meteor.subscribe('spreader1');
     } else if ((ses_loggedUserName == "sp21") || (ses_loggedUserName == "sp22")){
-      Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
+      //Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
+      Meteor.subscribe('spreader2');
     } else if ( ses_existdate == true ) {
       Meteor.subscribe('orderWithoutDate');
     } else if ( ses_jobnotexist == true ) { 
@@ -74,7 +77,7 @@ if (Meteor.isClient) {
     } else if ( ses_datefilter == "" ) { 
       Meteor.subscribe('orderAll');
     } else {
-      Meteor.subscribe('order', Session.get("ses_datefilter"));
+      Meteor.subscribe('orderWithDate', Session.get("ses_datefilter"));
     }
     /*
     if (ses_datefilter) {
@@ -284,8 +287,8 @@ if (Meteor.isClient) {
           showNavigation: 'auto',
           fields: [
             //{ key: '_id', label: '_ID' },
-            { key: 'No', label: 'No', sort: 'ascending' },
-            /*{ key: 'Date', label: 'Date',
+            { key: 'No', label: 'No', sort: 'descending' },
+            { key: 'Date', label: 'Date',
               fn: function (value) {
                 if (value){
                   return moment(value).format("DD-MMM");
@@ -294,11 +297,11 @@ if (Meteor.isClient) {
                 }
                 //return moment(value).format("DD-MM-YYYY");
               }//, sort: 'descending' // ascending
-            },*/
+            },
             //{ key: 'Created', label: 'Created' },
             { key: 'Komesa', label: 'Komesa' },
             { key: 'Marker', label: 'Marker' },
-            { key: 'Style', label: 'Style' },
+            /*{ key: 'Style', label: 'Style' },*/
             { key: 'Fabric', label: 'Fabric' },
             { key: 'ColorCode', label: 'Color Code' },
             { key: 'ColorDesc', label: 'Color Desc' },
@@ -374,7 +377,7 @@ if (Meteor.isClient) {
           showNavigation: 'auto',
           fields: [
             //{ key: '_id', label: '_ID' },
-            { key: 'No', label: 'No', sort: 'ascending' },
+            { key: 'No', label: 'No', sort: 'descending' },
             /*{ key: 'Date', label: 'Date',
               fn: function (value) {
                 if (value){
@@ -807,6 +810,14 @@ if (Meteor.isClient) {
       var order = Order.find({Spread: "SP 2-2"});
       return order.count();
     },
+    CutnoRollsShift1: function  (){
+      var order = Order.find({Cut: "CUT 1"});
+      return order.count();
+    },
+    CutnoRollsShift2: function  (){
+      var order = Order.find({Cut: "CUT 2"});
+      return order.count();
+    },
     SP1LoadMetShift1: function (){
       var order = Order.find({Load: "SP 1-1"}).fetch();
       var sum = 0;
@@ -887,6 +898,27 @@ if (Meteor.isClient) {
       sum = sum.toFixed(3);
       return sum;
     },
+    CutMetShift1: function (){
+      var order = Order.find({Cut: "CUT 1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    CutMetShift2: function (){
+      var order = Order.find({Cut: "CUT 2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+
   });
 
 
@@ -1487,7 +1519,7 @@ if (Meteor.isServer) {
     return Order.find();
   });
 
-  Meteor.publish("order", function(dateFilter){
+  Meteor.publish("orderWithDate", function(dateFilter){
     return Order.find({Date: dateFilter});
   });
 
@@ -1500,15 +1532,51 @@ if (Meteor.isServer) {
   });
 
   Meteor.publish("spreader1", function(dateFilter){
-    return Order.find({AssignSpreader: "SP 1", Date: dateFilter});
+    //return Order.find({AssignSpreader: "SP 1", Date: dateFilter});
+    //return Order.find({AssignSpreader: "SP 1"}); { $and:
+    //return Order.find({ $and: [{AssignSpreader: "SP 1"}, {Spread: ""}] });
+    
+    return Order.find({
+    $and : [
+        { AssignSpreader: "SP 1"},
+        { $or : [ { Spread : "" }, { Spread : { $exists: false }} ] }
+    ]
+    })
   });
 
   Meteor.publish("spreader2", function(dateFilter){
-    return Order.find({AssignSpreader: "SP 2", Date: dateFilter});
+    //return Order.find({AssignSpreader: "SP 2", Date: dateFilter});
+    //return Order.find({AssignSpreader: "SP 2"});
+    return Order.find({
+    $and : [
+        { AssignSpreader: "SP 2"},
+        { $or : [ { Spread : "" }, { Spread : { $exists: false }} ] }
+    ]
+    })
+  });
+
+  Meteor.publish("cutter", function(dateFilter){
+    //return Order.find({AssignSpreader: "SP 2", Date: dateFilter});
+    //return Order.find({AssignSpreader: "SP 2"});
+    return Order.find({
+    $and: [
+       { $or: [
+          { Spread: "SP 1-1" },
+          { Spread: "SP 1-2" },
+          { Spread: "SP 2-1" },
+          { Spread: "SP 2-2" }
+          ]},
+
+       { $or: [ 
+          { Cut : "" },
+          { Cut : { $exists: false }}
+          ]},
+      ] 
+    })
   });
 }
 
-var adminId = ""; //123123
+var admin = ""; //123123
 var sp11 = "";  // 111111
 var sp12 = "";  // 121212
 var sp21 = "";  // 212121

@@ -83,11 +83,12 @@
 
     <ul class="n<h2>Order table</h2>av navbar-nav">
       <div class="navbar-form">
+        
+        {{#if isAdmin}}
         <div class="form-group">
           <span style="color: white">Filter Order Date : </span>
           <input type="date" id="filterOrderDate" class="form-control" placeholder="Filter Order Date"/>
         </div>
-        {{#if isAdmin}}
         <button id="btnfilterOrderDate" class="btn btn-default">Clear Filter</button> 
         {{/if}}
         <!-- class="navbar-form navbar"  type="submit"-->
@@ -546,7 +547,7 @@
                     </tr>
                     <br />
                     <tr>
-                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,AssignSpreader,Priority,LengthSum,Created,Load,Spread,Cut"}}
+                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,AssignSpreader,Priority,LengthSum,Created,Load,Spread,Cut,OrderLink"}}
                     </tr>
                   </tbody>
                 </table>
@@ -563,7 +564,7 @@
                     </tr>
                     <br />
                     <tr>
-                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,LayersActual,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,AssignSpreader,Priority,LengthSum,Created,Load,Spread,Cut"}}
+                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,LayersActual,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,AssignSpreader,Priority,LengthSum,Created,Load,Spread,Cut,OrderLink"}}
                     </tr>
                   </tbody>
                 </table>
@@ -665,8 +666,8 @@
     <div>
       <p>Copy CSV code (Order list): </p>
       <textarea id="textarea_json" class="text" style="width:100%; height:200px;">
-_id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;M;MonLayer;L;LonLayer;AssignSpreader;Priority;Load;Spread;Cut;Comment
-{{#each order}}{{_id}};{{No}};{{Date}};{{Created}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{Length}};{{Extra}};{{LengthSum}};{{Width}};{{S}};{{SonLayer}};{{M}};{{MonLayer}};{{L}};{{LonLayer}};{{AssignSpreader}};{{Priority}};{{Load}};{{Spread}};{{Cut}};{{Comment}}
+_id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;M;MonLayer;L;LonLayer;AssignSpreader;Priority;Load;Spread;Cut;Comment;OrderLink
+{{#each order}}{{_id}};{{No}};{{Date}};{{Created}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{Length}};{{Extra}};{{LengthSum}};{{Width}};{{S}};{{SonLayer}};{{M}};{{MonLayer}};{{L}};{{LonLayer}};{{AssignSpreader}};{{Priority}};{{Load}};{{Spread}};{{Cut}};{{Comment}};{{OrderLink}}
 {{/each}}</textarea>
           <!--<br />
           <input id="quote" type="checkbox" checked="true" /> Wrap values in double quotes
@@ -781,6 +782,33 @@ _id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;
             <td>{{SP2LoadMetShift2}}</td>
             <td>{{SP2noSpreadRollsShift2}}</td>
             <td>{{SP2SpreadMetShift2}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <hr />
+      <p><b>Stastistic for - Cutter</b></p>
+      <!--<small>All, menas all order assigned to Spreader 2</small><br />
+      <small>Shift 1/Shift 2, means all "finished" orders by Spreader 2</small>-->
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Cut orders</th>
+            <th>Cut meters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Shift 1</td>
+            <td>{{CutnoRollsShift1}}</td>
+            <td>{{CutMetShift1}}</td>
+            
+          </tr>
+          <tr>
+            <td>Shift 2</td>
+            <td>{{CutnoRollsShift2}}</td>
+            <td>{{CutMetShift2}}</td>
+            
           </tr>
         </tbody>
       </table>

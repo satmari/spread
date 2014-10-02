@@ -198,7 +198,59 @@ Order = new Meteor.Collection("order", {
         type: String,
         label: "Comment",
         optional: true,
-    }
+    },
+    'OrderLink' : {
+        type: Boolean,
+        label: "Order Link (OrderDate + Marker + Komesa)",
+        defaultValue: false,
+    },
+    /*
+    'OrderLink': {
+        type: String,
+        label: "OrderLink", 
+        optional: false,
+        autoValue: function (){
+            
+            var val = this.siblingField("Komesa").value;
+            var val2 = "test";
+            if (this.siblingField("Link").value == true) {
+                return val.value.split(' ')[0];
+                //return val;
+            } else {
+                this.unset();
+                //return val2;
+            }
+
+        },
+        
+
+        /*
+        autoform: {
+            options: [
+            {label: "One", value: "One"},
+            {label: "Two", value: "Two"},
+            {label: "Three", value: "Three"}
+            ],
+            noselect: true,
+            template: "tmp_EditOrder"
+        }
+        */
+        /*
+        allowed: function () {
+            var val;
+            val = this("Marker");
+            return val;
+        }
+
+        allowedValues: [" ", allowed],
+        */
+        /*autoValue:function(){
+                var result = (this.siblingField("orderLength").value + this.siblingField("orderExtra").value) * this.siblingField("orderLayers").value;
+                //console.log(result);
+                return result;
+        }*/
+    //},
+
   }
 });
 
@@ -238,4 +290,5 @@ Load
 Spread
 Cut
 Comment
+OrderLink
 */
