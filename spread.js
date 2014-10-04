@@ -282,7 +282,7 @@ if (Meteor.isClient) {
     },
     settingsUserSp: function () {
       return {
-          rowsPerPage: 10,
+          rowsPerPage: 100,
           showFilter: false,
           showNavigation: 'auto',
           fields: [
@@ -372,7 +372,7 @@ if (Meteor.isClient) {
     },
     settingsUserCut: function () {
       return {
-          rowsPerPage: 10,
+          rowsPerPage: 100,
           showFilter: false,
           showNavigation: 'auto',
           fields: [
@@ -556,6 +556,24 @@ if (Meteor.isClient) {
             return User.username;
           }
         }
+      },
+      OrderInfo: function () {
+        var ses = Session.get("selectedDocId")
+        console.log("ses: " + ses);
+
+        var order = Order.find({_ID: ses}).fetch();
+        
+
+        var No = order.No;
+        var Komesa = order.Komesa;
+        var Fabric = order.Fabric;
+        var Bagno = order.Bagno;
+        var ColorCode = order.ColorCode;
+        var ColorDesc = order.ColorDesc;
+        var OrderInfo = "No: " + No + " ,Komesa: " + Komesa + " ,Fabric: " + Fabric + " ,Bagno: " + Bagno + " ,Color Code: " + ColorCode + " ,Color Desc: " + ColorDesc
+        console.log(OrderInfo);
+        return OrderInfo;
+
       },
       /*Comment: function() {
         var editingDoc = Session.get("selectedDocId");
@@ -1161,7 +1179,9 @@ if (Meteor.isClient) {
       //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
       //console.log(orderToEdit[0]._id);
 
-      Order.update({_id: orderToEdit},{$set: {Spread: userEditSpread}});
+      var spreadDate = new Date();
+
+      Order.update({_id: orderToEdit},{$set: {Spread: userEditSpread, SpreadDate: spreadDate}});
       rm_EditOrder.hide();
     },
     'click #cutOrder': function (){
@@ -1182,7 +1202,9 @@ if (Meteor.isClient) {
       //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
       //console.log(orderToEdit[0]._id);
 
-      Order.update({_id: orderToEdit},{$set: {Cut: userEditCut}});
+      var cutDate = new Date();
+
+      Order.update({_id: orderToEdit},{$set: {Cut: userEditCut, CutDate: cutDate}});
       rm_EditOrder.hide();
     }
     /*

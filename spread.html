@@ -461,7 +461,7 @@
         <legend></legend>
       </div>
       <div class="col-sm-6">
-        {{> quickForm collection="Order" id="insertOrderForm" type="insert" buttonContent="Add Order" omitFields="LengthSum,Created,S,M,L,LayersActual"}}
+        {{> quickForm collection="Order" id="insertOrderForm" type="insert" buttonContent="Add Order" omitFields="LengthSum,Created,S,M,L,LayersActual,SpreadDate,CutDate"}}
       </div>
     </div>
   </div>
@@ -489,7 +489,8 @@
               
                 <table class="table" style="width:550px">
                   <tbody>
-                    <p>User:  <b>{{User}}</b></p>
+                    <p>User:  <big>{{User}}</big></p>
+                    <p>User:  <big>{{User}}</big></p>
                     <tr>
                       <td>
                       <a href="#" id="loadOrder" class="btn btn-default btn-lg btn-block btn-primary">
@@ -522,7 +523,7 @@
       <div class="row" style="width:550px">
           <div>
             {{#if isAdmin}}
-              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="LengthSum,Created,S,M,L"}}
+              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="LengthSum,Created,S,M,L,SpreadDate,CutDate"}}
               <div class="">
                 <br />
                 <button class="btn btn-primary" id="deleteOrder" type="button">Delete order</button>  
@@ -532,7 +533,8 @@
             {{#if isUserSp}}  
                 <table class="table" style="width:550px">
                   <tbody>
-                    <p>User:  <b>{{User}}</b></p>
+                    <p>User:  <big>{{User}}</big></p>
+                    <p>Info:  <big>{{OrderInfo}}</big></p>
                     <tr>
                       <td>
                       <a href="#" id="loadOrder" class="btn btn-default btn-lg btn-block btn-primary">
@@ -547,7 +549,7 @@
                     </tr>
                     <br />
                     <tr>
-                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,AssignSpreader,Priority,LengthSum,Created,Load,Spread,Cut,OrderLink"}}
+                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,AssignSpreader,Priority,LengthSum,Created,Load,Spread,SpreadDate,Cut,CutDate,OrderLink"}}
                     </tr>
                   </tbody>
                 </table>
@@ -557,6 +559,7 @@
               <table class="table" style="width:550px">
                   <tbody>
                     <p>User:  <b>{{User}}</b></p>
+                    <p>Info:  <b>{{OrderInfo}}</b></p>
                     <tr>
                       <td>
                         <a href="#" id="cutOrder" class="btn btn-default btn-lg btn-block btn-success">Cut Order</a>
@@ -564,7 +567,7 @@
                     </tr>
                     <br />
                     <tr>
-                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,LayersActual,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,AssignSpreader,Priority,LengthSum,Created,Load,Spread,Cut,OrderLink"}}
+                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,LayersActual,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,AssignSpreader,Priority,LengthSum,Created,Load,Spread,SpreadDate,Cut,CutDate,OrderLink"}}
                     </tr>
                   </tbody>
                 </table>
@@ -666,8 +669,8 @@
     <div>
       <p>Copy CSV code (Order list): </p>
       <textarea id="textarea_json" class="text" style="width:100%; height:200px;">
-_id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;M;MonLayer;L;LonLayer;AssignSpreader;Priority;Load;Spread;Cut;Comment;OrderLink
-{{#each order}}{{_id}};{{No}};{{Date}};{{Created}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{Length}};{{Extra}};{{LengthSum}};{{Width}};{{S}};{{SonLayer}};{{M}};{{MonLayer}};{{L}};{{LonLayer}};{{AssignSpreader}};{{Priority}};{{Load}};{{Spread}};{{Cut}};{{Comment}};{{OrderLink}}
+_id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;M;MonLayer;L;LonLayer;AssignSpreader;Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink
+{{#each order}}{{_id}};{{No}};{{Date}};{{Created}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{Length}};{{Extra}};{{LengthSum}};{{Width}};{{S}};{{SonLayer}};{{M}};{{MonLayer}};{{L}};{{LonLayer}};{{AssignSpreader}};{{Priority}};{{Load}};{{Spread}};{{SpreadDate}};{{Cut}};{{CutDate}};{{Comment}};{{OrderLink}}
 {{/each}}</textarea>
           <!--<br />
           <input id="quote" type="checkbox" checked="true" /> Wrap values in double quotes

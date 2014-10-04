@@ -14,7 +14,7 @@ Order = new Meteor.Collection("order", {
         label: "Date",
         optional: true,
     },
-  'Created': {
+    'Created': {
         type: Date,
         label: "Created",
          autoValue: function() {
@@ -187,12 +187,22 @@ Order = new Meteor.Collection("order", {
         defaultValue: "",
         allowedValues: ["", "SP 1-1", "SP 1-2", "SP 2-1", "SP 2-2"]
     },
+    'SpreadDate': {
+        type: Date,
+        label: "Spread Date",
+        optional: true,
+    },
     'Cut': {
         type: String, 
         label: "Cut",
         optional: true,
         defaultValue: "",
         allowedValues: ["", "CUT 1", "CUT 2"]
+    },
+    'CutDate': {
+        type: Date,
+        label: "Cut Date",
+        optional: true,
     },
     'Comment' : {
         type: String,
@@ -220,9 +230,7 @@ Order = new Meteor.Collection("order", {
                 this.unset();
                 //return val2;
             }
-
-        },
-        
+        },      
 
         /*
         autoform: {
@@ -288,7 +296,9 @@ AssignSpreader
 Priority
 Load
 Spread
+SpreadDate
 Cut
+CutDate
 Comment
 OrderLink
 */
