@@ -12,7 +12,6 @@ jquery
 mrt:jquery-ui
 glasser:jqueryui
 mrt:bootstrap-3
-mrt:accounts-ui-bootstrap-3
 mrt:moment
 aldeed:collection2
 aldeed:simple-schema
@@ -21,4 +20,3 @@ meteorhacks:fast-render
 aslagle:reactive-table
 pahans:reactive-modal
 mrt:jquery-csv
-

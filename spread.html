@@ -1,44 +1,45 @@
 <head>
-  <title>spread</title>
+  <title>Gordon Spread Orders - Web application </title>
 </head>
 
 <body>
-	{{> nav}}
+  {{> nav}}
   <!--{{> orderList }}-->         <!-- Filter collection list-->
-	<!--{{> orderForm }}-->         <!-- Manual order form (with input fields)-->
-	<!--{{> orderQuickForm }}-->    <!-- AutoForm Quick-->
-	{{> reactiveTebleList }}        <!-- Reactive table list -->
+  <!--{{> orderForm }}-->         <!-- Manual order form (with input fields)-->
+  <!--{{> orderQuickForm }}-->    <!-- AutoForm Quick-->
+  {{> reactiveTebleList }}        <!-- Reactive table list -->
   <!--{{> orderAutoForm }}-->     <!-- AutoForm - Add order Full(manual fields)-->
-	<!--{{> tmp_AddNewOrder }}-->   <!-- Reactive table - Add order -->
+  <!--{{> tmp_AddNewOrder }}-->   <!-- Reactive table - Add order -->
   <!--{{> tmp_AddNewOrderFull}}--><!-- Reactive table - Add order Full (not fin) -->
   <!--{{> tmp_EditOrder }}-->     <!-- Reactive table - Edit order Quick-->
   <!--{{> tmp_EditOrderFull }}--> <!-- Reactive table - Edit order Full(not fin)-->
   <!-- {{> tmp_ImportOrderAnalytics}} -->
-
-	
+  <!-- {{> tmp_ImportPlannedMarkers}} -->
+  
 </body>
 
 <template name="nav">
-	<div class="navbar navbar-default" role="navigation">
-	<div class="navbar-header">
-		<a class="navbar-brand" href="#">Spread orders</a>
-		<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-			<span class="sr-only"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-		</button>
-	</div>
-	<div class="navbar-collapse collapse">
-		<ul class="nav navbar-nav" style="margin: 8px;">
+  <div class="navbar navbar-default" role="navigation">
+  <div class="navbar-header">
+    <a class="navbar-brand" href="#">Spread orders</a>
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+      <span class="sr-only"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+  </div>
+  <div class="navbar-collapse collapse">
+    <ul class="nav navbar-nav" style="margin: 8px;">
       <div class="navbar-form">
         <div class="form-group">
-			     {{> loginButtons }}
+           {{> loginButtons }}
         </div>
       </div>
-		</ul>
+    </ul>
 
     <!--ONLY IF IS ADMIN -->  
+    {{#if isAdmin}}
     <ul class="nav navbar-nav">
       <li><a href="#">|</a></li>
     </ul>
@@ -46,50 +47,69 @@
     <ul class="nav navbar-nav"><li class="active">
        <div class="navbar-form">
         <button id="new_order" class="btn btn-default">Add new order</button> 
-        <button id="import_orders_analytics" class="btn btn-default">Import orders from Analytics</button>
-        <button id="export_orders" class="btn btn-default">Export order</button> 
-        <button id="import_orders" class="btn btn-default">Import order</button> 
+        <!--<button id="import_orders_analytics" class="btn btn-default">Import orders from Analytics</button>-->
+        <button id="import_from_planned_markers" class="btn btn-default">Import from Planned Markers</button>
+        <button id="export_orders" class="btn btn-info">Export order</button> 
+        <button id="import_orders" class="btn btn-info">Import order</button>
+        <button id="refresh_sum" class="btn btn-success">Refresh Data</button>
+        <button id="statistics" class="btn btn-warning">Statistics</button>
       </div></li>
     </ul>
-    
+    <!--
+    <ul class="nav navbar-nav">
+      <li><a href="#">|</a></li>
+    </ul>
+    -->
     <ul class="nav navbar-nav">
       <div class="navbar-form">
         <div class="form-group">
           <li><span style="color: white">Orders without Order Date: </span></li>
-          <li style="padding-left: 50%;"><input type="checkbox" id="orderWithoutDate"/>
-          </li>
+          <li><span style="color: white">Orders without Assigned SP: </span></li>
+        </div>
+        <div class="form-group">
+          <li style="padding-left: 50%;"><input type="checkbox" id="orderWithoutDate"/></li>
+          <li style="padding-left: 50%;"><input type="checkbox" id="orderWithoutJob"/></li>
         </div>
       </div>
     </ul>
-    
+    <!--
     <ul class="nav navbar-nav">
       <li><a href="#">|</a></li>
     </ul>
-    
-		<!--ONLY IF IS ADMIN -->  
+    -->
+    {{/if}}
+    <!--ONLY IF IS ADMIN -->  
 
 
-    <ul class="nav navbar-nav">
-			<div class="navbar-form">
+    <ul class="n<h2>Order table</h2>av navbar-nav">
+      <div class="navbar-form">
+        
+        {{#if isAdmin}}
         <div class="form-group">
-          <span style="color: white">Filter Order Date : </span>
-          <input type="date" id="filterOrderDate" class="form-control" placeholder="Filter Order Date"/>
+          <!--<span style="color: white">Filter Order Date : </span>
+          <input type="date" id="filterOrderDate" class="form-control" placeholder="Filter Order Date"/>-->
+          <span style="color: white">Filter Order Range : </span>
+          <input type="date" id="filterOrderDateBefore" class="form-control" placeholder="Filter Order Date Before"/> <span style="color: white"> - </span>
+          <input type="date" id="filterOrderDateAfter" class="form-control" placeholder="Filter Order Date After"/>
         </div>
         <button id="btnfilterOrderDate" class="btn btn-default">Clear Filter</button> 
+        {{/if}}
         <!-- class="navbar-form navbar"  type="submit"-->
-      </div>	
-		</ul>
+      </div>  
+    </ul>
     
     <!--<ul class="nav navbar-nav">
       <div class="navbar-form">
         <input type="text" id="filterName" class="form-control" placeholder="Filter Order Name"/>
       </div>
     </ul>-->
-		<ul class="nav navbar-nav navbar-right">
-		<!--loginButtons here -->
-		</ul>
-	</div>
-	</div>
+    {{#if User.username}}
+      <ul class="nav navbar-nav navbar-right">
+      <h3 style="color:white"> <small> Hello,  </small>{{User.username}}</h3>
+    </ul>
+    {{/if}}
+  </div>
+  </div>
 </template>
 
 <template name="orderList">
@@ -118,13 +138,13 @@
     </nav>
   </div>
   <div lass="table-responsive">
-	 <h2>Order List</h2>
-	 <table class="table table-striped table-hover table-condensed">
+   <h2>Order List</h2>
+   <table class="table table-striped table-hover table-condensed">
    <tr>
-	  <th class="fc-sort" data-fc-sort="orderDate">
-	  OrderDate
-	  {{#if fcSort.orderDate.desc}}(desc){{/if}}
-	  {{#if fcSort.orderDate.asc}}(asc){{/if}}
+    <th class="fc-sort" data-fc-sort="orderDate">
+    OrderDate
+    {{#if fcSort.orderDate.desc}}(desc){{/if}}
+    {{#if fcSort.orderDate.asc}}(asc){{/if}}
     </th>
     <th class="fc-sort" data-fc-sort="orderCreated">
     OrderCreated
@@ -141,275 +161,300 @@
     {{#if fcSort.orderFileName.desc}}(desc){{/if}}
     {{#if fcSort.orderFileName.asc}}(asc){{/if}}
     </th>
-		<th class="fc-sort" data-fc-sort="orderModel">
-		Model
-		{{#if fcSort.orderModel.desc}}(desc){{/if}}
-		{{#if fcSort.orderModel.asc}}(asc){{/if}}
+    <th class="fc-sort" data-fc-sort="orderModel">
+    Model
+    {{#if fcSort.orderModel.desc}}(desc){{/if}}
+    {{#if fcSort.orderModel.asc}}(asc){{/if}}
     </th>
-		<th class="fc-sort" data-fc-sort="orderFabric">
-		Fabric
-		{{#if fcSort.orderFabric.desc}}(desc){{/if}}
-		{{#if fcSort.orderFabric.asc}}(asc){{/if}}
+    <th class="fc-sort" data-fc-sort="orderFabric">
+    Fabric
+    {{#if fcSort.orderFabric.desc}}(desc){{/if}}
+    {{#if fcSort.orderFabric.asc}}(asc){{/if}}
     </th>
-		<th class="fc-sort" data-fc-sort="orderBagno">
-		Bagno
-		{{#if fcSort.orderBagno.desc}}(desc){{/if}}
-		{{#if fcSort.orderBagno.asc}}(asc){{/if}}
+    <th class="fc-sort" data-fc-sort="orderBagno">
+    Bagno
+    {{#if fcSort.orderBagno.desc}}(desc){{/if}}
+    {{#if fcSort.orderBagno.asc}}(asc){{/if}}
     </th>
-		<th class="fc-sort" data-fc-sort="orderLayers">
-		Layers
-		{{#if fcSort.orderLayers.desc}}(desc){{/if}}
-		{{#if fcSort.orderLayers.asc}}(asc){{/if}}
+    <th class="fc-sort" data-fc-sort="orderLayers">
+    Layers
+    {{#if fcSort.orderLayers.desc}}(desc){{/if}}
+    {{#if fcSort.orderLayers.asc}}(asc){{/if}}
     </th>
-		<th class="fc-sort" data-fc-sort="orderLength">
-		Length
-		{{#if fcSort.orderLength.desc}}(desc){{/if}}
-		{{#if fcSort.orderLength.asc}}(asc){{/if}}
+    <th class="fc-sort" data-fc-sort="orderLength">
+    Length
+    {{#if fcSort.orderLength.desc}}(desc){{/if}}
+    {{#if fcSort.orderLength.asc}}(asc){{/if}}
     </th>
-		<th class="fc-sort" data-fc-sort="orderExtra">
-		Extra
-		{{#if fcSort.orderExtra.desc}}(desc){{/if}}
-		{{#if fcSort.orderExtra.asc}}(asc){{/if}}
+    <th class="fc-sort" data-fc-sort="orderExtra">
+    Extra
+    {{#if fcSort.orderExtra.desc}}(desc){{/if}}
+    {{#if fcSort.orderExtra.asc}}(asc){{/if}}
     </th>
-		<th class="fc-sort" data-fc-sort="orderLengthSum">
-		LengthSum
-		{{#if fcSort.orderLengthSum.desc}}(desc){{/if}}
-		{{#if fcSort.orderLengthSum.asc}}(asc){{/if}}
+    <th class="fc-sort" data-fc-sort="orderLengthSum">
+    LengthSum
+    {{#if fcSort.orderLengthSum.desc}}(desc){{/if}}
+    {{#if fcSort.orderLengthSum.asc}}(asc){{/if}}
     </th>
-		<th class="fc-sort" data-fc-sort="orderPriority">
-		Priority
-		{{#if fcSort.orderPriority.desc}}(desc){{/if}}
-		{{#if fcSort.orderPriority.asc}}(asc){{/if}}
-		</th>
-		<th class="fc-sort" data-fc-sort="orderLoaded">
-		Loaded
-		{{#if fcSort.orderLoaded.desc}}(desc){{/if}}
-		{{#if fcSort.orderLoaded.asc}}(asc){{/if}}
+    <th class="fc-sort" data-fc-sort="orderPriority">
+    Priority
+    {{#if fcSort.orderPriority.desc}}(desc){{/if}}
+    {{#if fcSort.orderPriority.asc}}(asc){{/if}}
     </th>
-		<th class="fc-sort" data-fc-sort="orderSpreaded">
-		Spreaded
-		{{#if fcSort.orderSpreaded.desc}}(desc){{/if}}
-		{{#if fcSort.orderSpreaded.asc}}(asc){{/if}}
+    <th class="fc-sort" data-fc-sort="orderLoad">
+    Load
+    {{#if fcSort.orderLoad.desc}}(desc){{/if}}
+    {{#if fcSort.orderLoad.asc}}(asc){{/if}}
     </th>
-		<th></th>
+    <th class="fc-sort" data-fc-sort="orderSpread">
+    Spread
+    {{#if fcSort.orderSpread.desc}}(desc){{/if}}
+    {{#if fcSort.orderSpread.asc}}(asc){{/if}}
+    </th>
+    <th></th>
     </tr>
   
-	<!--{{#each orders}}--> 
-		<!--{{> order}}-->
-	<!--{{/each}}-->
-	
-	<!--OLD TEMPLATE order -->
+  <!--{{#each orders}}--> 
+    <!--{{> order}}-->
+  <!--{{/each}}-->
+  
+  <!--OLD TEMPLATE order -->
 
-		<!--{{#if editing}} -->
-			<!--<input class="editField" type="text" value="{{orderName}}" />-->
-		<!--{{else}} -->
-			<!--<span class="orderName"> {{orderName}} </span>-->
-  			<!--<tbody>-->
-  			{{#each fcResults}}
-    			<tr>
-    				<!--<td>{{formatDate orderDate "long"}}</td>-->
-					<td>{{orderDate}}</td>
-					<td>{{formatDate orderCreated "long"}}</td>
-    		  <td>{{orderName}}</td>
-	   			<td>{{orderFileName}}</td>
-    			<td>{{orderModel}}</td>
-					<td>{{orderFabric}}</td>
-					<td>{{orderBagno}}</td>
-					<td>{{orderLayers}}</td>
-					<td>{{orderLength}}</td>
-					<td>{{orderExtra}}</td>
-					<td>{{orderLengthSum}}</td>
-					<td>{{orderPriority}}</td>
-					<td>{{orderLoaded}}</td>
-					<td>{{orderSpreaded}}</td>
-					<td><button id="deleteOrder">Delete</button></td> <!-- class="btn btn-default" -->
-				</tr>
-    		{{/each}}
-  			<!--</tbody> -->
-		<!-- {{/if}}-->
-			<!--<span class="delete"> |Delete| </span> -->
-	 <!--OLD TEMPLATE-->
-	</table>
+    <!--{{#if editing}} -->
+      <!--<input class="editField" type="text" value="{{orderName}}" />-->
+    <!--{{else}} -->
+      <!--<span class="orderName"> {{orderName}} </span>-->
+        <!--<tbody>-->
+        {{#each fcResults}}
+          <tr>
+            <!--<td>{{formatDate orderDate "long"}}</td>-->
+          <td>{{orderDate}}</td>
+          <td>{{formatDate orderCreated "long"}}</td>
+          <td>{{orderName}}</td>
+          <td>{{orderFileName}}</td>
+          <td>{{orderModel}}</td>
+          <td>{{orderFabric}}</td>
+          <td>{{orderBagno}}</td>
+          <td>{{orderLayers}}</td>
+          <td>{{orderLength}}</td>
+          <td>{{orderExtra}}</td>
+          <td>{{orderLengthSum}}</td>
+          <td>{{orderPriority}}</td>
+          <td>{{orderLoad}}</td>
+          <td>{{orderSpread}}</td>
+          <td><button id="deleteOrder">Delete</button></td> <!-- class="btn btn-default" -->
+        </tr>
+        {{/each}}
+        <!--</tbody> -->
+    <!-- {{/if}}-->
+      <!--<span class="delete"> |Delete| </span> -->
+   <!--OLD TEMPLATE-->
+  </table>
   </div>
   <div>
-	 <a href="#" class="fc-sort-clear" >Clear sorting</a><!-- to put outside of the <  table></table> balises as all the following elements-->
+   <a href="#" class="fc-sort-clear" >Clear sorting</a><!-- to put outside of the <  table></table> balises as all the following elements-->
   </div>
 
   {{#if fcPager.pages}}
- 	  <div class="row">
-    	<div class="col-md-12 text-center">
-      	<!-- numbered pager -->
-	        <ul class="pagination">
-    	    <li><a href="#" class="fc-pager-first">&lt;&lt;</a></li>
-        	  <li><a href="#" class="fc-pager-previous">&lt;</a></li>
-          	{{#each fcPager.pages}}
-	            <li class="{{status}}"><a href="#" class="fc-pager-page" data-fc-pager-page="{{page}}">{{page}}</a></li>
-          	{{/each}}
-          	<li><a href="#" class="fc-pager-next">&gt;</a></li>
-          	<li><a href="#" class="fc-pager-last">&gt;&gt;</a></li>
-        	</ul>
-        	<!-- /numbered pager -->
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <!-- numbered pager -->
+          <ul class="pagination">
+          <li><a href="#" class="fc-pager-first">&lt;&lt;</a></li>
+            <li><a href="#" class="fc-pager-previous">&lt;</a></li>
+            {{#each fcPager.pages}}
+              <li class="{{status}}"><a href="#" class="fc-pager-page" data-fc-pager-page="{{page}}">{{page}}</a></li>
+            {{/each}}
+            <li><a href="#" class="fc-pager-next">&gt;</a></li>
+            <li><a href="#" class="fc-pager-last">&gt;&gt;</a></li>
+          </ul>
+          <!-- /numbered pager -->
 
-	        <!-- pager status -->
-    	    <p>
-        	  <strong>{{fcPager.offsetStart}}</strong> to <strong>{{fcPager.offsetEnd}}</strong> of <strong>{{fcPager.totalItems}}</strong> records.
-        	</p>
-        	<!-- /pager status -->
-    	</div>
-  	</div>
+          <!-- pager status -->
+          <p>
+            <strong>{{fcPager.offsetStart}}</strong> to <strong>{{fcPager.offsetEnd}}</strong> of <strong>{{fcPager.totalItems}}</strong> records.
+          </p>
+          <!-- /pager status -->
+      </div>
+    </div>
   {{/if}}
 </template>
 
 <template name="orderForm">
- 	<!--<div class="input-group">-->
-	<div class="input-group-sm">
+  <!--<div class="input-group">-->
+  <div class="input-group-sm">
     <h1>orderForm</h1>
-		<!--<input type="text" id="orderDate" placeholder="Date"/> -->
- 		<input type="text" id="orderDate" placeholder="OrderDate" > <!--class="form-control" -->
-		<input type="text" id="orderName" placeholder="OdrerName">
-		<input type="text" id="orderFileName" placeholder="FileName">
-		<input type="text" id="orderModel" placeholder="Model">
-		<input type="text" id="orderFabric" placeholder="Fabric">
-		<input type="text" id="orderBagno" placeholder="Bagno">
-		<input type="text" id="orderLayers" placeholder="Layers">
-		<input type="text" id="orderLength" placeholder="Length">
-		<input type="text" id="orderExtra" placeholder="Extra">
-		<!--<input type="text" id="orderLengthSum" placeholder="LengthSum">-->
-		<input type="text" id="orderPriority" placeholder="Priority">
-		<input type="checkbox" id="orderLoaded" {{showLoadedChecked}}>
-		<input type="checkbox" id="orderSpreaded" {{showSpreadedChecked}}>
-		<button id="addOrder"> Add </button> <!-- class="btn btn-default" -->
-	</div>
+    <!--<input type="text" id="orderDate" placeholder="Date"/> -->
+    <input type="text" id="orderDate" placeholder="OrderDate" > <!--class="form-control" -->
+    <input type="text" id="orderName" placeholder="OdrerName">
+    <input type="text" id="orderFileName" placeholder="FileName">
+    <input type="text" id="orderModel" placeholder="Model">
+    <input type="text" id="orderFabric" placeholder="Fabric">
+    <input type="text" id="orderBagno" placeholder="Bagno">
+    <input type="text" id="orderLayers" placeholder="Layers">
+    <input type="text" id="orderLength" placeholder="Length">
+    <input type="text" id="orderExtra" placeholder="Extra">
+    <!--<input type="text" id="orderLengthSum" placeholder="LengthSum">-->
+    <input type="text" id="orderPriority" placeholder="Priority">
+    <input type="checkbox" id="orderLoad" {{showLoadChecked}}>
+    <input type="checkbox" id="orderSpread" {{showSpreadChecked}}>
+    <button id="addOrder"> Add </button> <!-- class="btn btn-default" -->
+  </div>
 </template>
 
 <template name="orderQuickForm">
-	<div class="container">
-		<div class="row">
-			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-				<legend>Quick Form title</legend>
-			</div>
-			<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-				{{> quickForm collection="Order" id="insertOrderForm" type='insert' buttonContent="Add Order" omitFields="orderLengthSum,orderCreated"}}
-			</div>
-		</div>
-	</div>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <legend>Quick Form title</legend>
+      </div>
+      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+        {{> quickForm collection="Order" id="insertOrderForm" type='insert' buttonContent="Add Order" omitFields="orderLengthSum,orderCreated"}}
+      </div>
+    </div>
+  </div>
 </template>
 
 <template name="reactiveTebleList">
   <div>
-    <h1>Order table</h1>
-    {{> reactiveTable collection=orders settings=settings}} 
+  <!--{{#if isUser}}
+    {{#if isAdmin}}
+      <h3>Order table</h3>
+      {{> reactiveTable collection=orders settings=settingsAdmin}} 
+    {{else}}
+      {{> reactiveTable collection=orders settings=settingsUser}} 
+    {{/if}}
+
+  {{else}}
+      <h3>Please login</h3>
+  {{/if}}
+  -->
+  {{#if isAdmin}}
+    <h3>Order table</h3>
+    {{> reactiveTable collection=orders settings=settingsAdmin}}
+  {{/if}}
+
+  {{#if isUserSp}}
+    <h3>Order table</h3>
+    {{> reactiveTable collection=orders settings=settingsUserSp}}
+  {{/if}}
+
+  {{#if isUserCut}}
+    <h3>Order table</h3>
+    {{> reactiveTable collection=orders settings=settingsUserCut}}
+  {{/if}}
+
   </div>
 </template>
 
 <template name="orderAutoForm">
-	<div class="container">
-		<div class="row">
-			<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-			<legend>AutoForm Order</legend>
-				{{#autoForm collection="Order" id="insertOrderForm" type='insert' buttonContent="Add Order"}}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+      <legend>AutoForm Order</legend>
+        {{#autoForm collection="Order" id="insertOrderForm" type='insert' buttonContent="Add Order"}}
 
-					<!-- Quick field in autoform
-					{{>afQuickField name="orderDate" type="date" }} -->
+          <!-- Quick field in autoform
+          {{>afQuickField name="orderDate" type="date" }} -->
 
-					<!-- autoform -->
-          			<div class="form-group {{#if afFieldIsInvalid name='orderDate'}}has-error{{/if}}">
-            			{{> afFieldLabel name='orderDate'}}*
-            		<!--<span class="help-block">*Requered</span>-->
-            			{{> afFieldInput novalidate="novalidate" name='orderDate' type="date"}}
+          <!-- autoform -->
+                <div class="form-group {{#if afFieldIsInvalid name='orderDate'}}has-error{{/if}}">
+                  {{> afFieldLabel name='orderDate'}}*
+                <!--<span class="help-block">*Requered</span>-->
+                  {{> afFieldInput novalidate="novalidate" name='orderDate' type="date"}}
                   <!-- Problem with type="date"-->
-      	       		{{#if afFieldIsInvalid name='orderDate'}}
-            		<span class="help-block">{{{afFieldMessage name='orderDate'}}}</span>
-            			{{/if}}
-          			</div>
+                  {{#if afFieldIsInvalid name='orderDate'}}
+                <span class="help-block">{{{afFieldMessage name='orderDate'}}}</span>
+                  {{/if}}
+                </div>
 
-          			<!--<input type="text" id="orderPickerDate" class="form-control" placeholder="Filter Order Date"/>-->
-          			<div class="form-group {{#if afFieldIsInvalid name='orderName'}}has-error{{/if}}">
-            			{{> afFieldLabel name='orderName'}}*
-            		<!--<span class="help-block">*Requered</span>-->
-            			{{> afFieldInput name='orderName'}}
-      	       		{{#if afFieldIsInvalid name='orderName'}}
-            		<span class="help-block">{{{afFieldMessage name='orderName'}}}</span>
-            			{{/if}}
-          			</div>
-          			<div class="form-group {{#if afFieldIsInvalid name='orderFileName'}}has-error{{/if}}">
-            			{{> afFieldLabel name='orderFileName'}}
-            			{{> afFieldInput name='orderFileName'}}
-      	       		{{#if afFieldIsInvalid name='orderFileName'}}
-            		<span class="help-block">{{{afFieldMessage name='orderFileName'}}}</span>
-            			{{/if}}
-          			</div>
-          			<div class="form-group {{#if afFieldIsInvalid name='orderModel'}}has-error{{/if}}">
-            			{{> afFieldLabel name='orderModel'}}
-            			{{> afFieldInput name='orderModel'}}
-      	       		{{#if afFieldIsInvalid name='orderModel'}}
-            		<span class="help-block">{{{afFieldMessage name='orderModel'}}}</span>
-            			{{/if}}
-          			</div>
-          			<div class="form-group {{#if afFieldIsInvalid name='orderFabric'}}has-error{{/if}}">
-            			{{> afFieldLabel name='orderFabric'}}
-            			{{> afFieldInput name='orderFabric'}}
-      	       		{{#if afFieldIsInvalid name='orderFabric'}}
-            		<span class="help-block">{{{afFieldMessage name='orderFabric'}}}</span>
-            			{{/if}}
-          			</div>
-          			<div class="form-group {{#if afFieldIsInvalid name='orderBagno'}}has-error{{/if}}">
-            			{{> afFieldLabel name='orderBagno'}}
-            			{{> afFieldInput name='orderBagno'}}
-      	       		{{#if afFieldIsInvalid name='orderBagno'}}
-            		<span class="help-block">{{{afFieldMessage name='orderBagno'}}}</span>
-            			{{/if}}
-          			</div>
-          			<div class="form-group {{#if afFieldIsInvalid name='orderLayers'}}has-error{{/if}}">
-            			{{> afFieldLabel name='orderLayers'}}*
-            		<!--<span class="help-block">*Requered</span>-->
-            			{{> afFieldInput name='orderLayers'}}
-      	       		{{#if afFieldIsInvalid name='orderLayers'}}
-            		<span class="help-block">{{{afFieldMessage name='orderLayers'}}}</span>
-            			{{/if}}
-          			</div>
-          			<div class="form-group {{#if afFieldIsInvalid name='orderLength'}}has-error{{/if}}">
-            			{{> afFieldLabel name='orderLength'}}*
-            		<!--<span class="help-block">*Requered</span>-->
-            			{{> afFieldInput name='orderLength'}}
-      	       		{{#if afFieldIsInvalid name='orderLength'}}
-            		<span class="help-block">{{{afFieldMessage name='orderLength'}}}</span>
-            			{{/if}}
-          			</div>
-          			<div class="form-group {{#if afFieldIsInvalid name='orderExtra'}}has-error{{/if}}">
-            			{{> afFieldLabel name='orderExtra'}}*
-            		<!--<span class="help-block">*Requered</span>-->
-            			{{> afFieldInput name='orderExtra'}}
-      	       		{{#if afFieldIsInvalid name='orderExtra'}}
-            		<span class="help-block">{{{afFieldMessage name='orderExtra'}}}</span>
-            			{{/if}}
-          			</div>
-          			<div class="form-group {{#if afFieldIsInvalid name='orderPriority'}}has-error{{/if}}">
-            			{{> afFieldLabel name='orderPriority'}}
-            			{{> afFieldInput name='orderPriority' options="allowed" capitalize="true"}}
-      	       		{{#if afFieldIsInvalid name='orderPriority'}}
-            		<span class="help-block">{{{afFieldMessage name='orderPriority'}}}</span>
-            			{{/if}}
-          			</div>
-          			<div class="form-group {{#if afFieldIsInvalid name='orderLoaded'}}has-error{{/if}}">
-            			<!--{{> afFieldLabel name='orderLoaded'}}-->
-            			{{> afFieldInput name='orderLoaded'}}
-      	       		{{#if afFieldIsInvalid name='orderLoaded'}}
-            		<span class="help-block">{{{afFieldMessage name='orderLoaded'}}}</span>
-            			{{/if}}
-          			</div>
-          			<div class="form-group {{#if afFieldIsInvalid name='orderSpreaded'}}has-error{{/if}}">
-            			<!--{{> afFieldLabel name='orderSpreaded'}}-->
-            			{{> afFieldInput name='orderSpreaded'}}
-      	       		{{#if afFieldIsInvalid name='orderSpreaded'}}
-            		<span class="help-block">{{{afFieldMessage name='orderSpreaded'}}}</span>
-            			{{/if}}
-          			</div>
-          			<button type="submit" class="btn btn-primary">Add Order</button>
-				{{/autoForm}}
-			</div>
-		</div>
-	</div>
+                <!--<input type="text" id="orderPickerDate" class="form-control" placeholder="Filter Order Date"/>-->
+                <div class="form-group {{#if afFieldIsInvalid name='orderName'}}has-error{{/if}}">
+                  {{> afFieldLabel name='orderName'}}*
+                <!--<span class="help-block">*Requered</span>-->
+                  {{> afFieldInput name='orderName'}}
+                  {{#if afFieldIsInvalid name='orderName'}}
+                <span class="help-block">{{{afFieldMessage name='orderName'}}}</span>
+                  {{/if}}
+                </div>
+                <div class="form-group {{#if afFieldIsInvalid name='orderFileName'}}has-error{{/if}}">
+                  {{> afFieldLabel name='orderFileName'}}
+                  {{> afFieldInput name='orderFileName'}}
+                  {{#if afFieldIsInvalid name='orderFileName'}}
+                <span class="help-block">{{{afFieldMessage name='orderFileName'}}}</span>
+                  {{/if}}
+                </div>
+                <div class="form-group {{#if afFieldIsInvalid name='orderModel'}}has-error{{/if}}">
+                  {{> afFieldLabel name='orderModel'}}
+                  {{> afFieldInput name='orderModel'}}
+                  {{#if afFieldIsInvalid name='orderModel'}}
+                <span class="help-block">{{{afFieldMessage name='orderModel'}}}</span>
+                  {{/if}}
+                </div>
+                <div class="form-group {{#if afFieldIsInvalid name='orderFabric'}}has-error{{/if}}">
+                  {{> afFieldLabel name='orderFabric'}}
+                  {{> afFieldInput name='orderFabric'}}
+                  {{#if afFieldIsInvalid name='orderFabric'}}
+                <span class="help-block">{{{afFieldMessage name='orderFabric'}}}</span>
+                  {{/if}}
+                </div>
+                <div class="form-group {{#if afFieldIsInvalid name='orderBagno'}}has-error{{/if}}">
+                  {{> afFieldLabel name='orderBagno'}}
+                  {{> afFieldInput name='orderBagno'}}
+                  {{#if afFieldIsInvalid name='orderBagno'}}
+                <span class="help-block">{{{afFieldMessage name='orderBagno'}}}</span>
+                  {{/if}}
+                </div>
+                <div class="form-group {{#if afFieldIsInvalid name='orderLayers'}}has-error{{/if}}">
+                  {{> afFieldLabel name='orderLayers'}}*
+                <!--<span class="help-block">*Requered</span>-->
+                  {{> afFieldInput name='orderLayers'}}
+                  {{#if afFieldIsInvalid name='orderLayers'}}
+                <span class="help-block">{{{afFieldMessage name='orderLayers'}}}</span>
+                  {{/if}}
+                </div>
+                <div class="form-group {{#if afFieldIsInvalid name='orderLength'}}has-error{{/if}}">
+                  {{> afFieldLabel name='orderLength'}}*
+                <!--<span class="help-block">*Requered</span>-->
+                  {{> afFieldInput name='orderLength'}}
+                  {{#if afFieldIsInvalid name='orderLength'}}
+                <span class="help-block">{{{afFieldMessage name='orderLength'}}}</span>
+                  {{/if}}
+                </div>
+                <div class="form-group {{#if afFieldIsInvalid name='orderExtra'}}has-error{{/if}}">
+                  {{> afFieldLabel name='orderExtra'}}*
+                <!--<span class="help-block">*Requered</span>-->
+                  {{> afFieldInput name='orderExtra'}}
+                  {{#if afFieldIsInvalid name='orderExtra'}}
+                <span class="help-block">{{{afFieldMessage name='orderExtra'}}}</span>
+                  {{/if}}
+                </div>
+                <div class="form-group {{#if afFieldIsInvalid name='orderPriority'}}has-error{{/if}}">
+                  {{> afFieldLabel name='orderPriority'}}
+                  {{> afFieldInput name='orderPriority' options="allowed" capitalize="true"}}
+                  {{#if afFieldIsInvalid name='orderPriority'}}
+                <span class="help-block">{{{afFieldMessage name='orderPriority'}}}</span>
+                  {{/if}}
+                </div>
+                <div class="form-group {{#if afFieldIsInvalid name='orderLoad'}}has-error{{/if}}">
+                  <!--{{> afFieldLabel name='orderLoad'}}-->
+                  {{> afFieldInput name='orderLoad'}}
+                  {{#if afFieldIsInvalid name='orderLoad'}}
+                <span class="help-block">{{{afFieldMessage name='orderLoad'}}}</span>
+                  {{/if}}
+                </div>
+                <div class="form-group {{#if afFieldIsInvalid name='orderSpread'}}has-error{{/if}}">
+                  <!--{{> afFieldLabel name='orderSpread'}}-->
+                  {{> afFieldInput name='orderSpread'}}
+                  {{#if afFieldIsInvalid name='orderSpread'}}
+                <span class="help-block">{{{afFieldMessage name='orderSpread'}}}</span>
+                  {{/if}}
+                </div>
+                <button type="submit" class="btn btn-primary">Add Order</button>
+        {{/autoForm}}
+      </div>
+    </div>
+  </div>
 </template>
 
 <template name="tmp_AddNewOrder">
@@ -419,31 +464,121 @@
         <legend></legend>
       </div>
       <div class="col-sm-6">
-        {{> quickForm collection="Order" id="insertOrderForm" type="insert" buttonContent="Add Order" omitFields="orderLengthSum,orderCreated"}}
+        {{> quickForm collection="Order" id="insertOrderForm" type="insert" buttonContent="Add Order" omitFields="LengthSum,Created,S,M,L,LayersActual,SpreadDate,CutDate"}}
       </div>
     </div>
   </div>
 </template>
 
+<template name="tmp_EditOrder_OLD">
+  <div class="container">
+        <div class="row" style="width:550px">
+          <!--
+          <div class="col-sm-12">
+            <legend></legend>
+          </div>
+          -->
+          <!--<div class="col-sm-8">-->
+          <div>
+          {{#if isUser}}
+            {{#if isAdmin}}
+              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="LengthSum,Created,S,M,L"}}
+              <div class="">
+                <br />
+                <button class="btn btn-primary" id="deleteOrder" type="button">Delete order</button>  
+              </div> 
+            {{else}}
+              <!--{{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Update Order" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,M,L,AssignSpreader,Priority,LengthSum,Created"}}-->
+              
+                <table class="table" style="width:550px">
+                  <tbody>
+                    <p>User:  <big>{{User}}</big></p>
+                    <p>User:  <big>{{User}}</big></p>
+                    <tr>
+                      <td>
+                      <a href="#" id="loadOrder" class="btn btn-default btn-lg btn-block btn-primary">
+                      Load Order</a>
+                      </td>
+                    </tr>
+                    <br />
+                    <tr>
+                      <td>
+                        <a href="#" id="spreadOrder" class="btn btn-default btn-lg btn-block btn-success"> Spread Order</a>
+                      </td>
+                    </tr>
+                    <br />
+                    <tr>
+                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save comment" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,AssignSpreader,Priority,LengthSum,Created,Load,Spread,Cut"}}
+                    </tr>
+                  </tbody>
+                </table>
+            {{/if}}
+            {{else}}
+            <p>Please log in!</p>
+          {{/if}}
+          </div>
+        </div>
+    </div>
+</template>
+
 <template name="tmp_EditOrder">
   <div class="container">
-    <div class="row">
-      <div class="col-sm-12">
-        <legend></legend>
-      </div>
-      <div class="col-sm-6">
-        {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="orderLengthSum,orderCreated"}}
-        
-        <!--ONLY IF IS ADMIN -->  
-        <div class="">
-          <br />
-          <button class="btn btn-primary" id="deleteOrder" type="button">Delete order</button>  
+      <div class="row" style="width:550px">
+          <div>
+            {{#if isAdmin}}
+              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="LengthSum,Created,S,M,L,SpreadDate,CutDate"}}
+              <div class="">
+                <br />
+                <button class="btn btn-primary" id="deleteOrder" type="button">Delete order</button>  
+              </div> 
+            {{/if}}
+
+            {{#if isUserSp}}  
+                <table class="table" style="width:550px">
+                  <tbody>
+                    <p>User:  <big>{{User}}</big></p>
+                    <p>Info:  <big>{{OrderInfo}}</big></p>
+                    <tr>
+                      <td>
+                      <a href="#" id="loadOrder" class="btn btn-default btn-lg btn-block btn-primary">
+                      Load Order</a>
+                      </td>
+                    </tr>
+                    <br />
+                    <tr>
+                      <td>
+                        <a href="#" id="spreadOrder" class="btn btn-default btn-lg btn-block btn-success"> Spread Order</a>
+                      </td>
+                    </tr>
+                    <br />
+                    <tr>
+                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,AssignSpreader,Priority,LengthSum,Created,Load,Spread,SpreadDate,Cut,CutDate,OrderLink"}}
+                    </tr>
+                  </tbody>
+                </table>
+            {{/if}}
+            
+            {{#if isUserCut}}
+              <table class="table" style="width:550px">
+                  <tbody>
+                    <p>User:  <b>{{User}}</b></p>
+                    <p>Info:  <b>{{OrderInfo}}</b></p>
+                    <tr>
+                      <td>
+                        <a href="#" id="cutOrder" class="btn btn-default btn-lg btn-block btn-success">Cut Order</a>
+                      </td>
+                    </tr>
+                    <br />
+                    <tr>
+                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,LayersActual,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,AssignSpreader,Priority,LengthSum,Created,Load,Spread,SpreadDate,Cut,CutDate,OrderLink"}}
+                    </tr>
+                  </tbody>
+                </table>
+            {{/if}}
+
         </div>
-        <!--ONLY IF IS ADMIN -->  
-             
       </div>
     </div>
-  </div>
 </template>
 
 <template name="tmp_AddNewOrderFull">
@@ -467,6 +602,28 @@
   </div>
   <div>
     <p>Paste Your CSV code <b>(MD Analytics file)</b>:</p> 
+      <textarea id="csv3" class="text" style="width:100%; height:200px;"></textarea>
+      <br />
+      <button id="insert_csv_text">Import from CSV code</button>
+      <br />
+  </div>
+</template>
+
+<template name="tmp_ImportPlannedMarkers">
+  <!--<div>
+    <p id="heading">Import Orders from MD Analytics</p>
+    <hr />
+  </div>-->
+  <div>
+    <p>Insert from CSV file <b>(Planned Markers file)</b>:</p> 
+    <input type="file" id="files_planned_markers" name="files[]" enctype="multipart/form-data" />
+    <br />
+    <!--<button id="insert_csv_file">Insert form CSV file</button>-->
+    <br />
+    <hr />
+  </div>
+  <div>
+    <p>Paste Your CSV code <b>(Planned Markers file)</b>:</p> 
       <textarea id="csv3" class="text" style="width:100%; height:200px;"></textarea>
       <br />
       <button id="insert_csv_text">Import from CSV code</button>
@@ -507,20 +664,16 @@
     </div>-->
     <div>
       <p>Download CSV file (Order list): </p>
-        <button id="download1">Download CSV file</button>
+        <button id="download_from_textarea">Download CSV file</button>
         <span>* you must put ".csv" at the end of download file</span>
         <br />
         <hr />
     </div>
     <div>
       <p>Copy CSV code (Order list): </p>
-        <!--  <textarea id="json1" class="text" style="width:100%;">
-"_id","orderDate","orderCreated","orderName","orderFileName","orderModel","orderFabric","orderBagno","orderColor","orderLayers","orderLength","orderExtra","orderLengthSum","orderPriority","orderLoaded","orderSpreaded"
-{{#each order}}{{_id}},{{orderDate}},{{orderCreated}},"{{orderName}}","{{orderFileName}}","{{orderModel}}","{{orderFabric}}","{{orderBagno}}","{{orderColor}}",{{orderLayers}},{{orderLength}},{{orderExtra}},{{orderLengthSum}},{{orderPriority}},{{orderLoaded}},{{orderSpreaded}}
-{{/each}}</textarea>-->
-          <textarea id="json1" class="text" style="width:100%; height:200px;">
-"_id";"orderDate";"orderCreated";"orderName";"orderFileName";"orderModel";"orderFabric";"orderBagno";"orderColor";"orderLayers";"orderLength";"orderExtra";"orderLengthSum";"orderPriority";"orderLoaded";"orderSpreaded"
-{{#each order}}{{_id}};{{orderDate}};{{orderCreated}};"{{orderName}}";"{{orderFileName}}";"{{orderModel}}";"{{orderFabric}}";"{{orderBagno}}";"{{orderColor}}";{{orderLayers}};{{orderLength}};{{orderExtra}};{{orderLengthSum}};{{orderPriority}};{{orderLoaded}};{{orderSpreaded}}
+      <textarea id="textarea_json" class="text" style="width:100%; height:200px;">
+_id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;M;MonLayer;L;LonLayer;AssignSpreader;Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink
+{{#each order}}{{_id}};{{No}};{{Date}};{{Created}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{Length}};{{Extra}};{{LengthSum}};{{Width}};{{S}};{{SonLayer}};{{M}};{{MonLayer}};{{L}};{{LonLayer}};{{AssignSpreader}};{{Priority}};{{Load}};{{Spread}};{{SpreadDate}};{{Cut}};{{CutDate}};{{Comment}};{{OrderLink}}
 {{/each}}</textarea>
           <!--<br />
           <input id="quote" type="checkbox" checked="true" /> Wrap values in double quotes
@@ -545,4 +698,125 @@
       <br /><br />
      <textarea id="json2" class="text" style="width:100%;"></textarea>
   </div>-->
+</template>
+
+<template name="tmp_Statistics">
+  <div>
+      Stastistic for - All orders in table
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Number of Orders</th>
+            <th>Number of all Layers</th>
+            <th>Sum of all Lengths</th>
+            <th>S</th>
+            <th>M</th>
+            <th>L</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{noRolls}}</td>
+            <td>{{allLayers}}</td>
+            <td>{{allLengths}}</td>
+            <td>{{allS}}</td>
+            <td>{{allM}}</td>
+            <td>{{allL}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <br />
+      <hr />
+      <p><b>Stastistic for - Spreader 1</b></p>
+      <!--<small>All, menas all order assigned to Spreader 1</small><br />
+      <small>Shift 1/Shift 2, means all "finished" orders by Spreader 1</small>-->
+      <!-- Table -->
+      Assigned orders: {{SP1noRolls}}
+      <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Load orders</th>
+              <th>Load meters</th>
+              <th>Spread orders</th>
+              <th>Spread meters</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Shift 1</td>
+              <td>{{SP1noLoadRollsShift1}}</td>
+              <td>{{SP1LoadMetShift1}}</td>
+              <td>{{SP1noSpreadRollsShift1}}</td>
+              <td>{{SP1SpreadMetShift1}}</td>
+            </tr>
+            <tr>
+              <td>Shift 2</td>
+              <td>{{SP1noLoadRollsShift2}}</td>
+              <td>{{SP1LoadMetShift2}}</td>
+              <td>{{SP1noSpreadRollsShift2}}</td>
+              <td>{{SP1SpreadMetShift2}}</td>
+            </tr>
+          </tbody>
+      </table>
+      <hr />
+      <p><b>Stastistic for - Spreader 2</b></p>
+      <!--<small>All, menas all order assigned to Spreader 2</small><br />
+      <small>Shift 1/Shift 2, means all "finished" orders by Spreader 2</small>-->
+      Assigned orders: {{SP2noRolls}}
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Load orders</th>
+            <th>Load meters</th>
+            <th>Spread oredrs</th>
+            <th>Spread meters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Shift 1</td>
+            <td>{{SP2noLoadRollsShift1}}</td>
+            <td>{{SP2LoadMetShift1}}</td>
+            <td>{{SP2noSpreadRollsShift1}}</td>
+            <td>{{SP2SpreadMetShift1}}</td>
+          </tr>
+          <tr>
+            <td>Shift 2</td>
+            <td>{{SP2noLoadRollsShift2}}</td>
+            <td>{{SP2LoadMetShift2}}</td>
+            <td>{{SP2noSpreadRollsShift2}}</td>
+            <td>{{SP2SpreadMetShift2}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <hr />
+      <p><b>Stastistic for - Cutter</b></p>
+      <!--<small>All, menas all order assigned to Spreader 2</small><br />
+      <small>Shift 1/Shift 2, means all "finished" orders by Spreader 2</small>-->
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Cut orders</th>
+            <th>Cut meters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Shift 1</td>
+            <td>{{CutnoRollsShift1}}</td>
+            <td>{{CutMetShift1}}</td>
+            
+          </tr>
+          <tr>
+            <td>Shift 2</td>
+            <td>{{CutnoRollsShift2}}</td>
+            <td>{{CutMetShift2}}</td>
+            
+          </tr>
+        </tbody>
+      </table>
+  </div>
 </template>

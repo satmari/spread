@@ -1,60 +1,210 @@
 if (Meteor.isClient) {
-
+  //SimpleSchema.debug = true;
+  //UI.registerHelper("Schemas", Schemas);
+  
   Meteor.startup(function () {
     //Session.set("ses_namefilter", "");
     //Session.set("ses_datefilter", "");
 
-    var t = Date();
+    //var t = Date();
 
     var todayAt02 = new Date();
     todayAt02.setHours(2,0,0,0);
+    console.log("todayAt02" + todayAt02);
 
-    //console.log("todayAt02: " + todayAt02 + " typeof: " + typeof todayAt02);
-    //$('#filterOrderDate').val("13/10/2014");
+    var treeDaysbefore = new Date();
+    treeDaysbefore.setHours(-70,0,0,0);
+    console.log("treeDaysbefore: " + treeDaysbefore);
+
+    var treeDaysafter = new Date();
+    //treeDaysafter.setHours(74,0,0,0); // three days + 2h timezone 
+    treeDaysafter.setHours(75,0,0,0);   // three days + 2h timezone + 1h
+    console.log("treeDaysafter: " + treeDaysafter);
+
+    Session.set("ses_datefilter", todayAt02);
+    Session.set("ses_DaysBefore", treeDaysbefore);
+    Session.set("ses_DaysAfter", treeDaysafter);
+    Session.set("ses_datenotexist", false);
+    Session.set("ses_jobnotexist", false);
 
     Date.prototype.toDateInputValue = (function() {
         var local = new Date(this);
         local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
         return local.toJSON().slice(0,10);
     });
-    
     $('#filterOrderDate').val(new Date().toDateInputValue());
-    Session.set("ses_datefilter", todayAt02);
+    
+    var filterOrderDateBefore = new Date(treeDaysbefore).toDateInputValue();
+    //filterOrderDateBefore = filterOrderDateBefore.setHours(-70,0,0,0);
+    console.log(filterOrderDateBefore);
+    $('#filterOrderDateBefore').val(filterOrderDateBefore);
 
-    Session.set("ses_datenotexist", false);
+    var filterOrderDateAfter = new Date(treeDaysafter).toDateInputValue();
+    //filterOrderDateAfter = filterOrderDateAfter.setHours(75,0,0,0);
+    console.log(filterOrderDateAfter);
+    $('#filterOrderDateAfter').val(filterOrderDateAfter);
 
+    // User auth
+    var loggedUserId = Session.get("loggedUserId");
+    //console.log("ses_loggedUserId: " + loggedUserId);
+    var userId = Meteor.userId();
+    //console.log("userId: " + userId);
+
+    if (userId || loggedUserId) {
+        var User = Meteor.users.findOne({_id: userId});
+
+        Session.set("loggedUserId", User._id);
+        Session.set("loggedUserName", User.username);
+        console.log("Startup: UserId: " + User._id);
+        console.log("Startup: UserName: " + User.username);
+    }
   })
 
   Meteor.autosubscribe(function () {
-    var ses_datefilter = Session.get("ses_datefilter");
-    var ses_existdate = Session.get("ses_datenotexist");
-    //console.log("Autosubcribe sesion: " + ses + " , typeof: " + typeof ses);
-    
 
-    if ( ses_existdate == true ) {
-      Meteor.subscribe('orderWithoutDate');
-    } else if ( ses_datefilter == "" ) { 
-      Meteor.subscribe('orderAll');
-    } else {
-      Meteor.subscribe('order', Session.get("ses_datefilter"));
+    var user = Meteor.user();
+    //console.log("user: " + user);
+    //console.log("_id: " + user._id );
+    //console.log("username: " + user.username );
+
+    if (user) {
+      var UserId = Meteor.userId();
+      var UserA = Meteor.users.findOne({_id: UserId});
+      console.log("Autosubscribe = UserA_Id: " + UserA._id);
+      console.log("Autosubscribe = UserName: " + UserA.username);
+
+      Session.set("ses_loggedUserId", UserA._id);
+      Session.set("ses_loggedUserName", UserA.username);
     }
 
-  });
+    var ses_loggedUserName = Session.get("ses_loggedUserName");
+    var ses_datefilter = Session.get("ses_datefilter");
+    var ses_DaysBefore = Session.get("ses_DaysBefore");
+    var ses_DaysAfter = Session.get("ses_DaysAfter");
+    var ses_existdate = Session.get("ses_datenotexist");
+    var ses_jobnotexist = Session.get("ses_jobnotexist");
 
+    //console.log("Autosubcribe sesion: " + ses + " , typeof: " + typeof ses);
+    if ((ses_loggedUserName == "cut1") || (ses_loggedUserName == "cut2")){
+      Meteor.subscribe('cutter');
+    } else if ((ses_loggedUserName == "sp11") || (ses_loggedUserName == "sp12")){
+      //Meteor.subscribe('spreader1', Session.get("ses_datefilter"));
+      Meteor.subscribe('spreader1');
+    } else if ((ses_loggedUserName == "sp21") || (ses_loggedUserName == "sp22")){
+      //Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
+      Meteor.subscribe('spreader2');
+    } else if ( ses_existdate == true ) {
+      Meteor.subscribe('orderWithoutDate');
+    } else if ( ses_jobnotexist == true ) { 
+      Meteor.subscribe('orderWithoutJob');
+    } else if ( ses_datefilter == "" ) { 
+      Meteor.subscribe('orderAll');
+    } else if ( (ses_DaysBefore) || (ses_DaysAfter) ) {
+      Meteor.subscribe('orderWithDateRange', ses_DaysBefore, ses_DaysAfter);
+    } else {
+      Meteor.subscribe('orderWithDate', ses_datefilter);
+    }
+    
+    /*
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if (User._id == "hzsGmdDpJXrDFiujZ") {
+          console.log('admin je ulogovan');
+        } else {
+          console.log('NIJE admin je ulogovan');
+        }
+      }
+    */
+    /*
+    if (Session.get("userId") === adminId) {
+      console.log("Wellcome admin");
+      Session.set("logged", "admin");
+    }     
+    */     
+  });
+    
+  Template.nav.helpers ({
+    isAdmin: function() {
+      //var loggedUserName = Session.get("loggedUserName");
+      //console.log(loggedUserName);
+
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if (User.username == "admin") {
+          return true;
+        } else {
+          return false;  
+        }
+      }
+    },
+    User: function(){
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        return User;
+      }
+    }, 
+  });
+    
   // Reactive-table
   Template.reactiveTebleList.orders = function () {
       return Order.find();
   }
 
   Template.reactiveTebleList.helpers({
-    settings: function () {
+    isAdmin: function() {
+        //var loggedUserName = Session.get("loggedUserName");
+        //console.log(loggedUserName);
+
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "admin") {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+    },
+    isUserSp: function() {
+        //var loggedUserName = Session.get("loggedUserName");
+        //console.log(loggedUserName);
+
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp21") || (User.username == "sp22")) {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+    },
+    isUserCut: function() {
+        //var loggedUserName = Session.get("loggedUserName");
+        //console.log(loggedUserName);
+
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if ((User.username == "cut1") || (User.username == "cut2")) {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+    },
+    settingsAdmin: function () {
       return {
-            rowsPerPage: 10,
-            showFilter: true,
-          showNavigation: 'auto',
-          fields: [
-          //{ key: '_id', label: 'ID' },
-          { key: 'orderDate', label: 'Date',
+        rowsPerPage: 100,
+        showFilter: true,
+        showNavigation: 'auto',
+        fields: [
+          //{ key: '_id', label: '_ID' },
+          { key: 'No', label: 'No', sort: 'descending' },
+          { key: 'Date', label: 'Date',
             fn: function (value) {
               if (value){
                 return moment(value).format("YYYY-MM-DD");
@@ -62,19 +212,37 @@ if (Meteor.isClient) {
                 return "";
               }
               //return moment(value).format("DD-MM-YYYY");
-            }, sort: 'descending'
-           },
-          { key: 'orderName', label: 'Order' },
-          //{ key: 'orderCreated', label: 'Order Created' },
-          { key: 'orderFileName', label: 'File' },
-          { key: 'orderModel', label: 'Model' },
-          { key: 'orderFabric', label: 'Fabric' },
-          { key: 'orderBagno', label: 'Bagno' },
-          { key: 'orderLayers', label: 'Layers' },
-          { key: 'orderLength', label: 'Length' },
-          { key: 'orderExtra', label: 'Extra' },
-          { key: 'orderLengthSum', label: 'Sum' },
-          { key: 'orderAssignSpreader', label: 'Assign',
+            }//, sort: 'descending' // ascending
+          },
+          //{ key: 'Created', label: 'Created' },
+          { key: 'Komesa', label: 'Komesa' },
+          { key: 'Marker', label: 'Marker' },
+          { key: 'Style', label: 'Style' },
+          { key: 'Fabric', label: 'Fabric' },
+          { key: 'ColorCode', label: 'Color Code' },
+          { key: 'ColorDesc', label: 'Color Desc' },
+          { key: 'Bagno', label: 'Bagno' },
+          { key: 'Layers', label: 'Layers' },
+          { key: 'LayersActual', label: 'Layers Actual',
+            fn: function (value){
+              if (value == 0) {
+                return "";
+              } else {
+                return value ;
+              };
+            }
+          },
+          { key: 'Length', label: 'Length (m)' },
+          { key: 'Extra', label: 'Extra (cm)' },
+          { key: 'LengthSum', label: 'LengthSum (m)' },
+          { key: 'Width', label: 'Width (cm)' },
+          { key: 'S', label: 'S' },
+          /*{ key: 'SonLayer', label: 'S on Layer'},*/
+          { key: 'M', label: 'M' },
+          /*{ key: 'MonLayer', label: 'M on Layer'},*/
+          { key: 'L', label: 'L' },
+          /*{ key: 'LonLayer', label: 'L on layer'},*/
+          { key: 'AssignSpreader', label: 'Assign',
             fn: function (value) {
               if (value == "SP 1") {
                 return "SP 1";
@@ -86,46 +254,233 @@ if (Meteor.isClient) {
                 return "Not Assigned";
               }
             }
-           },
-          { key: 'orderPriority', label: 'Priority' },
-          { key: 'orderLoaded', label: 'Loaded',
-            fn: function (value){ 
+          },
+          { key: 'Priority', label: 'Priority' },
+          { key: 'Load', label: 'Load',
+            /*fn: function (value){ 
               if (value == true) {
-                return "Loaded";
+                return "Load";
               };
-          } },
-          { key: 'orderSpreaded', label: 'Spreaded', 
-            fn: function (value){
+            }*/
+          },
+          { key: 'Spread', label: 'Spread', 
+            /*fn: function (value){
               if (value == true) {
-                return "Spreaded";
+                return "Spread";
               };
-          } },
-          ],
+            }*/
+          },
+          { key: 'Cut', label: 'Cut' },
+          { key: 'Comment', label: 'Comment' },
+        ],
 
-          useFontAwesome: true,
+          //useFontAwesome: true,
           //group: 'orderExtra'
           //rowClass: "warning", //warning, danger
           rowClass: function(item) {
-            var priority = item.orderPriority;
-            var loaded = item.orderLoaded;
-            var spreaded = item.orderSpreaded;
+            var priority = item.Priority;
+            var load = item.Load;
+            var spread = item.Spread;
+            var cut = item.Cut;
             
             // treba da se doradi
 
-            if (spreaded == true)  {
+            if (cut)  {
               return 'success';
-            } else if (loaded == true) {
+            } else if (spread) {
               return 'info';
+            } else if (load) {
+              return 'active';
             } else if (priority == 4) {
               return 'warning';
             } else if (priority == 5){
-              return 'danger'; //info, success, active, warning, danger
+              return 'danger'; //active, success, info, warning, danger
             } else {
 
             }
-        },
-        };
-      } 
+          },
+      };
+    },
+    settingsUserSp: function () {
+      return {
+          rowsPerPage: 100,
+          showFilter: false,
+          showNavigation: 'auto',
+          fields: [
+            //{ key: '_id', label: '_ID' },
+            { key: 'No', label: 'No', sort: 'descending' },
+            { key: 'Date', label: 'Date',
+              fn: function (value) {
+                if (value){
+                  return moment(value).format("DD-MMM");
+                } else {
+                  return "";
+                }
+                //return moment(value).format("DD-MM-YYYY");
+              }//, sort: 'descending' // ascending
+            },
+            //{ key: 'Created', label: 'Created' },
+            { key: 'Komesa', label: 'Komesa' },
+            { key: 'Marker', label: 'Marker' },
+            /*{ key: 'Style', label: 'Style' },*/
+            { key: 'Fabric', label: 'Fabric' },
+            { key: 'ColorCode', label: 'Color Code' },
+            { key: 'ColorDesc', label: 'Color Desc' },
+            { key: 'Bagno', label: 'Bagno' },
+            { key: 'Layers', label: 'Layers' },
+            { key: 'LayersActual', label: 'Layers Actual',
+              fn: function (value){
+                if (value == 0) {
+                  return "";
+                } else {
+                  return value ;
+                };
+              }
+            },
+            { key: 'Length', label: 'Length (m)' },
+            //{ key: 'Extra', label: 'Extra (cm)' },
+            { key: 'LengthSum', label: 'LengthSum (m)' },
+            { key: 'Width', label: 'Width (cm)' },
+            //{ key: 'S', label: 'S' },
+            //{ key: 'M', label: 'M' },
+            //{ key: 'L', label: 'L' },
+            /*{ key: 'AssignSpreader', label: 'Assign',
+              fn: function (value) {
+                if (value == "SP 1") {
+                  return "SP 1";
+                }
+                else if (value == "SP 2") {
+                  return "SP 2";
+                }
+                else {
+                  return "Not Assigned";
+                }
+              }
+            },*/
+            { key: 'Priority', label: 'Priority' },
+            { key: 'Load', label: 'Load'},
+            { key: 'Spread', label: 'Spread'},
+            //{ key: 'Cut', label: 'Cut' },
+            //{ key: 'Comment', label: 'Comment' },
+          ],
+
+            //useFontAwesome: true,
+            //group: 'Komesa', 
+            //rowClass: "warning", //warning, danger
+            rowClass: function(item) {
+            var priority = item.Priority;
+            var load = item.Load;
+            var spread = item.Spread;
+            var cut = item.Cut;
+
+            // treba da se doradi
+
+            if (cut)  {
+              return 'success';
+            } else if (spread) {
+              return 'info';
+            } else if (load) {
+              return 'active';
+            } else if (priority == 4) {
+              return 'warning';
+            } else if (priority == 5){
+              return 'danger'; //active, success, info, warning, danger
+            } else {
+
+            }
+          },
+      };
+    },
+    settingsUserCut: function () {
+      return {
+          rowsPerPage: 100,
+          showFilter: false,
+          showNavigation: 'auto',
+          fields: [
+            //{ key: '_id', label: '_ID' },
+            { key: 'No', label: 'No', sort: 'descending' },
+            /*{ key: 'Date', label: 'Date',
+              fn: function (value) {
+                if (value){
+                  return moment(value).format("DD-MMM");
+                } else {
+                  return "";
+                }
+                //return moment(value).format("DD-MM-YYYY");
+              }//, sort: 'descending' // ascending
+            },*/
+            //{ key: 'Created', label: 'Created' },
+            { key: 'Komesa', label: 'Komesa' },
+            { key: 'Marker', label: 'Marker' },
+            { key: 'Style', label: 'Style' },
+            { key: 'Fabric', label: 'Fabric' },
+            { key: 'ColorCode', label: 'Color Code' },
+            { key: 'ColorDesc', label: 'Color Desc' },
+            { key: 'Bagno', label: 'Bagno' },
+            { key: 'Layers', label: 'Layers' },
+            { key: 'LayersActual', label: 'Layers Actual',
+              fn: function (value){
+                if (value == 0) {
+                  return "";
+                } else {
+                  return value ;
+                };
+              }
+            },
+            { key: 'Length', label: 'Length (m)' },
+            //{ key: 'Extra', label: 'Extra (cm)' },
+            { key: 'LengthSum', label: 'LengthSum (m)' },
+            { key: 'Width', label: 'Width (cm)' },
+            //{ key: 'S', label: 'S' },
+            //{ key: 'M', label: 'M' },
+            //{ key: 'L', label: 'L' },
+            /*{ key: 'AssignSpreader', label: 'Assign',
+              fn: function (value) {
+                if (value == "SP 1") {
+                  return "SP 1";
+                }
+                else if (value == "SP 2") {
+                  return "SP 2";
+                }
+                else {
+                  return "Not Assigned";
+                }
+              }
+            },*/
+            { key: 'Priority', label: 'Priority' },
+            /*{ key: 'Load', label: 'Load'},*/
+            /*{ key: 'Spread', label: 'Spread'},*/
+            { key: 'Cut', label: 'Cut' },
+            //{ key: 'Comment', label: 'Comment' },
+          ],
+
+            //useFontAwesome: true,
+            //group: 'Komesa', 
+            //rowClass: "warning", //warning, danger
+            rowClass: function(item) {
+            var priority = item.Priority;
+            var load = item.Load;
+            var spread = item.Spread;
+            var cut = item.Cut;
+
+            // treba da se doradi
+
+            if (cut)  {
+              return 'success';
+            } else if (spread) {
+              return 'info';
+            } else if (load) {
+              return 'active';
+            } else if (priority == 4) {
+              return 'warning';
+            } else if (priority == 5){
+              return 'danger'; //active, success, info, warning, danger
+            } else {
+
+            }
+          },
+      };
+    },
   });
 
   // Reactive Table events
@@ -137,7 +492,7 @@ if (Meteor.isClient) {
         Session.set('selectedDocId', click_id);
 
         // Define rd_editorder
-      var rd_editorder = ReactiveModal.initDialog(rm_EditOrder);
+        var rd_editorder = ReactiveModal.initDialog(rm_EditOrder);
         // show rd_editorder
         rd_editorder.show();
       }
@@ -171,7 +526,89 @@ if (Meteor.isClient) {
   Template.tmp_EditOrder.helpers({
       editingDoc: function editingDocHelper() {
         return Order.findOne({_id: Session.get("selectedDocId")});
-      }
+      },
+      isAdmin: function() {
+        //var loggedUserName = Session.get("loggedUserName");
+        //console.log(loggedUserName);
+
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "admin") {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+       },
+      isUserSp: function() {
+        //var loggedUserName = Session.get("loggedUserName");
+        //console.log(loggedUserName);
+
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp21") || (User.username == "sp22")) {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+      },
+      isUserCut: function() {
+        //var loggedUserName = Session.get("loggedUserName");
+        //console.log(loggedUserName);
+
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if ((User.username == "cut1") || (User.username == "cut2")) {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+      },
+      User: function() {
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username) {
+            return User.username;
+          }
+        }
+      },
+      OrderInfo: function () {
+        var ses = Session.get("selectedDocId")
+        console.log("ses: " + ses);
+
+        var order = Order.find({_ID: ses}).fetch();
+        
+
+        var No = order.No;
+        var Komesa = order.Komesa;
+        var Fabric = order.Fabric;
+        var Bagno = order.Bagno;
+        var ColorCode = order.ColorCode;
+        var ColorDesc = order.ColorDesc;
+        var OrderInfo = "No: " + No + " ,Komesa: " + Komesa + " ,Fabric: " + Fabric + " ,Bagno: " + Bagno + " ,Color Code: " + ColorCode + " ,Color Desc: " + ColorDesc
+        console.log(OrderInfo);
+        return OrderInfo;
+
+      },
+      /*Comment: function() {
+        var editingDoc = Session.get("selectedDocId");
+        if (editingDoc) {
+            var editingDocAll = Order.find({_id: editingDoc}).fetch();
+            
+            for (var i = 0; i < editingDocAll.length; i++) {
+              var commentEditing = editingDocAll[0].Comment;
+              //console.log(commentEditing);
+            }
+            //console.log("in Comment: " + editingDocAll.Comment);
+            return commentEditing;
+        }
+      }*/
   });
 
   // Add New Order on click (in nav button) - Reactive Modal
@@ -242,6 +679,7 @@ if (Meteor.isClient) {
 
   // Import Order from MD Analytics on click (in nav button) - Reactive Modal
   var rm_ImportOrderAnalyitics = {
+      /*
       template: Template.tmp_ImportOrderAnalytics, 
       title: "Import orders from MD Analytics",
       //modalDialogClass: "modal-dialog", //optional
@@ -259,11 +697,270 @@ if (Meteor.isClient) {
             label: 'Back'
           }
       }
+    */
   };
 
-  SimpleSchema.debug = true;
-  //UI.registerHelper("Schemas", Schemas);
-  
+  // Import Order from Planned Markers file (in nav button) - Reactive Modal
+  var rm_ImportPlannedMarkers = {
+      template: Template.tmp_ImportPlannedMarkers, 
+      title: "Import from Planned Markers CSV file",
+      //modalDialogClass: "modal-dialog", //optional
+      //modalBodyClass: "modal-body", //optional
+      //modalFooterClass: "modal-footer",//optional
+      closable: false,
+      buttons: {
+        //"cancel": {
+        //  class: 'btn-danger',
+        //  label: 'Cancel'
+          //},
+          "ok": {
+            closeModalOnClick: true, // if this is false, dialog doesnt close automatically on click
+            class: 'btn-info',
+            label: 'Back'
+          }
+      }
+  };
+
+  var rm_Statistics = {
+     template: Template.tmp_Statistics, 
+      title: "Statistic for order table",
+      //modalDialogClass: "modal-dialog", //optional
+      //modalBodyClass: "modal-body", //optional
+      //modalFooterClass: "modal-footer",//optional
+      closable: false,
+      buttons: {
+        //"cancel": {
+        //  class: 'btn-danger',
+        //  label: 'Cancel'
+          //},
+          "ok": {
+            closeModalOnClick: true, // if this is false, dialog doesnt close automatically on click
+            class: 'btn-info',
+            label: 'Back'
+          }
+      } 
+  };
+
+  Template.tmp_Statistics.helpers({
+    noRolls: function (){
+      var noRolls = Order.find();
+      //console.log("noRolls: "+ noRolls.count());
+      return noRolls.count();
+    },
+    allLayers: function(){
+      //var allLayers = Order.distinct("Layers");
+      var order = Order.find().fetch();
+      /*var allLayers = order.aggregate([
+          //{ $match : {} },
+          { $group : {
+              AssignSpreader: "$AssignSpreader",
+              total: {$sum: "LengthSum"}
+            }
+          },
+          //{ $sort: {AssignSpreader: "SP 1"}}
+      ]);
+      */
+
+      var sumLayers = 0;
+      for (var i = 0; i < order.length; i++) {
+        sumLayers += order[i].Layers;
+      }
+
+      //console.log(order);
+      //console.log("order count: " + order.length);
+      //console.log("sum layers: " + sumLayers);
+      return sumLayers;
+    },
+    allLengths: function(){
+      var order = Order.find().fetch();
+
+      var sumLengths = 0;
+      for (var i = 0; i < order.length; i++) {
+        sumLengths += order[i].LengthSum;
+      }
+      sumLengths = Number(sumLengths);
+      sumLengths = sumLengths.toFixed(3);
+      return sumLengths;
+    },
+    allS: function(){
+      var order = Order.find().fetch();
+
+      var sumS = 0;
+      for (var i = 0; i < order.length; i++) {
+        sumS += order[i].S;
+      }
+      return sumS;
+    },
+    allM: function(){
+      var order = Order.find().fetch();
+
+      var sumM = 0;
+      for (var i = 0; i < order.length; i++) {
+        sumM += order[i].M;
+      }
+      return sumM;
+    },
+    allL: function(){
+      var order = Order.find().fetch();
+
+      var sumL = 0;
+      for (var i = 0; i < order.length; i++) {
+        sumL += order[i].L;
+      }
+      return sumL;
+    },
+    SP1noRolls: function (){
+      var order = Order.find({AssignSpreader: "SP 1"});
+      return order.count();
+    },
+    SP2noRolls: function (){
+      var order = Order.find({AssignSpreader: "SP 2"});
+      return order.count();
+    },
+    SP1noLoadRollsShift1: function (){
+      var order = Order.find({Load: "SP 1-1"});
+      return order.count();
+    },
+    SP1noLoadRollsShift2: function (){
+      var order = Order.find({Load: "SP 1-2"});
+      return order.count();
+    },
+    SP2noLoadRollsShift1: function (){
+      var order = Order.find({Load: "SP 2-1"});
+      return order.count();
+    },
+    SP2noLoadRollsShift2: function (){
+      var order = Order.find({Load: "SP 2-2"});
+      return order.count();
+    },
+    SP1noSpreadRollsShift1: function (){
+      var order = Order.find({Spread: "SP 1-1"});
+      return order.count();
+    },
+    SP1noSpreadRollsShift2: function (){
+      var order = Order.find({Spread: "SP 1-2"});
+      return order.count();
+    },
+    SP2noSpreadRollsShift1: function (){
+      var order = Order.find({Spread: "SP 2-1"});
+      return order.count();
+    },
+    SP2noSpreadRollsShift2: function (){
+      var order = Order.find({Spread: "SP 2-2"});
+      return order.count();
+    },
+    CutnoRollsShift1: function  (){
+      var order = Order.find({Cut: "CUT 1"});
+      return order.count();
+    },
+    CutnoRollsShift2: function  (){
+      var order = Order.find({Cut: "CUT 2"});
+      return order.count();
+    },
+    SP1LoadMetShift1: function (){
+      var order = Order.find({Load: "SP 1-1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    SP1LoadMetShift2: function (){
+      var order = Order.find({Load: "SP 1-2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    SP2LoadMetShift1: function (){
+      var order = Order.find({Load: "SP 2-1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    SP2LoadMetShift2: function (){
+      var order = Order.find({Load: "SP 2-2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    SP1SpreadMetShift1: function (){
+      var order = Order.find({Spread: "SP 1-1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    SP1SpreadMetShift2: function (){
+      var order = Order.find({Spread: "SP 1-2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    SP2SpreadMetShift1: function (){
+      var order = Order.find({Spread: "SP 2-1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    SP2SpreadMetShift2: function (){
+      var order = Order.find({Spread: "SP 2-2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    CutMetShift1: function (){
+      var order = Order.find({Cut: "CUT 1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+    CutMetShift2: function (){
+      var order = Order.find({Cut: "CUT 2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(3);
+      return sum;
+    },
+
+  });
+
+
   // Accounts base - Only Username and pass requered
   Accounts.ui.config({
     passwordSignupFields: 'USERNAME_ONLY'
@@ -291,9 +988,17 @@ if (Meteor.isClient) {
     'click #btnfilterOrderDate': function (e, t) {
 
       Session.set("ses_datefilter", "");
-      console.log("Delete-ses_datefilter: " + Session.get("ses_datefilter"));
+      Session.set("ses_DaysBefore", "");
+      Session.set("ses_DaysAfter", "");
+
+      console.log("Delete - ses_datefilter,ses_DaysBefore,ses_DaysAfter");
 
       $('#filterOrderDate').val("");
+      $('#filterOrderDateBefore').val("");
+      $('#filterOrderDateAfter').val("");
+
+      //Session.set("ses_datenotexist", false);
+      //Session.set("ses_jobnotexist", false);
     },
 
     'change #filterOrderDate': function (e, t) {
@@ -306,6 +1011,30 @@ if (Meteor.isClient) {
       console.log("Set-ses_datefilter: " + Session.get("ses_datefilter"));
     },
 
+    'change #filterOrderDateBefore': function (e, t) {
+      var datesel = $('#filterOrderDateBefore').val();
+
+      var datesel1 = new Date(datesel);
+      datesel1.setHours(1,0,0,0);
+
+      Session.set("ses_DaysBefore", datesel1);
+      Session.set("ses_datefilter", datesel1); //just to skip all
+      datesel1 = "";
+      console.log("Set-ses_DaysBefore: " + Session.get("ses_DaysBefore"));
+    },
+
+    'change #filterOrderDateAfter': function (e, t) {
+      var datesel = $('#filterOrderDateAfter').val();
+
+      var datesel1 = new Date(datesel);
+      datesel1.setHours(3,0,0,0);
+
+      Session.set("ses_DaysAfter", datesel1);
+      Session.set("ses_datefilter", datesel1); //just to skip all
+      datesel1 = "";
+      console.log("Set-ses_DaysAfter: " + Session.get("ses_DaysAfter"));
+    },
+
     'click #new_order': function (e, t) {
       console.log("new_order - click");
 
@@ -316,12 +1045,21 @@ if (Meteor.isClient) {
     },
 
     'click #import_orders_analytics' : function () {
-      console.log('import orders from Analytics - click')
+      /*console.log('import orders from Analytics - click')
 
       // Define rd_addneworder
       var rd_importOrderAnalytics = ReactiveModal.initDialog(rm_ImportOrderAnalyitics);
       // Show rd_addneworder
-      rd_importOrderAnalytics.show();
+      rd_importOrderAnalytics.show();*/
+    },
+
+    'click #import_from_planned_markers' : function () {
+      console.log('import from planned markers - click')
+
+      // Define rd_addneworder
+      var rd_importPlannedMarkers = ReactiveModal.initDialog(rm_ImportPlannedMarkers);
+      // Show rd_addneworder
+      rd_importPlannedMarkers.show();
     },
 
     'click #export_orders' : function () {
@@ -342,6 +1080,70 @@ if (Meteor.isClient) {
       rd_importOrder.show();
     },
 
+    'click #refresh_sum' : function () {
+      console.log('refresh_sum - click')
+
+      var order_all = Order.find().fetch();
+
+      for (var i = 0; i < order_all.length; i++) {
+        //alert("a")
+        //console.log(order_all[i])
+        //console.log(order_all[i]._id)
+        var length = Number(order_all[i].Length);
+        //console.log(length);
+        var extra = Number(order_all[i].Extra);
+        //console.log(extra);
+        var layers = Number(order_all[i].Layers);
+        //console.log(layers);
+        var layersactual = Number(order_all[i].LayersActual);
+        //console.log(layers);
+        var sonlayer = Number(order_all[i].SonLayer);
+        var monlayer = Number(order_all[i].MonLayer);
+        var lonlayer = Number(order_all[i].LonLayer);
+
+        if (layersactual) {
+          LayersToCount = layersactual;
+        } else {
+          LayersToCount = layers;
+        }
+
+        //LengthSum
+        var sum = Number((length + (extra/100)) * LayersToCount);
+        //console.log(sum);
+        var sumf =sum.toFixed(3);
+        //console.log(sumf);
+
+        if (sumf == "NaN") {
+          sumf = 0;
+        }
+
+        //S M L 
+        var Snew = Number(sonlayer * LayersToCount);
+        var Mnew = Number(monlayer * LayersToCount);
+        var Lnew = Number(lonlayer * LayersToCount);
+
+        Order.update({_id: order_all[i]._id},
+          {
+            //$set: { orderLength: 5+5 },
+            $set: { LengthSum: sumf, S: Snew, M: Mnew, L: Lnew },
+          }, 
+          {
+            multi: true,
+          }
+        );
+      }
+      alert("LengthSum fields are refreshed! \n ______________________________ \n If LengthSum is 0, that's because some fields \n(Length, Extra or Layers) are missing!  ");
+    },
+
+    'click #statistics' : function (e, t) {
+      console.log('statistics - click')
+
+      // Define rd_addneworder
+      var rd_statistics = ReactiveModal.initDialog(rm_Statistics);
+      // Show rd_addneworder
+      rd_statistics.show();
+    },
+
     'change #orderWithoutDate': function (e, t) {
 
         if ($('#orderWithoutDate').prop('checked')){
@@ -353,20 +1155,131 @@ if (Meteor.isClient) {
         }
     },
 
+    'change #orderWithoutJob': function (e, t) {
+
+        if ($('#orderWithoutJob').prop('checked')){
+          console.log("orderWithoutJob: checked");
+          Session.set("ses_jobnotexist", true);
+        } else {
+          console.log("orderWithoutJob: unchecked");
+          Session.set("ses_jobnotexist", false);
+        }
+    },
   });
   
   Template.tmp_EditOrder.events({
     'click #deleteOrder': function (e, t) {
       var orderToDelete = Session.get("selectedDocId");
-      console.log("orderToDelete" + orderToDelete);
+      //console.log("orderToDelete" + orderToDelete);
 
-      Order.remove({_id: orderToDelete});
-      //rd_editorder.hide();
+      if (confirm('Are you sure you want to DELETE this Order?')) {
+        // Save it!
+        Order.remove({_id: orderToDelete});
+        rm_EditOrder.hide();
+      } else {
+        // Do nothing!
+        rm_EditOrder.hide();
+      }
+
+    },
+    'click #loadOrder': function (){
+      //console.log("click load Order");
+      var orderToEdit = Session.get("selectedDocId");
+      //console.log("orderToEdit: " + orderToEdit);
+      var userEdit = Session.get("ses_loggedUserName");
+      //console.log("userEdit: " + userEdit);
+      var userEditLoad;
+
+      if (userEdit == "sp11"){
+        userEditLoad = "SP 1-1";
+      } else if (userEdit == "sp12") {
+        userEditLoad = "SP 1-2";
+      } else if (userEdit == "sp21") {
+        userEditLoad = "SP 2-1";
+      } else if (userEdit == "sp22") {
+        userEditLoad = "SP 2-2";
+      }
+
+      //console.log("userEditLoad: " + userEditLoad);
+      //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
+      //console.log(orderToEdit[0]._id);
+
+      Order.update({_id: orderToEdit},{$set: {Load: userEditLoad}});
+      rm_EditOrder.hide();
+    },
+    'click #spreadOrder': function (){
+      //console.log("click spread Order");
+      var orderToEdit = Session.get("selectedDocId");
+      //console.log("orderToEdit: " + orderToEdit);
+      var userEdit = Session.get("ses_loggedUserName");
+      //console.log("userEdit: " + userEdit);
+      var userEditSpread;
+
+      if (userEdit == "sp11"){
+        userEditSpread = "SP 1-1";
+      } else if (userEdit == "sp12") {
+        userEditSpread = "SP 1-2";
+      } else if (userEdit == "sp21") {
+        userEditSpread = "SP 2-1";
+      } else if (userEdit == "sp22") {
+        userEditSpread = "SP 2-2";
+      }
+
+      //console.log("userEditSpread: " + userEditSpread);
+      //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
+      //console.log(orderToEdit[0]._id);
+
+      var spreadDate = new Date();
+
+      Order.update({_id: orderToEdit},{$set: {Spread: userEditSpread, SpreadDate: spreadDate}});
+      rm_EditOrder.hide();
+    },
+    'click #cutOrder': function (){
+      //console.log("click spread Order");
+      var orderToEdit = Session.get("selectedDocId");
+      //console.log("orderToEdit: " + orderToEdit);
+      var userEdit = Session.get("ses_loggedUserName");
+      //console.log("userEdit: " + userEdit);
+      var userEditCut;
+
+      if (userEdit == "cut1"){
+        userEditCut = "CUT 1";
+      } else if (userEdit == "cut2") {
+        userEditCut = "CUT 2";
+      } 
+
+      //console.log("userEditSpread: " + userEditSpread);
+      //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
+      //console.log(orderToEdit[0]._id);
+
+      var cutDate = new Date();
+
+      Order.update({_id: orderToEdit},{$set: {Cut: userEditCut, CutDate: cutDate}});
+      rm_EditOrder.hide();
     }
+    /*
+    'click #saveCommentOrder': function (){
+      console.log("click save Comment");
+      var orderToEdit = Session.get("selectedDocId");
+
+      var newComment = $('#commentOrder').val();
+      console.log("newComment: " + newComment);
+
+      Order.update({_id: orderToEdit},{$set: {Comment: newComment}});
+      newComment = ""
+      //alert("Comment saved");
+      //rm_EditOrder.hide();
+    },
+    'keyup #commentOrder': function(e, v){
+        //console.log("e: " + e);
+        //console.log("v: " + v);
+        var newComment = $('#commentOrder').val();
+        console.log("newComment: " + newComment);
+    }*/
   });
 
   Template.tmp_ImportOrderAnalytics.events({
-    'change #files_analytics': function (e) {
+    /*'change #files_analytics': function (e) {
       //alert("change a")
       //var files_a = e.target.files || e.dataTransfer.files;
 
@@ -391,19 +1304,6 @@ if (Meteor.isClient) {
 
           for (var i = 0; i < all.length; i++) {
             console.log(all[i]);
-            /*
-            $('#table').before( 
-              '<tr>' +
-                '<td id="SEQ'         + [i] +'">' + all[i]['SEQ'] + '</td>' +
-                '<td id="FILE'        + [i] +'">' + all[i]['FILE'] + '</td>' +
-                '<td id="CUT FILE'    + [i] +'">' + all[i]['CUT FILE'] + '</td>' +
-                '<td id="MODEL'       + [i] +'">' + all[i]['MODEL'] + '</td>' +
-                '<td id="SPREAD TYPE' + [i] +'">' + all[i]['SPREAD TYPE'] + '</td>' +
-                '<td id="BAGNO'       + [i] +'">' + all[i]['BAGNO'] + '</td>' +
-                '<td id="PLY'         + [i] +'">' + all[i]['PLY'] + '</td>' +
-                '</tr>'
-            );
-            */
 
             var seq  = Number(all[i]['SEQ']);
             console.log(seq);
@@ -411,82 +1311,234 @@ if (Meteor.isClient) {
             console.log(ply);
   
             // One by One
-            //A.insert({SEQ: seq, FILE: all[i]['FILE'], CUT_FILE: all[i]['CUT FILE'], MODEL: all[i]['MODEL'], SPREAD_TYPE: all[i]['SPREAD TYPE'], BAGNO: all[i]['BAGNO'], PLY: ply});    
+            //Order.insert({SEQ: seq, FILE: all[i]['FILE'], CUT_FILE: all[i]['CUT FILE'], MODEL: all[i]['MODEL'], SPREAD_TYPE: all[i]['SPREAD TYPE'], BAGNO: all[i]['BAGNO'], PLY: ply});    
+            Order.insert({orderName: all[i]['FILE'], orderFileName: all[i]['CUT FILE'], orderModel: all[i]['MODEL'], orderFabric: all[i]['SPREAD TYPE'], orderBagno: all[i]['BAGNO'], orderLayers: ply});    
           }
       }
       reader.readAsText(file_a);
+      rm_ImportOrderAnalyitics.hide();
+    }*/
+  });
 
+  Template.tmp_ImportPlannedMarkers.events({
+    'change #files_planned_markers': function (e) {
+      //alert("change a")
+      //var files_a = e.target.files || e.dataTransfer.files;
+
+      var files_a = e.target.files;
+      //console.log("files_a:" + files_a);
+      var file_a = files_a[0];           
+      //console.log("file_a:" + file_a);
+
+      var reader = new FileReader();
+
+      reader.onload = function (e) { 
+        //alert("reader.onloadend");
+        var text = e.target.result;
+        //alert(text);
+        //var all = $.csv.toObjects(text);
+        var all = $.csv.toObjects(text, {
+            /*delimiter:"'",
+            separator:';',*/
+            delimiter:";",
+            separator:',',
+        });
+
+          for (var i = 0; i < all.length; i++) {
+            //console.log(all[i]);
+
+            var no  = Number(all[i]['No']);
+            var komesa = all[i]['KOMESA'];
+            var marker = all[i]['Marker Name'];
+            var style = all[i]['Style'];
+            var fabric = all[i]['Fabric'];
+            var colorcode = all[i]['Color Code'];
+            var colordesc = all[i]['Color Description'];
+            var bagno = all[i]['Bagno'];
+            var layers = Number(all[i]['Layers']);
+            var lengthS = all[i]['Marker Length [mt]'];
+            //console.log(lengthS);
+            //var lengthR = lengthS.replace(",", ".");
+            //console.log(lengthR);
+            var length = Number(lengthS);
+            //console.log(length);
+            var extra = Number(all[i]['Length All. [cm]']);
+            var lengthsumX = Number((length + (extra/100)) * layers);
+            var lengthsum = Number(lengthsumX).toFixed(3);
+            var width = Number(all[i]['Marker Width [cm]']);
+            var s = Number(all[i]['tot S']);
+            var sonlayer = Number(all[i]['S']);
+            var m = Number(all[i]['tot M']);
+            var monlayer = Number(all[i]['M']);
+            var l = Number(all[i]['tot L']);
+            var lonlayer = Number(all[i]['L']);
+            var spreader = Number(all[i]['SPREADER']);
+            if (spreader == 1 ){
+              spreader = 'SP 1';
+            } else if (spreader == 2 ){
+              spreader = 'SP 2';
+            } 
+            var orderdate = new Date(all[i]['DATE']);
+            orderdate.setHours(2,0,0,0);
+            //console.log("orderdate: " + orderdate);
+
+            //One by One
+            //Order.insert({SEQ: seq, FILE: all[i]['FILE'], CUT_FILE: all[i]['CUT FILE'], MODEL: all[i]['MODEL'], SPREAD_TYPE: all[i]['SPREAD TYPE'], BAGNO: all[i]['BAGNO'], PLY: ply});    
+            //Order.insert({orderName: all[i]['FILE'], orderFileName: all[i]['CUT FILE'], orderModel: all[i]['MODEL'], orderFabric: all[i]['SPREAD TYPE'], orderBagno: all[i]['BAGNO'], orderLayers: ply});
+            Order.insert({No: no, Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, AssignSpreader: spreader});    
+          }
+      }
+      reader.readAsText(file_a);
+      rm_ImportPlannedMarkers.hide();
     }
   });
 
-    Template.tmp_ImportOrder.events({
+  Template.tmp_ImportOrder.events({
     'change #files': function (e) {
-      //alert("change")
-      var files = e.target.files || e.dataTransfer.files;
+      //alert("Ne radi jos")
+      //var files = e.target.files || e.dataTransfer.files;
 
+      var files_a = e.target.files;
+      //console.log("files_a:" + files_a);
+      var file_a = files_a[0];           
+      //console.log("file_a:" + file_a);
+
+      var reader = new FileReader();
+
+      reader.onload = function (e) { 
+        //alert("reader.onloadend");
+        var text = e.target.result;
+        //alert(text);
+        //var all = $.csv.toObjects(text);
+        var all = $.csv.toObjects(text, {
+            delimiter:"'",
+            separator:';',
+        });
+
+          //console.log("all: "+all);
+
+          for (var i = 0; i < all.length; i++) {
+            //console.log(all[i]);
+
+            var id = all[i]['_id'];
+            var no  = Number(all[i]['No']);
+            var komesa = all[i]['Komesa'];
+            var marker = all[i]['Marker'];
+            var style = all[i]['Style'];
+            var fabric = all[i]['Fabric'];
+            var colorcode = all[i]['ColorCode'];
+            var colordesc = all[i]['ColorDesc'];
+            var bagno = all[i]['Bagno'];
+            var layers = Number(all[i]['Layers']);
+            var layersactual = Number(all[i]['LayersActual']);
+            var length = Number(all[i]['Length']);
+            //var length = lengthS.replace(",", ".");
+            var extra = Number(all[i]['Extra']);
+            //var lengthsumX = Number((length + extra) * layers);
+            //var lengthsum = lengthsumX.toFixed(3);
+            var lengthsum = Number(all[i]['LengthSum']);
+            var width = Number(all[i]['Width']);
+            var s = Number(all[i]['S']);
+            var sonlayer = Number(all[i]['SonLayer']);
+            var m = Number(all[i]['M']);
+            var monlayer = Number(all[i]['MonLayer']);
+            var l = Number(all[i]['L']);
+            var lonlayer = Number(all[i]['LonLayer']);
+            var assignespreader = all[i]['AssignSpreader'];
+            var priority = all[i]['Priority'];
+            var load = all[i]['Load'];
+            var spread = all[i]['Spread'];
+            var comment = all[i]['Comment'];
+
+            var priority = Number(all[i]['Priority']);
+
+            var orderDate = all[i]['Date'];
+            if (orderDate) {
+              var orderDate2 = new Date(orderDate);  
+              //var orderDateP = Date.parse(orderDate);
+              //var orderDateM = moment(all[i]['Date']).format("DD-MM-YYYY");
+              //var orderDateM2 = new Date(orderDateM);
+            } else {
+              orderDate2 = "";
+            }
+
+            //console.log('direct: ' + all[i]['Date'] + " : " + all[i]['Date'].typeof);
+            //console.log('orderDate: ' + orderDate + " : " + orderDate.typeof);
+            //console.log('orderDate2: ' + orderDate2 + " : " + orderDate2.typeof);
+            //console.log('orderDateP: ' + orderDateP + " : " + orderDateP.typeof);
+            //console.log('orderDateM: ' + orderDateM + " : " + orderDateM.typeof);
+            //console.log('orderDateM2: ' + orderDateM2 + " : " + orderDateM2.typeof);
+
+            var orderCreated = all[i]['Created'];
+            var orderCreated2 = new Date(orderCreated);
+            //console.log('orderCreated: ' + orderCreated + " : " + orderCreated.typeof);
+            //console.log('orderCreated2: ' + orderCreated2 + " : " + orderCreated2.typeof);
+
+            //One by One
+            //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,AssignSpreader: all[i]['AssignSpreader'], Priority: priority});    
+            Order.insert({No: no, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, AssignSpreader: assignespreader, Load: load, Spread: spread, Comment: comment }); 
+            // Can not insert order created and _id , this values is automaticali created
+            //Created: orderCreated2  
+            //_id: id
+            
+          } 
+      }
+      reader.readAsText(file_a);
+      rm_ImportOrder.hide();
     }
   });
 
   Template.tmp_ExportOrder.order = function() {
-      return Order.find();
+    return Order.find();
   }
 
   Template.tmp_ExportOrder.events({
-      'click #convert1' : function (e, t) {
-
-          //var json = $.parseJSON($("#json").val());
-          //var csv = JSON2CSV(json);
-          //$("#csv").val(csv);
-
-          //var listo  = $("#listo").val();
-          //console.log(listo);
-
-          //for example
-          //Order.insert(
-          //[
-          //{orderName:"import1",orderLayers:"5",orderLength:"5",orderExtra:"5",orderPriority:"5"},
-          //{orderName:"import2",orderLayers:1,orderLength:1,orderExtra:1}
-          //]
-            //)
-
-      },
-      'click #download1' : function (e, t) {
+      'click #download_from_textarea' : function (e, t) {
         //var json = $.parseJSON($("#json").val());
         //var csv = JSON2CSV(json);
         
         //var listo  = $("#listo").val();
-        var json1  = $("#json1").val();
+        var textarea_json  = $("#textarea_json").val();
           //console.log(listo);
-        window.open("data:text/csv;charset=utf-8," + escape(json1))
+        window.open("data:text/csv;charset=utf-8," + escape(textarea_json))
+        rm_ExportOrder.hide();
 
       },
+      'click #convert1' : function (e, t) {
+        /*
+          var json = $.parseJSON($("#json").val());
+          var csv = JSON2CSV(json);
+          $("#csv").val(csv);
+
+          var listo  = $("#listo").val();
+          console.log(listo);
+        */
+      },
       'click #convert2' : function (e, t) {
-      //alert('convert2');
-      var csv2 = $("#json1").val();
-      //alert(csv2)
-
-      if (csv2 == "") {
-        return alert('empty field');
-      } else {
-          var json2 = CSV2JSON(csv2);
-          $("#json2").val(json2);
-        }
-
-    },
-    'click #download2' : function (e, t) {
-      //alert('download2');
-      var csv2 = $("#json1").val();
-      //alert(csv2)
-
-      if (csv2 == "") {
-        return alert('empty field');
-      } else {
-        
-          var json2 = CSV2JSON(csv2);
-          window.open("data:text/json;charset=utf-8," + escape(json2))  
-        }
-
-    }
+        /*
+          alert('convert2');
+          var csv2 = $("#json1").val();
+          if (csv2 == "") {
+            return alert('empty field');
+          } else {
+            var json2 = CSV2JSON(csv2);
+            $("#json2").val(json2);
+          }
+        */
+      },
+      'click #download2' : function (e, t) {
+        /*
+          alert('download2');
+          var csv2 = $("#json1").val();
+          alert(csv2)
+          if (csv2 == "") {
+            return alert('empty field');
+          } else {
+            var json2 = CSV2JSON(csv2);
+            window.open("data:text/json;charset=utf-8," + escape(json2))  
+          }
+        */
+      }
   });
 
   function JSON2CSV(objArray) {
@@ -530,9 +1582,6 @@ if (Meteor.isClient) {
       }
       return str;
   }
-
-
-
 }
 
 // Meteor Server side
@@ -542,29 +1591,89 @@ if (Meteor.isServer) {
     return Order.find();
   });
 
-  Meteor.publish("order", function(dateFilter){
-    return Order.find({orderDate: dateFilter});
+  Meteor.publish("orderWithDate", function(dateFilter){
+    return Order.find({ Date: dateFilter});
+  });
+
+  Meteor.publish("orderWithDateRange", function(Daysbefore , Daysafter) {
+    //return Order.find({ Date: {$gte: ISODate(Daysbefore), $lt: ISODate(Daysafter)} });
+    return Order.find({ Date: {$gte: Daysbefore, $lt: Daysafter} });
   });
 
   Meteor.publish("orderWithoutDate", function(){
-    return Order.find({orderDate: { $exists: false }});
+    return Order.find({ Date: { $exists: false }});
   });
 
+  Meteor.publish("orderWithoutJob", function(){
+    return Order.find({ AssignSpreader: "none"});
+  });
+
+  Meteor.publish("spreader1", function(dateFilter){
+    //return Order.find({AssignSpreader: "SP 1", Date: dateFilter});
+    //return Order.find({AssignSpreader: "SP 1"}); { $and:
+    //return Order.find({ $and: [{AssignSpreader: "SP 1"}, {Spread: ""}] });
+    
+    return Order.find({
+    $and : [
+        { AssignSpreader: "SP 1"},
+        { $or : [ { Spread : "" }, { Spread : { $exists: false }} ] }
+    ]
+    })
+  });
+
+  Meteor.publish("spreader2", function(dateFilter){
+    //return Order.find({AssignSpreader: "SP 2", Date: dateFilter});
+    //return Order.find({AssignSpreader: "SP 2"});
+    return Order.find({
+    $and : [
+        { AssignSpreader: "SP 2"},
+        { $or : [ { Spread : "" }, { Spread : { $exists: false }} ] }
+    ]
+    })
+  });
+
+  Meteor.publish("cutter", function(dateFilter){
+    //return Order.find({AssignSpreader: "SP 2", Date: dateFilter});
+    //return Order.find({AssignSpreader: "SP 2"});
+    return Order.find({
+    $and: [
+       { $or: [
+          { Spread: "SP 1-1" },
+          { Spread: "SP 1-2" },
+          { Spread: "SP 2-1" },
+          { Spread: "SP 2-2" }
+          ]},
+
+       { $or: [ 
+          { Cut : "" },
+          { Cut : { $exists: false }}
+          ]},
+      ] 
+    })
+  });
 }
 
+var admin = ""; //123123
+var sp11 = "";  // 111111
+var sp12 = "";  // 121212
+var sp21 = "";  // 212121
+var sp22 = "";  // 222222
+var cut1 = "";  // c1c1c1
+var cut2 = "";  // c2c2c2
 
+// kill -9 `ps ax | grep node | grep meteor | awk '{print $1}'`
 // export MONGO_URL=mongodb://localhost:27017/spread
 
 // meteor add accounts-base
 // meteor add accounts-password
 // meteor add accounts-ui
 // meteor add jquery
-// meteor mrt:jquery-ui  meteor se
+// meteor mrt:jquery-ui 
 // meteor add glasser:jqueryui
 
 // meteor add mrt:bootstrap-3  // meteor add bootstrap
 //meteor add mrt:jquery-ui-bootstrap 
-// meteor add mrt:accounts-ui-bootstrap-3
+//meteor add mrt:accounts-ui-bootstrap-3
 
 // meteor add mrt:moment
 
