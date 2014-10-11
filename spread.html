@@ -86,8 +86,11 @@
         
         {{#if isAdmin}}
         <div class="form-group">
-          <span style="color: white">Filter Order Date : </span>
-          <input type="date" id="filterOrderDate" class="form-control" placeholder="Filter Order Date"/>
+          <!--<span style="color: white">Filter Order Date : </span>
+          <input type="date" id="filterOrderDate" class="form-control" placeholder="Filter Order Date"/>-->
+          <span style="color: white">Filter Order Range : </span>
+          <input type="date" id="filterOrderDateBefore" class="form-control" placeholder="Filter Order Date Before"/> <span style="color: white"> - </span>
+          <input type="date" id="filterOrderDateAfter" class="form-control" placeholder="Filter Order Date After"/>
         </div>
         <button id="btnfilterOrderDate" class="btn btn-default">Clear Filter</button> 
         {{/if}}

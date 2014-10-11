@@ -6,22 +6,43 @@ if (Meteor.isClient) {
     //Session.set("ses_namefilter", "");
     //Session.set("ses_datefilter", "");
 
-    var t = Date();
+    //var t = Date();
 
     var todayAt02 = new Date();
     todayAt02.setHours(2,0,0,0);
+    console.log("todayAt02" + todayAt02);
+
+    var treeDaysbefore = new Date();
+    treeDaysbefore.setHours(-70,0,0,0);
+    console.log("treeDaysbefore: " + treeDaysbefore);
+
+    var treeDaysafter = new Date();
+    //treeDaysafter.setHours(74,0,0,0); // three days + 2h timezone 
+    treeDaysafter.setHours(75,0,0,0);   // three days + 2h timezone + 1h
+    console.log("treeDaysafter: " + treeDaysafter);
+
+    Session.set("ses_datefilter", todayAt02);
+    Session.set("ses_DaysBefore", treeDaysbefore);
+    Session.set("ses_DaysAfter", treeDaysafter);
+    Session.set("ses_datenotexist", false);
+    Session.set("ses_jobnotexist", false);
 
     Date.prototype.toDateInputValue = (function() {
         var local = new Date(this);
         local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
         return local.toJSON().slice(0,10);
     });
-    
     $('#filterOrderDate').val(new Date().toDateInputValue());
-    Session.set("ses_datefilter", todayAt02);
-    Session.set("ses_datenotexist", false);
-    Session.set("ses_jobnotexist", false);
+    
+    var filterOrderDateBefore = new Date(treeDaysbefore).toDateInputValue();
+    //filterOrderDateBefore = filterOrderDateBefore.setHours(-70,0,0,0);
+    console.log(filterOrderDateBefore);
+    $('#filterOrderDateBefore').val(filterOrderDateBefore);
 
+    var filterOrderDateAfter = new Date(treeDaysafter).toDateInputValue();
+    //filterOrderDateAfter = filterOrderDateAfter.setHours(75,0,0,0);
+    console.log(filterOrderDateAfter);
+    $('#filterOrderDateAfter').val(filterOrderDateAfter);
 
     // User auth
     var loggedUserId = Session.get("loggedUserId");
@@ -58,6 +79,8 @@ if (Meteor.isClient) {
 
     var ses_loggedUserName = Session.get("ses_loggedUserName");
     var ses_datefilter = Session.get("ses_datefilter");
+    var ses_DaysBefore = Session.get("ses_DaysBefore");
+    var ses_DaysAfter = Session.get("ses_DaysAfter");
     var ses_existdate = Session.get("ses_datenotexist");
     var ses_jobnotexist = Session.get("ses_jobnotexist");
 
@@ -76,14 +99,12 @@ if (Meteor.isClient) {
       Meteor.subscribe('orderWithoutJob');
     } else if ( ses_datefilter == "" ) { 
       Meteor.subscribe('orderAll');
+    } else if ( (ses_DaysBefore) || (ses_DaysAfter) ) {
+      Meteor.subscribe('orderWithDateRange', ses_DaysBefore, ses_DaysAfter);
     } else {
-      Meteor.subscribe('orderWithDate', Session.get("ses_datefilter"));
+      Meteor.subscribe('orderWithDate', ses_datefilter);
     }
-    /*
-    if (ses_datefilter) {
-      Meteor.subscribe('order', Session.get("ses_datefilter"));
-    }
-    */
+    
     /*
       var userId = Meteor.userId();
       if (userId) {
@@ -967,9 +988,14 @@ if (Meteor.isClient) {
     'click #btnfilterOrderDate': function (e, t) {
 
       Session.set("ses_datefilter", "");
-      console.log("Delete-ses_datefilter: " + Session.get("ses_datefilter"));
+      Session.set("ses_DaysBefore", "");
+      Session.set("ses_DaysAfter", "");
+
+      console.log("Delete - ses_datefilter,ses_DaysBefore,ses_DaysAfter");
 
       $('#filterOrderDate').val("");
+      $('#filterOrderDateBefore').val("");
+      $('#filterOrderDateAfter').val("");
 
       //Session.set("ses_datenotexist", false);
       //Session.set("ses_jobnotexist", false);
@@ -983,6 +1009,30 @@ if (Meteor.isClient) {
       Session.set("ses_datefilter", datesel1);
       datesel1 = "";
       console.log("Set-ses_datefilter: " + Session.get("ses_datefilter"));
+    },
+
+    'change #filterOrderDateBefore': function (e, t) {
+      var datesel = $('#filterOrderDateBefore').val();
+
+      var datesel1 = new Date(datesel);
+      datesel1.setHours(1,0,0,0);
+
+      Session.set("ses_DaysBefore", datesel1);
+      Session.set("ses_datefilter", datesel1); //just to skip all
+      datesel1 = "";
+      console.log("Set-ses_DaysBefore: " + Session.get("ses_DaysBefore"));
+    },
+
+    'change #filterOrderDateAfter': function (e, t) {
+      var datesel = $('#filterOrderDateAfter').val();
+
+      var datesel1 = new Date(datesel);
+      datesel1.setHours(3,0,0,0);
+
+      Session.set("ses_DaysAfter", datesel1);
+      Session.set("ses_datefilter", datesel1); //just to skip all
+      datesel1 = "";
+      console.log("Set-ses_DaysAfter: " + Session.get("ses_DaysAfter"));
     },
 
     'click #new_order': function (e, t) {
@@ -1542,15 +1592,20 @@ if (Meteor.isServer) {
   });
 
   Meteor.publish("orderWithDate", function(dateFilter){
-    return Order.find({Date: dateFilter});
+    return Order.find({ Date: dateFilter});
+  });
+
+  Meteor.publish("orderWithDateRange", function(Daysbefore , Daysafter) {
+    //return Order.find({ Date: {$gte: ISODate(Daysbefore), $lt: ISODate(Daysafter)} });
+    return Order.find({ Date: {$gte: Daysbefore, $lt: Daysafter} });
   });
 
   Meteor.publish("orderWithoutDate", function(){
-    return Order.find({Date: { $exists: false }});
+    return Order.find({ Date: { $exists: false }});
   });
 
   Meteor.publish("orderWithoutJob", function(){
-    return Order.find({AssignSpreader: "none"});
+    return Order.find({ AssignSpreader: "none"});
   });
 
   Meteor.publish("spreader1", function(dateFilter){
