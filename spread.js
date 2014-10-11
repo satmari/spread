@@ -580,20 +580,40 @@ if (Meteor.isClient) {
       },
       OrderInfo: function () {
         var ses = Session.get("selectedDocId")
-        console.log("ses: " + ses);
+        //console.log("ses: " + ses);
 
-        var order = Order.find({_ID: ses}).fetch();
+        var order = Order.find({_id: ses}).fetch();
         
+        //console.log("order: " + order);
 
-        var No = order.No;
-        var Komesa = order.Komesa;
-        var Fabric = order.Fabric;
-        var Bagno = order.Bagno;
-        var ColorCode = order.ColorCode;
-        var ColorDesc = order.ColorDesc;
-        var OrderInfo = "No: " + No + " ,Komesa: " + Komesa + " ,Fabric: " + Fabric + " ,Bagno: " + Bagno + " ,Color Code: " + ColorCode + " ,Color Desc: " + ColorDesc
-        console.log(OrderInfo);
+        for (var i = 0; i < order.length; i++) {
+          var No = order[i].No;
+          var Komesa = order[i].Komesa;
+          
+        }
+
+        var OrderInfo = "No: " + No + " ,Komesa: " + Komesa ;
         return OrderInfo;
+
+      },
+      FabricInfo: function () {
+        var ses = Session.get("selectedDocId")
+        //console.log("ses: " + ses);
+
+        var order = Order.find({_id: ses}).fetch();
+        
+        //console.log("order: " + order);
+
+        for (var i = 0; i < order.length; i++) {
+          var Fabric = order[i].Fabric;
+          var Bagno = order[i].Bagno;
+          //var ColorCode = order[i].ColorCode;
+          var ColorDesc = order[i].ColorDesc;
+
+        }
+
+        var FabricInfo ="Fabric: " + Fabric + " ,Bagno: " + Bagno + " ,Color Desc: " + ColorDesc;
+        return FabricInfo;
 
       },
       /*Comment: function() {
@@ -834,7 +854,7 @@ if (Meteor.isClient) {
       return order.count();
     },
     SP1noSpreadRollsShift1: function (){
-      var order = Order.find({Spread: "SP 1-1"});
+      
       return order.count();
     },
     SP1noSpreadRollsShift2: function (){
