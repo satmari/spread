@@ -854,7 +854,7 @@ if (Meteor.isClient) {
       return order.count();
     },
     SP1noSpreadRollsShift1: function (){
-      
+      var order = Order.find({Spread: "SP 1-1"});
       return order.count();
     },
     SP1noSpreadRollsShift2: function (){
@@ -1156,7 +1156,7 @@ if (Meteor.isClient) {
     },
 
     'click #statistics' : function (e, t) {
-      console.log('statistics - click')
+      //console.log('statistics - click')
 
       // Define rd_addneworder
       var rd_statistics = ReactiveModal.initDialog(rm_Statistics);
@@ -1709,3 +1709,4 @@ var cut2 = "";  // c2c2c2
 // meteor add pahans:reactive-modal
 
 // meteor add mrt:jquery-csv 
+// meteor add settinghead:auto-nprogress
