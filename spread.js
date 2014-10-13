@@ -10,16 +10,16 @@ if (Meteor.isClient) {
 
     var todayAt02 = new Date();
     todayAt02.setHours(2,0,0,0);
-    console.log("todayAt02" + todayAt02);
+    //console.log("todayAt02" + todayAt02);
 
     var treeDaysbefore = new Date();
     treeDaysbefore.setHours(-70,0,0,0);
-    console.log("treeDaysbefore: " + treeDaysbefore);
+    //console.log("treeDaysbefore: " + treeDaysbefore);
 
     var treeDaysafter = new Date();
     //treeDaysafter.setHours(74,0,0,0); // three days + 2h timezone 
     treeDaysafter.setHours(75,0,0,0);   // three days + 2h timezone + 1h
-    console.log("treeDaysafter: " + treeDaysafter);
+    //console.log("treeDaysafter: " + treeDaysafter);
 
     Session.set("ses_datefilter", todayAt02);
     Session.set("ses_DaysBefore", treeDaysbefore);
@@ -36,12 +36,12 @@ if (Meteor.isClient) {
     
     var filterOrderDateBefore = new Date(treeDaysbefore).toDateInputValue();
     //filterOrderDateBefore = filterOrderDateBefore.setHours(-70,0,0,0);
-    console.log(filterOrderDateBefore);
+    //console.log(filterOrderDateBefore);
     $('#filterOrderDateBefore').val(filterOrderDateBefore);
 
     var filterOrderDateAfter = new Date(treeDaysafter).toDateInputValue();
     //filterOrderDateAfter = filterOrderDateAfter.setHours(75,0,0,0);
-    console.log(filterOrderDateAfter);
+    //console.log(filterOrderDateAfter);
     $('#filterOrderDateAfter').val(filterOrderDateAfter);
 
     // User auth
@@ -1397,10 +1397,26 @@ if (Meteor.isClient) {
               spreader = 'SP 1';
             } else if (spreader == 2 ){
               spreader = 'SP 2';
-            } 
-            var orderdate = new Date(all[i]['DATE']);
-            orderdate.setHours(2,0,0,0);
-            //console.log("orderdate: " + orderdate);
+            }
+
+            //var orderd = all[i]['DATE'];
+            console.log("all[i]['DATE']: " + all[i]['DATE']);
+            
+
+            //if (orderd){
+              var orderdate = new Date(all[i]['DATE']);
+              console.log("new Date(all[i]['DATE']): " + orderdate);
+
+              //orderdate.setHours(2,0,0,0);
+              //console.log("orderdate: " + orderdate);
+                            
+            //} else {
+              
+            //  console.log("orderdate === 0, prazan: " + orderdate);
+              //orderdate = "";
+              //Order.insert({No: no, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, AssignSpreader: spreader});    
+            //}
+            
 
             //One by One
             //Order.insert({SEQ: seq, FILE: all[i]['FILE'], CUT_FILE: all[i]['CUT FILE'], MODEL: all[i]['MODEL'], SPREAD_TYPE: all[i]['SPREAD TYPE'], BAGNO: all[i]['BAGNO'], PLY: ply});    
