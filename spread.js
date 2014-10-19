@@ -1315,7 +1315,7 @@ if (Meteor.isClient) {
       var al = $('#input_actuallaysers').val();
       Session.set("ses_change_al", al);
       console.log("ses: " + Session.get("ses_change_al"));
-
+ 
     }
     /*
     'click #saveCommentOrder': function (){
