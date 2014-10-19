@@ -1321,7 +1321,7 @@ if (Meteor.isClient) {
     'click #saveCommentOrder': function (){
       console.log("click save Comment");
       var orderToEdit = Session.get("selectedDocId");
-
+  
       var newComment = $('#commentOrder').val();
       console.log("newComment: " + newComment);
 
@@ -1335,7 +1335,7 @@ if (Meteor.isClient) {
         //console.log("v: " + v);
         var newComment = $('#commentOrder').val();
         console.log("newComment: " + newComment);
-    }*/
+    } */
   });
 
   Template.tmp_ImportOrderAnalytics.events({
