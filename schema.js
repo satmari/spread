@@ -130,6 +130,13 @@ Order = new Meteor.Collection("order", {
         decimal: true, 
         min: 0
     },
+    'CutS': {
+        type: Number,
+        label: "Cut S",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
     'M': {
         type: Number,
         label: "M",
@@ -140,6 +147,13 @@ Order = new Meteor.Collection("order", {
     'MonLayer': {
         type: Number,
         label: "MonLayer",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'CutM': {
+        type: Number,
+        label: "Cut M",
         optional: true,
         decimal: true, 
         min: 0
@@ -158,12 +172,19 @@ Order = new Meteor.Collection("order", {
         decimal: true, 
         min: 0
     },
-    'AssignSpreader': {
-        type: String,
-        label: "AssignSpreader",
+    'CutL': {
+        type: Number,
+        label: "Cut L",
         optional: true,
-        defaultValue: "none",
-        allowedValues: ["none", "SP 1", "SP 2"]
+        decimal: true, 
+        min: 0
+    },
+    'Status': {
+        type: String,
+        label: "Status",
+        optional: true,
+        defaultValue: "Not assigned",
+        allowedValues: ["Not assigned", "SP 1", "SP 2","CUT","Finish"]
     },
     'Priority': {
         type: Number,
@@ -288,11 +309,14 @@ LengthSum
 Width
 S
 SonLayer
+CutS
 M
 MonLayer
+CutM
 L
 LonLayer
-AssignSpreader
+CutL
+Status
 Priority
 Load
 Spread

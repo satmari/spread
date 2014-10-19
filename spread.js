@@ -237,12 +237,15 @@ if (Meteor.isClient) {
           { key: 'LengthSum', label: 'LengthSum (m)' },
           { key: 'Width', label: 'Width (cm)' },
           { key: 'S', label: 'S' },
-          /*{ key: 'SonLayer', label: 'S on Layer'},*/
+          { key: 'SonLayer', label: 'S on Layer'},
+          { key: 'CutS', label: 'Cut S'},
           { key: 'M', label: 'M' },
-          /*{ key: 'MonLayer', label: 'M on Layer'},*/
+          { key: 'MonLayer', label: 'M on Layer'},
+          { key: 'CutM', label: 'Cut M'},
           { key: 'L', label: 'L' },
-          /*{ key: 'LonLayer', label: 'L on layer'},*/
-          { key: 'AssignSpreader', label: 'Assign',
+          { key: 'LonLayer', label: 'L on layer'},
+          { key: 'CutL', label: 'Cut L'},
+          { key: 'Status', label: 'Status',
             fn: function (value) {
               if (value == "SP 1") {
                 return "SP 1";
@@ -250,8 +253,17 @@ if (Meteor.isClient) {
               else if (value == "SP 2") {
                 return "SP 2";
               }
+              else if (value == "CUT") {
+                return "CUT";
+              }
+              else if (value == "Finish") {
+                return "Finish";
+              }
+              else if (value == "Not assigned") {
+                return "Not assigned";
+              }
               else {
-                return "Not Assigned";
+                return "Not Defined";
               }
             }
           },
@@ -270,7 +282,25 @@ if (Meteor.isClient) {
               };
             }*/
           },
+          { key: 'SpreadDate', label: 'SpreadDate',
+             fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD HH:mm:ss");
+              } else {
+                return "";
+              }
+            }
+          },
           { key: 'Cut', label: 'Cut' },
+          { key: 'CutDate', label: 'CutDate',
+             fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD HH:mm:ss");
+              } else {
+                return "";
+              }
+            }
+          },
           { key: 'Comment', label: 'Comment' },
         ],
 
@@ -344,24 +374,12 @@ if (Meteor.isClient) {
             //{ key: 'S', label: 'S' },
             //{ key: 'M', label: 'M' },
             //{ key: 'L', label: 'L' },
-            /*{ key: 'AssignSpreader', label: 'Assign',
-              fn: function (value) {
-                if (value == "SP 1") {
-                  return "SP 1";
-                }
-                else if (value == "SP 2") {
-                  return "SP 2";
-                }
-                else {
-                  return "Not Assigned";
-                }
-              }
-            },*/
+            //{ key: 'Status', label: 'Status'},
             { key: 'Priority', label: 'Priority' },
             { key: 'Load', label: 'Load'},
-            { key: 'Spread', label: 'Spread'},
+            //{ key: 'Spread', label: 'Spread'},
             //{ key: 'Cut', label: 'Cut' },
-            //{ key: 'Comment', label: 'Comment' },
+            { key: 'Comment', label: 'Comment' },
           ],
 
             //useFontAwesome: true,
@@ -434,24 +452,21 @@ if (Meteor.isClient) {
             //{ key: 'S', label: 'S' },
             //{ key: 'M', label: 'M' },
             //{ key: 'L', label: 'L' },
-            /*{ key: 'AssignSpreader', label: 'Assign',
-              fn: function (value) {
-                if (value == "SP 1") {
-                  return "SP 1";
-                }
-                else if (value == "SP 2") {
-                  return "SP 2";
-                }
-                else {
-                  return "Not Assigned";
-                }
-              }
-            },*/
+            //{ key: 'Status', label: 'Status'},
             { key: 'Priority', label: 'Priority' },
             /*{ key: 'Load', label: 'Load'},*/
             /*{ key: 'Spread', label: 'Spread'},*/
-            { key: 'Cut', label: 'Cut' },
-            //{ key: 'Comment', label: 'Comment' },
+            { key: 'SpreadDate', label: 'SpreadDate',
+             fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD HH:mm:ss");
+              } else {
+                return "";
+              }
+            }
+          },
+            //{ key: 'Cut', label: 'Cut' },
+            { key: 'Comment', label: 'Comment' },
           ],
 
             //useFontAwesome: true,
@@ -583,15 +598,11 @@ if (Meteor.isClient) {
         //console.log("ses: " + ses);
 
         var order = Order.find({_id: ses}).fetch();
-        
-        //console.log("order: " + order);
-
         for (var i = 0; i < order.length; i++) {
           var No = order[i].No;
           var Komesa = order[i].Komesa;
           
         }
-
         var OrderInfo = "No: " + No + " ,Komesa: " + Komesa ;
         return OrderInfo;
 
@@ -601,9 +612,6 @@ if (Meteor.isClient) {
         //console.log("ses: " + ses);
 
         var order = Order.find({_id: ses}).fetch();
-        
-        //console.log("order: " + order);
-
         for (var i = 0; i < order.length; i++) {
           var Fabric = order[i].Fabric;
           var Bagno = order[i].Bagno;
@@ -612,10 +620,42 @@ if (Meteor.isClient) {
 
         }
 
-        var FabricInfo ="Fabric: " + Fabric + " ,Bagno: " + Bagno + " ,Color Desc: " + ColorDesc;
+        var FabricInfo = "Fabric: " + Fabric + " ,Bagno: " + Bagno + " ,Color Desc: " + ColorDesc;
         return FabricInfo;
 
       },
+      isLoaded: function () {
+        var ses = Session.get("selectedDocId")
+
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var Loaded = order[i].Load;
+          
+        }
+
+        //console.log("Loaded: " + Loaded);
+        if (Loaded) {
+          return false;
+        } else {
+          return true;
+        }
+      },
+      /*isSpreaded: function () {
+        var ses = Session.get("selectedDocId")
+
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var Spreaded = order[i].Spread;
+          
+        }
+
+        console.log("Spreaded: " + Spreaded);
+        if (Spreaded) {
+          return false;
+        } else {
+          return true;
+        }
+      },*/
       /*Comment: function() {
         var editingDoc = Session.get("selectedDocId");
         if (editingDoc) {
@@ -770,17 +810,7 @@ if (Meteor.isClient) {
     allLayers: function(){
       //var allLayers = Order.distinct("Layers");
       var order = Order.find().fetch();
-      /*var allLayers = order.aggregate([
-          //{ $match : {} },
-          { $group : {
-              AssignSpreader: "$AssignSpreader",
-              total: {$sum: "LengthSum"}
-            }
-          },
-          //{ $sort: {AssignSpreader: "SP 1"}}
-      ]);
-      */
-
+     
       var sumLayers = 0;
       for (var i = 0; i < order.length; i++) {
         sumLayers += order[i].Layers;
@@ -830,11 +860,11 @@ if (Meteor.isClient) {
       return sumL;
     },
     SP1noRolls: function (){
-      var order = Order.find({AssignSpreader: "SP 1"});
+      var order = Order.find({Status: "SP 1"});
       return order.count();
     },
     SP2noRolls: function (){
-      var order = Order.find({AssignSpreader: "SP 2"});
+      var order = Order.find({Status: "SP 2"});
       return order.count();
     },
     SP1noLoadRollsShift1: function (){
@@ -1186,6 +1216,7 @@ if (Meteor.isClient) {
         }
     },
   });
+
   
   Template.tmp_EditOrder.events({
     'click #deleteOrder': function (e, t) {
@@ -1220,7 +1251,7 @@ if (Meteor.isClient) {
         userEditLoad = "SP 2-2";
       }
 
-      //console.log("userEditLoad: " + userEditLoad);
+      
       //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
       //console.log(orderToEdit[0]._id);
 
@@ -1228,6 +1259,10 @@ if (Meteor.isClient) {
       rm_EditOrder.hide();
     },
     'click #spreadOrder': function (){
+      var input_actuallaysers = $('#input_actuallaysers').val();
+      //input_actuallaysers = Number(input_actuallaysers);
+      console.log("input_actuallaysers: " + input_actuallaysers); // Problem!!
+
       //console.log("click spread Order");
       var orderToEdit = Session.get("selectedDocId");
       //console.log("orderToEdit: " + orderToEdit);
@@ -1245,13 +1280,16 @@ if (Meteor.isClient) {
         userEditSpread = "SP 2-2";
       }
 
-      //console.log("userEditSpread: " + userEditSpread);
-      //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
-      //console.log(orderToEdit[0]._id);
-
       var spreadDate = new Date();
 
-      Order.update({_id: orderToEdit},{$set: {Spread: userEditSpread, SpreadDate: spreadDate}});
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var SonLayer = order[i].SonLayer;
+          var MonLayer = order[i].MonLayer;
+          var LonLayer = order[i].LonLayer;
+      }
+
+      Order.update({_id: orderToEdit},{$set: {Spread: userEditSpread, SpreadDate: spreadDate, Status: "CUT",LayersActual: input_actuallaysers}});
       rm_EditOrder.hide();
     },
     'click #cutOrder': function (){
@@ -1268,14 +1306,16 @@ if (Meteor.isClient) {
         userEditCut = "CUT 2";
       } 
 
-      //console.log("userEditSpread: " + userEditSpread);
-      //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
-      //console.log(orderToEdit[0]._id);
-
       var cutDate = new Date();
 
-      Order.update({_id: orderToEdit},{$set: {Cut: userEditCut, CutDate: cutDate}});
+      Order.update({_id: orderToEdit},{$set: {Cut: userEditCut, CutDate: cutDate, Status: "Finish" }});
       rm_EditOrder.hide();
+    },
+    'keyup #input_actuallaysers': function(e){
+      var al = $('#input_actuallaysers').val();
+      Session.set("ses_change_al", al);
+      console.log("ses: " + Session.get("ses_change_al"));
+
     }
     /*
     'click #saveCommentOrder': function (){
@@ -1376,6 +1416,7 @@ if (Meteor.isClient) {
             var colordesc = all[i]['Color Description'];
             var bagno = all[i]['Bagno'];
             var layers = Number(all[i]['Layers']);
+            var actuallayers = 0;
             var lengthS = all[i]['Marker Length [mt]'];
             //console.log(lengthS);
             //var lengthR = lengthS.replace(",", ".");
@@ -1392,36 +1433,25 @@ if (Meteor.isClient) {
             var monlayer = Number(all[i]['M']);
             var l = Number(all[i]['tot L']);
             var lonlayer = Number(all[i]['L']);
-            var spreader = Number(all[i]['SPREADER']);
-            if (spreader == 1 ){
-              spreader = 'SP 1';
-            } else if (spreader == 2 ){
-              spreader = 'SP 2';
+            var status = Number(all[i]['SPREADER']);
+            if (status == 1 ){
+              status = 'SP 1';
+            } else if (status == 2 ){
+              status = 'SP 2';
+            } else if (status == "" ){
+              status = 'Not assigned';
             }
 
             //var orderd = all[i]['DATE'];
-            console.log("all[i]['DATE']: " + all[i]['DATE']);
+            //console.log("all[i]['DATE']: " + all[i]['DATE']);
             
-
-            //if (orderd){
-              var orderdate = new Date(all[i]['DATE']);
-              console.log("new Date(all[i]['DATE']): " + orderdate);
-
-              //orderdate.setHours(2,0,0,0);
-              //console.log("orderdate: " + orderdate);
-                            
-            //} else {
+            var orderdate = new Date(all[i]['DATE']);
+            orderdate.setHours(2,0,0,0);
               
-            //  console.log("orderdate === 0, prazan: " + orderdate);
-              //orderdate = "";
-              //Order.insert({No: no, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, AssignSpreader: spreader});    
-            //}
-            
-
-            //One by One
+           //One by One
             //Order.insert({SEQ: seq, FILE: all[i]['FILE'], CUT_FILE: all[i]['CUT FILE'], MODEL: all[i]['MODEL'], SPREAD_TYPE: all[i]['SPREAD TYPE'], BAGNO: all[i]['BAGNO'], PLY: ply});    
             //Order.insert({orderName: all[i]['FILE'], orderFileName: all[i]['CUT FILE'], orderModel: all[i]['MODEL'], orderFabric: all[i]['SPREAD TYPE'], orderBagno: all[i]['BAGNO'], orderLayers: ply});
-            Order.insert({No: no, Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, AssignSpreader: spreader});    
+            Order.insert({No: no, Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, Status: status});    
           }
       }
       reader.readAsText(file_a);
@@ -1476,11 +1506,14 @@ if (Meteor.isClient) {
             var width = Number(all[i]['Width']);
             var s = Number(all[i]['S']);
             var sonlayer = Number(all[i]['SonLayer']);
+            var cuts = Number(all[i]['CutS']);
             var m = Number(all[i]['M']);
             var monlayer = Number(all[i]['MonLayer']);
+            var cutm = Number(all[i]['CutM']);
             var l = Number(all[i]['L']);
             var lonlayer = Number(all[i]['LonLayer']);
-            var assignespreader = all[i]['AssignSpreader'];
+            var cutl = Number(all[i]['CutL']);
+            var status = all[i]['Status'];
             var priority = all[i]['Priority'];
             var load = all[i]['Load'];
             var spread = all[i]['Spread'];
@@ -1498,21 +1531,13 @@ if (Meteor.isClient) {
               orderDate2 = "";
             }
 
-            //console.log('direct: ' + all[i]['Date'] + " : " + all[i]['Date'].typeof);
-            //console.log('orderDate: ' + orderDate + " : " + orderDate.typeof);
-            //console.log('orderDate2: ' + orderDate2 + " : " + orderDate2.typeof);
-            //console.log('orderDateP: ' + orderDateP + " : " + orderDateP.typeof);
-            //console.log('orderDateM: ' + orderDateM + " : " + orderDateM.typeof);
-            //console.log('orderDateM2: ' + orderDateM2 + " : " + orderDateM2.typeof);
-
             var orderCreated = all[i]['Created'];
             var orderCreated2 = new Date(orderCreated);
-            //console.log('orderCreated: ' + orderCreated + " : " + orderCreated.typeof);
-            //console.log('orderCreated2: ' + orderCreated2 + " : " + orderCreated2.typeof);
+
 
             //One by One
-            //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,AssignSpreader: all[i]['AssignSpreader'], Priority: priority});    
-            Order.insert({No: no, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, AssignSpreader: assignespreader, Load: load, Spread: spread, Comment: comment }); 
+            //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,Status: all[i]['Status'], Priority: priority});    
+            Order.insert({No: no, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, Status: status, Load: load, Spread: spread, Comment: comment }); 
             // Can not insert order created and _id , this values is automaticali created
             //Created: orderCreated2  
             //_id: id
@@ -1641,37 +1666,45 @@ if (Meteor.isServer) {
   });
 
   Meteor.publish("orderWithoutJob", function(){
-    return Order.find({ AssignSpreader: "none"});
+    return Order.find({ Status: "Not assigned"});
   });
 
   Meteor.publish("spreader1", function(dateFilter){
-    //return Order.find({AssignSpreader: "SP 1", Date: dateFilter});
-    //return Order.find({AssignSpreader: "SP 1"}); { $and:
-    //return Order.find({ $and: [{AssignSpreader: "SP 1"}, {Spread: ""}] });
-    
+
     return Order.find({
     $and : [
-        { AssignSpreader: "SP 1"},
-        { $or : [ { Spread : "" }, { Spread : { $exists: false }} ] }
+        { Status: "SP 1"},
+        //{ $or : [ { Spread : "" }, { Spread : { $exists: false }} ] }
     ]
     })
   });
 
   Meteor.publish("spreader2", function(dateFilter){
-    //return Order.find({AssignSpreader: "SP 2", Date: dateFilter});
-    //return Order.find({AssignSpreader: "SP 2"});
+  
     return Order.find({
     $and : [
-        { AssignSpreader: "SP 2"},
-        { $or : [ { Spread : "" }, { Spread : { $exists: false }} ] }
+        { Status: "SP 2"},
+        //{ $or : [ { Spread : "" }, { Spread : { $exists: false }} ] }
     ]
     })
   });
 
   Meteor.publish("cutter", function(dateFilter){
-    //return Order.find({AssignSpreader: "SP 2", Date: dateFilter});
-    //return Order.find({AssignSpreader: "SP 2"});
+
     return Order.find({
+    $and: [
+       { $or: [
+          { Status: "CUT" }
+        ]},
+
+       { $or: [ 
+          { Cut : "" },
+          { Cut : { $exists: false }}
+          ]},
+      ] 
+    })
+
+    /* return Order.find({
     $and: [
        { $or: [
           { Spread: "SP 1-1" },
@@ -1685,7 +1718,9 @@ if (Meteor.isServer) {
           { Cut : { $exists: false }}
           ]},
       ] 
-    })
+    })*/
+
+
   });
 }
 
