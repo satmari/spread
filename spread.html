@@ -46,8 +46,8 @@
     
     <ul class="nav navbar-nav"><li class="active">
        <div class="navbar-form">
-        <button id="new_order" class="btn btn-default">Add new order</button> 
-        <!--<button id="import_orders_analytics" class="btn btn-default">Import orders from Analytics</button>-->
+        <!--<button id="new_order" class="btn btn-default">Add new order</button> 
+        <button id="import_orders_analytics" class="btn btn-default">Import orders from Analytics</button>-->
         <button id="import_from_planned_markers" class="btn btn-default">Import from Planned Markers</button>
         <button id="export_orders" class="btn btn-info">Export order</button> 
         <button id="import_orders" class="btn btn-info">Import order</button>
@@ -85,14 +85,54 @@
       <div class="navbar-form">
         
         {{#if isAdmin}}
-        <div class="form-group">
+        <div class="form-group" style="border: 1px solid #000; border-radius: 5px;">
           <!--<span style="color: white">Filter Order Date : </span>
           <input type="date" id="filterOrderDate" class="form-control" placeholder="Filter Order Date"/>-->
-          <span style="color: white">Filter Order Range : </span>
+          <span style="color: white">Filter Order Range: </span>
           <input type="date" id="filterOrderDateBefore" class="form-control" placeholder="Filter Order Date Before"/> <span style="color: white"> - </span>
           <input type="date" id="filterOrderDateAfter" class="form-control" placeholder="Filter Order Date After"/>
+          <!--<button id="btnfilterOrderDate" class="btn btn-default">Clear Filter</button> -->
+          <ul class="nav navbar-nav">
+          <li><a href="#"></a></li>
+        </ul>
         </div>
-        <button id="btnfilterOrderDate" class="btn btn-default">Clear Filter</button> 
+        
+
+        <!--
+        <select class="form-control" id="filter_select">
+          <option>none</option>
+          <option>SP 1</option>
+          <option>SP 2</option>
+          <option>CUT</option>
+          <option>Finished</option>
+          <option>Not Assigned</option>
+          <option>All</option>
+        </select>
+        -->
+        
+        <div class="btn-group" data-toggle="buttons" style="border: 1px solid #000; border-radius: 5px;">
+       
+        <ul class="nav navbar-nav">
+          <li><a href="#"></a></li>
+        </ul>
+        
+           <label class="btn btn-primary">
+            <input type="radio" name="options" id="not_assigned"> Not Assigned
+          </label>
+          <label class="btn btn-default">
+            <input type="radio" name="options" id="sp1"> SP 1 
+          </label>
+          <label class="btn btn-default ">
+            <input type="radio" name="options" id="sp2"> SP 2 
+          </label>
+          <label class="btn btn-info">
+            <input type="radio" name="options" id="cut"> CUT
+          </label>
+          <label class="btn btn-success">
+            <input type="radio" name="options" id="finished"> Finished
+          </label>
+        </div>
+
         {{/if}}
         <!-- class="navbar-form navbar"  type="submit"-->
       </div>  
@@ -526,6 +566,38 @@
       <div class="row" style="width:550px">
           <div>
             {{#if isAdmin}}
+
+              {{#autoForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc }}
+                      <fieldset>
+                        <!--<legend>Actual Layers</legend>-->
+                        {{> afQuickField name='No' type='Number' }}
+                        {{> afQuickField name='Position' type='Number'  }}
+                        {{> afQuickField name='Status' options='allowed' }}
+                        <!--
+                        {{#if afFieldValueIs name='Status' value="SP 1"}}
+                          {{> afQuickField name='Position'}}
+                        {{/if}}
+                        
+                        {{#each afFieldNames}}
+                            {{> afQuickField name='Status' options="auto"}}
+                        {{/each}}
+                        -->
+                      </fieldset>
+                      <button type="submit" class="btn btn-primary">Save</button>
+              {{/autoForm}}
+              <hr />
+
+
+                      <select class="form-control">
+                        {{#each position}}
+                           <option>{{this}}</option>
+                        {{/each}}
+                      </select>
+                      <button type="submit" id="saveposition" class="btn btn-primary">Save Position</button>
+
+
+              <hr />
+
               {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="LengthSum,Created,S,M,L,SpreadDate,CutDate"}}
               <div class="">
                 <br />
@@ -539,6 +611,7 @@
                     <p>User:  <big>{{User}}</big></p>
                     <p>Oredr Info:  <big>{{OrderInfo}}</big></p>
                     <p>Fabric Info:  <big>{{FabricInfo}}</big></p>
+
                     {{#if isLoaded}}
                     <tr>
                       <td>
@@ -556,13 +629,16 @@
                     <br />
                     <!--
                     <tr>
-                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,SonLayer,CutS,M,MonLayer,CutM,L,LonLayer,CutL,Status,Priority,LengthSum,Created,Load,Spread,SpreadDate,Cut,CutDate,OrderLink"}}
+                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,SonLayer,CutS,M,MonLayer,CutM,L,LonLayer,CutL,Status,Priority,LengthSum,Created,Load,Spread,SpreadDate,Cut,CutDate,OrderLink,Position"}}
                     </tr>
-                    -->
-                    <tr>
-                      <label class="control-label">Actual Layers</label>
-                      <input class="form-control" id="input_actuallaysers" type="number">
-                    </tr>
+                   -->
+                      {{#autoForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc }}
+                      <fieldset>
+                        <!--<legend>Actual Layers</legend>-->
+                        {{> afQuickField name='LayersActual'}}
+                      </fieldset>
+                      <button type="submit" class="btn btn-primary">Save</button>
+                      {{/autoForm}}
 
                     {{/if}}
                   </tbody>
@@ -582,7 +658,20 @@
                     </tr>
                     <br />
                     <tr>
-                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,LayersActual,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,Status,Priority,LengthSum,Created,Load,Spread,SpreadDate,Cut,CutDate,OrderLink"}}
+                    <!--
+                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,LayersActual,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,Status,Priority,LengthSum,Created,Load,Spread,SpreadDate,Cut,CutDate,OrderLink,Position"}}
+                    -->
+                    {{#autoForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc }}
+                      <fieldset>
+                        <!--<legend>Actual Layers</legend>-->
+                        {{> afQuickField name='CutS'}}
+                        {{> afQuickField name='CutM'}}
+                        {{> afQuickField name='CutL'}}
+                        {{> afQuickField name='Comment'}}
+                      </fieldset>
+                      <button type="submit" class="btn btn-primary">Save</button>
+                    {{/autoForm}}
+
                     </tr>
                   </tbody>
                 </table>

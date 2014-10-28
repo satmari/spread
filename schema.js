@@ -8,11 +8,39 @@ Order = new Meteor.Collection("order", {
         decimal: false, 
         min: 0
     },
+    'Position': {
+        type: Number,
+        label: "Position",
+        optional: false,
+        decimal: false, 
+        //defaultValue: 99,
+        //allowedValues: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 99],
+        //max: 100
+        /*allowedValues: function() {
+            var order = Order.find({Status: 'SP 2'}).fetch();
+
+            var pos;
+
+            for (var i = 0; i < order.length; i++) {
+                pos = order[i].Position;
+                pos += pos
+            }
+            console.log("pos: " + pos);
+            return pos;
+        }*/
+    },
+    'Status': {
+        type: String,
+        label: "Status",
+        optional: true,
+        defaultValue: "Not assigned",
+        allowedValues: ["Not assigned", "SP 1", "SP 2","CUT","Finished"]
+    },
     'Date': {
         //blackbox: true, 
         type: Date,
         label: "Date",
-        optional: true,
+        optional: true
     },
     'Created': {
         type: Date,
@@ -178,13 +206,6 @@ Order = new Meteor.Collection("order", {
         optional: true,
         decimal: true, 
         min: 0
-    },
-    'Status': {
-        type: String,
-        label: "Status",
-        optional: true,
-        defaultValue: "Not assigned",
-        allowedValues: ["Not assigned", "SP 1", "SP 2","CUT","Finish"]
     },
     'Priority': {
         type: Number,

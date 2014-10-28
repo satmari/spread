@@ -26,12 +26,14 @@ if (Meteor.isClient) {
     Session.set("ses_DaysAfter", treeDaysafter);
     Session.set("ses_datenotexist", false);
     Session.set("ses_jobnotexist", false);
+    Session.set("ses_statusfilter", false);
 
     Date.prototype.toDateInputValue = (function() {
         var local = new Date(this);
         local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
         return local.toJSON().slice(0,10);
     });
+
     $('#filterOrderDate').val(new Date().toDateInputValue());
     
     var filterOrderDateBefore = new Date(treeDaysbefore).toDateInputValue();
@@ -83,26 +85,32 @@ if (Meteor.isClient) {
     var ses_DaysAfter = Session.get("ses_DaysAfter");
     var ses_existdate = Session.get("ses_datenotexist");
     var ses_jobnotexist = Session.get("ses_jobnotexist");
+    var ses_statusfilter = Session.get("ses_statusfilter");
 
     //console.log("Autosubcribe sesion: " + ses + " , typeof: " + typeof ses);
     if ((ses_loggedUserName == "cut1") || (ses_loggedUserName == "cut2")){
-      Meteor.subscribe('cutter');
+      Meteor.subscribe('filter_cutter');
     } else if ((ses_loggedUserName == "sp11") || (ses_loggedUserName == "sp12")){
       //Meteor.subscribe('spreader1', Session.get("ses_datefilter"));
-      Meteor.subscribe('spreader1');
+      Meteor.subscribe('filter_spreader1');
     } else if ((ses_loggedUserName == "sp21") || (ses_loggedUserName == "sp22")){
       //Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
-      Meteor.subscribe('spreader2');
+      Meteor.subscribe('filter_spreader2');
+
     } else if ( ses_existdate == true ) {
-      Meteor.subscribe('orderWithoutDate');
-    } else if ( ses_jobnotexist == true ) { 
-      Meteor.subscribe('orderWithoutJob');
+      Meteor.subscribe('filter_orderWithoutDate');
+    } else if ( ses_jobnotexist == true ) {
+      Meteor.subscribe('filter_orderWithoutJob');
+
+    } else if ( ses_statusfilter) { 
+      Meteor.subscribe('filter_statusfilter', ses_statusfilter, ses_DaysBefore, ses_DaysAfter);
+
     } else if ( ses_datefilter == "" ) { 
-      Meteor.subscribe('orderAll');
+      Meteor.subscribe('filter_orderAll');
     } else if ( (ses_DaysBefore) || (ses_DaysAfter) ) {
-      Meteor.subscribe('orderWithDateRange', ses_DaysBefore, ses_DaysAfter);
+      Meteor.subscribe('filter_orderWithDateRange', ses_DaysBefore, ses_DaysAfter);
     } else {
-      Meteor.subscribe('orderWithDate', ses_datefilter);
+      Meteor.subscribe('filter_orderWithDate', ses_datefilter);
     }
     
     /*
@@ -203,7 +211,8 @@ if (Meteor.isClient) {
         showNavigation: 'auto',
         fields: [
           //{ key: '_id', label: '_ID' },
-          { key: 'No', label: 'No', sort: 'descending' },
+          { key: 'No', label: 'No', /*sort: 'descending' */},
+          { key: 'Position', label: 'Pos' , sort: 'ascending'},
           { key: 'Date', label: 'Date',
             fn: function (value) {
               if (value){
@@ -236,14 +245,14 @@ if (Meteor.isClient) {
           { key: 'Extra', label: 'Extra (cm)' },
           { key: 'LengthSum', label: 'LengthSum (m)' },
           { key: 'Width', label: 'Width (cm)' },
-          { key: 'S', label: 'S' },
           { key: 'SonLayer', label: 'S on Layer'},
+          { key: 'S', label: 'Order S ' },
           { key: 'CutS', label: 'Cut S'},
-          { key: 'M', label: 'M' },
           { key: 'MonLayer', label: 'M on Layer'},
+          { key: 'M', label: 'Order M' },
           { key: 'CutM', label: 'Cut M'},
-          { key: 'L', label: 'L' },
           { key: 'LonLayer', label: 'L on layer'},
+          { key: 'L', label: 'Order L' },
           { key: 'CutL', label: 'Cut L'},
           { key: 'Status', label: 'Status',
             fn: function (value) {
@@ -256,8 +265,8 @@ if (Meteor.isClient) {
               else if (value == "CUT") {
                 return "CUT";
               }
-              else if (value == "Finish") {
-                return "Finish";
+              else if (value == "Finished") {
+                return "Finished";
               }
               else if (value == "Not assigned") {
                 return "Not assigned";
@@ -307,7 +316,7 @@ if (Meteor.isClient) {
           //useFontAwesome: true,
           //group: 'orderExtra'
           //rowClass: "warning", //warning, danger
-          rowClass: function(item) {
+          /*rowClass: function(item) {
             var priority = item.Priority;
             var load = item.Load;
             var spread = item.Spread;
@@ -328,6 +337,31 @@ if (Meteor.isClient) {
             } else {
 
             }
+          },*/
+          rowClass: function(item) {
+            var priority = item.Priority;
+            var load = item.Load;
+            var spread = item.Spread;
+            var status = item.Status;
+            
+            // treba da se doradi
+
+            if (status == "Finished")  {
+              return 'success'; // green
+            } else if (status == 'CUT') {
+              return 'info';    // dark blue
+            } else if (load) {
+              return 'load';    // greey
+            } else if ((status == "SP 1") || (status == "SP 2")) {
+              return 'active';  // light blue
+            } else if (priority == 4) {
+              return 'warning'; // orange
+            } else if (priority == 5) {
+              return 'danger';  // red
+              //active, success, info, warning, danger
+            } else {
+
+            }
           },
       };
     },
@@ -338,8 +372,9 @@ if (Meteor.isClient) {
           showNavigation: 'auto',
           fields: [
             //{ key: '_id', label: '_ID' },
-            { key: 'No', label: 'No', sort: 'descending' },
-            { key: 'Date', label: 'Date',
+            /*{ key: 'No', label: 'No', sort: 'descending' },*/
+            { key: 'Position', label: 'Pos' , sort: 'ascending'},
+            /*{ key: 'Date', label: 'Date',
               fn: function (value) {
                 if (value){
                   return moment(value).format("DD-MMM");
@@ -348,7 +383,7 @@ if (Meteor.isClient) {
                 }
                 //return moment(value).format("DD-MM-YYYY");
               }//, sort: 'descending' // ascending
-            },
+            },*/
             //{ key: 'Created', label: 'Created' },
             { key: 'Komesa', label: 'Komesa' },
             { key: 'Marker', label: 'Marker' },
@@ -389,20 +424,23 @@ if (Meteor.isClient) {
             var priority = item.Priority;
             var load = item.Load;
             var spread = item.Spread;
-            var cut = item.Cut;
-
+            var status = item.Status;
+            
             // treba da se doradi
 
-            if (cut)  {
-              return 'success';
-            } else if (spread) {
-              return 'info';
+            if (status == "Finished")  {
+              return 'success'; // green
+            } else if (status == 'CUT') {
+              return 'info';    // dark blue
             } else if (load) {
-              return 'active';
+              return 'load';    // greey
+            } else if ((status == "SP 1") || (status == "SP 2")) {
+              return 'active';  // light blue
             } else if (priority == 4) {
-              return 'warning';
-            } else if (priority == 5){
-              return 'danger'; //active, success, info, warning, danger
+              return 'warning'; // orange
+            } else if (priority == 5) {
+              return 'danger';  // red
+              //active, success, info, warning, danger
             } else {
 
             }
@@ -416,7 +454,8 @@ if (Meteor.isClient) {
           showNavigation: 'auto',
           fields: [
             //{ key: '_id', label: '_ID' },
-            { key: 'No', label: 'No', sort: 'descending' },
+            /*{ key: 'No', label: 'No', sort: 'descending' },*/
+            { key: 'Position', label: 'Pos'},
             /*{ key: 'Date', label: 'Date',
               fn: function (value) {
                 if (value){
@@ -427,6 +466,7 @@ if (Meteor.isClient) {
                 //return moment(value).format("DD-MM-YYYY");
               }//, sort: 'descending' // ascending
             },*/
+            
             //{ key: 'Created', label: 'Created' },
             { key: 'Komesa', label: 'Komesa' },
             { key: 'Marker', label: 'Marker' },
@@ -445,18 +485,18 @@ if (Meteor.isClient) {
                 };
               }
             },
-            { key: 'Length', label: 'Length (m)' },
+            { key: 'Length', label: 'Length(m)' },
             //{ key: 'Extra', label: 'Extra (cm)' },
-            { key: 'LengthSum', label: 'LengthSum (m)' },
+            { key: 'LengthSum', label: 'Length Sum (m)' },
             { key: 'Width', label: 'Width (cm)' },
             //{ key: 'S', label: 'S' },
             //{ key: 'M', label: 'M' },
             //{ key: 'L', label: 'L' },
             //{ key: 'Status', label: 'Status'},
-            { key: 'Priority', label: 'Priority' },
+            { key: 'Priority', label: 'Priority', sort: 'descending' },
             /*{ key: 'Load', label: 'Load'},*/
             /*{ key: 'Spread', label: 'Spread'},*/
-            { key: 'SpreadDate', label: 'SpreadDate',
+            { key: 'SpreadDate', label: 'Spread Date',
              fn: function (value) {
               if (value){
                 return moment(value).format("YYYY-MM-DD HH:mm:ss");
@@ -476,20 +516,25 @@ if (Meteor.isClient) {
             var priority = item.Priority;
             var load = item.Load;
             var spread = item.Spread;
-            var cut = item.Cut;
-
+            var status = item.Status;
+            
             // treba da se doradi
 
-            if (cut)  {
-              return 'success';
-            } else if (spread) {
-              return 'info';
-            } else if (load) {
-              return 'active';
+            if (status == "Finished")  {
+              return 'success'; // green
+            
             } else if (priority == 4) {
-              return 'warning';
-            } else if (priority == 5){
-              return 'danger'; //active, success, info, warning, danger
+              return 'warning'; // orange
+            } else if (priority == 5) {
+              return 'danger';  // red
+              //active, success, info, warning, danger
+
+            } else if (status == 'CUT') {
+              return 'info';    // dark blue
+            } else if (load) {
+              return 'load';    // greey
+            } else if ((status == "SP 1") || (status == "SP 2")) {
+              return 'active';  // light blue
             } else {
 
             }
@@ -506,6 +551,27 @@ if (Meteor.isClient) {
         //console.log('selectedDocId: ', click_id);
         Session.set('selectedDocId', click_id);
 
+        //console.log("ses: " + ses);
+
+        var click_id_pos = this.Position;
+        console.log("click_id_pos: " + click_id_pos );
+        var click_id_status = this.Status;
+        console.log("click_id_status: " + click_id_status );
+
+        if (click_id_status == 'SP 1'){
+          Meteor.call('arrayofPosSp1', function(err,data) {
+          Session.set('arrayofPosSp', data);
+          //console.log("arrayofPosSp1: " + data);
+          });
+        } else if (click_id_status == 'SP 2'){
+          Meteor.call('arrayofPosSp2', function(err,data) {
+          Session.set('arrayofPosSp', data);
+          //console.log("arrayofPosSp2: " + data);
+          });
+        } else {
+          Session.set('arrayofPosSp', '');
+        }
+        
         // Define rd_editorder
         var rd_editorder = ReactiveModal.initDialog(rm_EditOrder);
         // show rd_editorder
@@ -639,6 +705,41 @@ if (Meteor.isClient) {
         } else {
           return true;
         }
+      },
+      position: function  (){
+        /*
+        var ses = Session.get("selectedDocId")
+
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var actualposition = order[i].Position;
+        }
+        console.log("actualposition: " + actualposition );
+      */
+      /*
+      Meteor.call('countPosSp1', function(err, data1) {
+        //var countSP1set = data1;
+        Session.set("ses_countPosSp1", data1);
+        console.log("ses_countPosSp1: " + data1);
+      });
+      Meteor.call('countPosSp2', function(err, data2) {
+        //var countSP2set = data2;
+        Session.set("ses_countPosSp2", data2);
+        console.log("ses_countPosSp2: " + data2);
+      });
+      Meteor.call('arrayofPosSp1', function(err,data) {
+        console.log("arrayofPosSp1: " + data);
+      });
+      Meteor.call('arrayofPosSp2', function(err,data) {
+        console.log("arrayofPosSp2: " + data);
+      });*/
+
+      var  arrayofPosSp2 = Session.get('arrayofPosSp');
+      //console.log("test: " + test);
+      //var ret = [1,2];
+      //console.log("ret: " + ret);
+    
+      return arrayofPosSp2;
       },
       /*isSpreaded: function () {
         var ses = Session.get("selectedDocId")
@@ -1108,6 +1209,8 @@ if (Meteor.isClient) {
 
       // Define rd_addneworder
       var rd_importPlannedMarkers = ReactiveModal.initDialog(rm_ImportPlannedMarkers);
+      
+      
       // Show rd_addneworder
       rd_importPlannedMarkers.show();
     },
@@ -1183,6 +1286,11 @@ if (Meteor.isClient) {
         );
       }
       alert("LengthSum fields are refreshed! \n ______________________________ \n If LengthSum is 0, that's because some fields \n(Length, Extra or Layers) are missing!  ");
+
+
+      
+
+
     },
 
     'click #statistics' : function (e, t) {
@@ -1190,6 +1298,8 @@ if (Meteor.isClient) {
 
       // Define rd_addneworder
       var rd_statistics = ReactiveModal.initDialog(rm_Statistics);
+
+
       // Show rd_addneworder
       rd_statistics.show();
     },
@@ -1215,6 +1325,48 @@ if (Meteor.isClient) {
           Session.set("ses_jobnotexist", false);
         }
     },
+
+    'change #not_assigned': function  (e, t) {
+      Session.set("ses_statusfilter", "Not assigned");
+      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //$('#filterOrderDateBefore').val("");
+      //$('#filterOrderDateAfter').val("");
+      //ses_DaysBefore = Session.set("ses_DaysBefore", '');
+      //ses_DaysAfter = Session.set("ses_DaysAfter", '');
+
+    },
+    'change #sp1': function  (e, t) {
+      Session.set("ses_statusfilter", "SP 1");
+      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //$('#filterOrderDateBefore').val("");
+      //$('#filterOrderDateAfter').val("");
+      //ses_DaysBefore = Session.set("ses_DaysBefore", '01/01/2014');
+      //ses_DaysAfter = Session.set("ses_DaysAfter", '01/01/2020');
+    },
+    'change #sp2': function  (e, t) {
+      Session.set("ses_statusfilter", "SP 2");
+      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //$('#filterOrderDateBefore').val("");
+      //$('#filterOrderDateAfter').val("");
+      //ses_DaysBefore = Session.set("ses_DaysBefore", '');
+      //ses_DaysAfter = Session.set("ses_DaysAfter", '');
+    },
+    'change #cut': function  (e, t) {
+      Session.set("ses_statusfilter", "CUT");
+      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //$('#filterOrderDateBefore').val("");
+      //$('#filterOrderDateAfter').val("");
+      //ses_DaysBefore = Session.set("ses_DaysBefore", '');
+      //ses_DaysAfter = Session.set("ses_DaysAfter", '');
+    },
+    'change #finished': function  (e, t) {
+      Session.set("ses_statusfilter", "Finished");
+      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //$('#filterOrderDateBefore').val("");
+      //$('#filterOrderDateAfter').val("");
+      //ses_DaysBefore = Session.set("ses_DaysBefore", null);
+      //ses_DaysAfter = Session.set("ses_DaysAfter", null);
+    }
   });
 
   
@@ -1259,9 +1411,10 @@ if (Meteor.isClient) {
       rm_EditOrder.hide();
     },
     'click #spreadOrder': function (){
-      var input_actuallaysers = $('#input_actuallaysers').val();
+      var input_actuallaysers = Session.get("ses_change_al");
+      //var input_actuallaysers = $('#input_actuallaysers').val();
       //input_actuallaysers = Number(input_actuallaysers);
-      console.log("input_actuallaysers: " + input_actuallaysers); // Problem!!
+      console.log("input_actuallaysers form ses: " + input_actuallaysers); // Problem!!
 
       //console.log("click spread Order");
       var orderToEdit = Session.get("selectedDocId");
@@ -1287,9 +1440,23 @@ if (Meteor.isClient) {
           var SonLayer = order[i].SonLayer;
           var MonLayer = order[i].MonLayer;
           var LonLayer = order[i].LonLayer;
+          var layers = order[i].Layers;
+          var layersactual = order[i].LayersActual;
       }
 
-      Order.update({_id: orderToEdit},{$set: {Spread: userEditSpread, SpreadDate: spreadDate, Status: "CUT",LayersActual: input_actuallaysers}});
+      if (layersactual) {
+          LayersToCount = layersactual;
+      } else {
+          LayersToCount = layers;
+      }
+
+      var CutS = LayersToCount * SonLayer;
+      var CutM = LayersToCount * MonLayer;
+      var CutL = LayersToCount * LonLayer;
+
+      Order.update({_id: orderToEdit},{$set: {Position: 999,Spread: userEditSpread, SpreadDate: spreadDate, Status: "CUT",LayersActual: input_actuallaysers, CutS: CutS, CutM: CutM, CutL: CutL}});
+      delete input_actuallaysers;
+
       rm_EditOrder.hide();
     },
     'click #cutOrder': function (){
@@ -1308,15 +1475,24 @@ if (Meteor.isClient) {
 
       var cutDate = new Date();
 
-      Order.update({_id: orderToEdit},{$set: {Cut: userEditCut, CutDate: cutDate, Status: "Finish" }});
+      Order.update({_id: orderToEdit},{$set: {Cut: userEditCut, CutDate: cutDate, Status: "Finished" }});
       rm_EditOrder.hide();
     },
+    /*
     'keyup #input_actuallaysers': function(e){
+      Session.set("ses_change_al", "");
       var al = $('#input_actuallaysers').val();
+      //al = Number(al);
+      console.log("input: " + al);
       Session.set("ses_change_al", al);
       console.log("ses: " + Session.get("ses_change_al"));
- 
-    }
+      
+    },
+    */ 
+    'click #saveposition': function(e){
+      console.log("saveposition clicked");
+
+    },
     /*
     'click #saveCommentOrder': function (){
       console.log("click save Comment");
@@ -1408,6 +1584,7 @@ if (Meteor.isClient) {
             //console.log(all[i]);
 
             var no  = Number(all[i]['No']);
+            console.log("No: " + no);
             var komesa = all[i]['KOMESA'];
             var marker = all[i]['Marker Name'];
             var style = all[i]['Style'];
@@ -1434,24 +1611,77 @@ if (Meteor.isClient) {
             var l = Number(all[i]['tot L']);
             var lonlayer = Number(all[i]['L']);
             var status = Number(all[i]['SPREADER']);
-            if (status == 1 ){
-              status = 'SP 1';
-            } else if (status == 2 ){
-              status = 'SP 2';
-            } else if (status == "" ){
-              status = 'Not assigned';
-            }
-
-            //var orderd = all[i]['DATE'];
-            //console.log("all[i]['DATE']: " + all[i]['DATE']);
+            
+            var orderd = all[i]['DATE'];
+            //console.log("all[i]['DATE']: " + orderd);
             
             var orderdate = new Date(all[i]['DATE']);
             orderdate.setHours(2,0,0,0);
               
+            if (status == "1" ){
+              status = 'SP 1';
+              //var countSP1 = Order.find({Status: status}); // WRRONG it must be from server side query not form table
+              //console.log("countSP1.count(): " + countSP1.count());
+
+              /*Meteor.call('countPosSp1', function(err, data) {
+                if (err){
+                  console.log(err);
+                }
+              var countSP1set = data;
+              console.log("data1: " + data);
+              });*/
+              var countPosSp1 = Session.get("ses_countPosSp1");
+              var countPosSp1 = countPosSp1 + 1;
+              console.log("countPosSp1+1: " + countPosSp1);
+              setPos = countPosSp1;
+
+              Session.set("ses_countPosSp1", countPosSp1);
+            
+            } else if (status == "2" ){
+              status = 'SP 2';
+              //var countSP2 = Order.find({Status: status}); // WRRONG it must be from server side query not form table
+              //console.log("countSP2.count(): " + countSP2.count());
+
+              /*Meteor.call('countPosSp2', function(err, data) {
+                if (err){
+                  console.log(err);
+                }
+              var countSP2set = data;
+              console.log("data2: " + data);
+              });*/
+
+              var countPosSp2 = Session.get("ses_countPosSp2");
+              var countPosSp2 = countPosSp2 + 1;
+              console.log("countPosSp2+1: " + countPosSp2);
+              setPos = countPosSp2;
+
+              Session.set("ses_countPosSp2", countPosSp2);
+            
+            } else {
+              status = 'Not assigned';
+              setPos = 999;
+            }
+
            //One by One
-            //Order.insert({SEQ: seq, FILE: all[i]['FILE'], CUT_FILE: all[i]['CUT FILE'], MODEL: all[i]['MODEL'], SPREAD_TYPE: all[i]['SPREAD TYPE'], BAGNO: all[i]['BAGNO'], PLY: ply});    
-            //Order.insert({orderName: all[i]['FILE'], orderFileName: all[i]['CUT FILE'], orderModel: all[i]['MODEL'], orderFabric: all[i]['SPREAD TYPE'], orderBagno: all[i]['BAGNO'], orderLayers: ply});
-            Order.insert({No: no, Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, Status: status});    
+            if ((orderd != 0) || (orderd)) { 
+              Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, Status: status});    
+              setPos = 0;
+              countSP2set = 0;
+              countSP1set = 0; 
+            } else {
+              Order.insert({No: no, Position: setPos, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, Status: status});    
+              setPos = 0;
+              countSP2set = 0;
+              countSP1set = 0;
+            }
+
+            //var a = WriteResult.nInserted
+            //alert(Orde.hasWriteError());
+            //var b = BulkWriteResult.hasWriteError()
+            //var c = BulkWriteResult.writeConcernError.errmsg
+            //console.log(a +b +c);
+
+            
           }
       }
       reader.readAsText(file_a);
@@ -1647,81 +1877,106 @@ if (Meteor.isClient) {
 
 // Meteor Server side
 if (Meteor.isServer) {
+
+  Meteor.methods({ 
+  countPosSp1: function() {
+    return Order.find({Status: 'SP 1'}).count();
+  },
+  countPosSp2: function() {
+    return Order.find({Status: 'SP 2'}).count();
+  },
+  arrayofPosSp1: function() {
+    var order = Order.find({Status: 'SP 1'}).fetch();
+      var posarray = [];
+
+      for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+      }
+      posarray.sort(function(a, b){return a-b});
+    return posarray;
+  },
+  arrayofPosSp2: function() {
+    var order = Order.find({Status: 'SP 2'}).fetch();
+      var posarray = [];
+
+      for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+      }
+      posarray.sort(function(a, b){return a-b});
+    return posarray;
+  },
+  });
  
-  Meteor.publish("orderAll", function(){
+  Meteor.publish("filter_orderAll", function(){
     return Order.find();
   });
 
-  Meteor.publish("orderWithDate", function(dateFilter){
+  Meteor.publish("filter_orderWithDate", function(dateFilter){
     return Order.find({ Date: dateFilter});
   });
 
-  Meteor.publish("orderWithDateRange", function(Daysbefore , Daysafter) {
+  Meteor.publish("filter_orderWithDateRange", function(Daysbefore , Daysafter) {
     //return Order.find({ Date: {$gte: ISODate(Daysbefore), $lt: ISODate(Daysafter)} });
     return Order.find({ Date: {$gte: Daysbefore, $lt: Daysafter} });
   });
 
-  Meteor.publish("orderWithoutDate", function(){
+  Meteor.publish("filter_orderWithoutDate", function(){
     return Order.find({ Date: { $exists: false }});
   });
 
-  Meteor.publish("orderWithoutJob", function(){
+  Meteor.publish("filter_orderWithoutJob", function(){
     return Order.find({ Status: "Not assigned"});
   });
 
-  Meteor.publish("spreader1", function(dateFilter){
-
-    return Order.find({
+  Meteor.publish("filter_spreader1", function(){
+    return Order.find({ Status: "SP 1"});
+    /*return Order.find({
     $and : [
         { Status: "SP 1"},
         //{ $or : [ { Spread : "" }, { Spread : { $exists: false }} ] }
     ]
-    })
+    })*/
   });
 
-  Meteor.publish("spreader2", function(dateFilter){
-  
-    return Order.find({
+  Meteor.publish("filter_spreader2", function(){
+    return Order.find({ Status: "SP 2"});
+    /*return Order.find({
     $and : [
         { Status: "SP 2"},
         //{ $or : [ { Spread : "" }, { Spread : { $exists: false }} ] }
     ]
-    })
+    })*/
   });
 
-  Meteor.publish("cutter", function(dateFilter){
-
-    return Order.find({
+  Meteor.publish("filter_cutter", function(){
+    return Order.find({ Status: "CUT"});
+    /*return Order.find({
     $and: [
        { $or: [
           { Status: "CUT" }
         ]},
 
-       { $or: [ 
+       /*{ $or: [ 
           { Cut : "" },
           { Cut : { $exists: false }}
           ]},
-      ] 
-    })
-
-    /* return Order.find({
-    $and: [
-       { $or: [
-          { Spread: "SP 1-1" },
-          { Spread: "SP 1-2" },
-          { Spread: "SP 2-1" },
-          { Spread: "SP 2-2" }
-          ]},
-
-       { $or: [ 
-          { Cut : "" },
-          { Cut : { $exists: false }}
-          ]},
-      ] 
+      ]
     })*/
 
-
   });
+
+  Meteor.publish("filter_statusfilter", function(status, Daysbefore , Daysafter){
+    return Order.find({ 
+      $and: [
+      {Status: status},
+      {Date: {$gte: Daysbefore, $lt: Daysafter}}
+      ]
+    })
+  });
+  
+
 }
 
 var admin = ""; //123123
