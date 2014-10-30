@@ -567,13 +567,14 @@
           <div>
             {{#if isAdmin}}
 
+              <!--
               {{#autoForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc }}
                       <fieldset>
-                        <!--<legend>Actual Layers</legend>-->
+                        <legend>Actual Layers</legend>
                         {{> afQuickField name='No' type='Number' }}
                         {{> afQuickField name='Position' type='Number'  }}
                         {{> afQuickField name='Status' options='allowed' }}
-                        <!--
+                        
                         {{#if afFieldValueIs name='Status' value="SP 1"}}
                           {{> afQuickField name='Position'}}
                         {{/if}}
@@ -581,20 +582,31 @@
                         {{#each afFieldNames}}
                             {{> afQuickField name='Status' options="auto"}}
                         {{/each}}
-                        -->
+                       
                       </fieldset>
                       <button type="submit" class="btn btn-primary">Save</button>
+                       
               {{/autoForm}}
-              <hr />
+              -->
+              
 
-
-                      <select class="form-control">
+                      <select class="form-control" id="selectPosition">
                         {{#each position}}
                            <option>{{this}}</option>
                         {{/each}}
                       </select>
+                      <br />
+                        <!--{{#each position}} 
+                           <button type="submit" id="{{this}}" class="btn btn-primary">{{this}}</button>
+                        {{/each}}-->
+                      
+                      <select class="form-control" id="selectStatus">
+                        {{#each status}}
+                           <option>{{this}}</option>
+                        {{/each}}
+                      </select>
+                      <br />
                       <button type="submit" id="saveposition" class="btn btn-primary">Save Position</button>
-
 
               <hr />
 

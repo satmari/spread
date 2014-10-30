@@ -1,8 +1,11 @@
 if (Meteor.isClient) {
   //SimpleSchema.debug = true;
   //UI.registerHelper("Schemas", Schemas);
+
   
   Meteor.startup(function () {
+   
+
     //Session.set("ses_namefilter", "");
     //Session.set("ses_datefilter", "");
 
@@ -112,6 +115,15 @@ if (Meteor.isClient) {
     } else {
       Meteor.subscribe('filter_orderWithDate', ses_datefilter);
     }
+
+      Meteor.call('method_countPosSp1', function(err, data1) {
+        Session.set("ses_countPosSp1", data1);
+        //console.log("ses_countPosSp1: " + data1);
+      });
+      Meteor.call('method_countPosSp2', function(err, data2) {
+        Session.set("ses_countPosSp2", data2);
+        //console.log("ses_countPosSp2: " + data2);
+      });
     
     /*
       var userId = Meteor.userId();
@@ -554,54 +566,65 @@ if (Meteor.isClient) {
         //console.log("ses: " + ses);
 
         var click_id_pos = this.Position;
-        console.log("click_id_pos: " + click_id_pos );
+        //console.log("click_id_pos: " + click_id_pos );
         var click_id_status = this.Status;
-        console.log("click_id_status: " + click_id_status );
+        //console.log("click_id_status: " + click_id_status );
 
         if (click_id_status == 'SP 1'){
-          Meteor.call('arrayofPosSp1', function(err,data) {
-          Session.set('arrayofPosSp', data);
-          //console.log("arrayofPosSp1: " + data);
+          Meteor.call('method_arrayofPosSp1', function(err,data) {
+          Session.set('ses_arrayofPosSp', data);
+          console.log("ses_arrayofPosSp: " + data);
           });
         } else if (click_id_status == 'SP 2'){
-          Meteor.call('arrayofPosSp2', function(err,data) {
-          Session.set('arrayofPosSp', data);
-          //console.log("arrayofPosSp2: " + data);
+          Meteor.call('method_arrayofPosSp2', function(err,data) {
+          Session.set('ses_arrayofPosSp', data);
+          console.log("ses_arrayofPosSp: " + data);
           });
         } else {
-          Session.set('arrayofPosSp', '');
+          Session.set('ses_arrayofPosSp', '');
+          console.log("ses_arrayofPosSp is Empty ");
         }
-        
+
+        Meteor.call('method_arrayofStatus', function(err,data) {
+          Session.set('ses_arrayofStatus', data);
+          console.log('ses_arrayofStatus: ' + data);
+        });
+
         // Define rd_editorder
         var rd_editorder = ReactiveModal.initDialog(rm_EditOrder);
+
         // show rd_editorder
         rd_editorder.show();
       }
   });
 
+  //Template.alert.preserve(["tmp_EditOrder"]);
+
   // Edit Order on click (in table) - Reactive Modal
-  var rm_EditOrder = {
-    //type: 'type-info',   //type-default, type-info, type-primary, 'type-success', 'type-warning' , 'type-danger' 
+    var rm_EditOrder = {
+    type: 'type-default',   //type-default, type-info, type-primary, 'type-success', 'type-warning' , 'type-danger' 
       //size: '',
       template: Template.tmp_EditOrder, 
       title: "Edit Order",
       //modalBody: "Helll0",
-      modalDialogClass: "modal-dialog", //optional
-      modalBodyClass: "modal-body", //optional
-      modalFooterClass: "modal-footer",//optional
-      closable: false,
+      //modalDialogClass: "modal-dialog", //optional
+      //modalBodyClass: "modal-body", //optional
+      //modalFooterClass: "modal-footer",//optional
+      removeOnHide: true,
+      closable: true,
       buttons: {
-        //"cancel": {
-        //  class: 'btn-danger',
-        //  label: 'Cancel'
-          //},
+          "cancel": {
+            class: 'btn-danger',
+            label: 'Cancel'
+          },
           "ok": {
             closeModalOnClick: true, // if this is false, dialog doesnt close automatically on click
             class: 'btn-info',
             label: 'Back'
           }
       }
-  };
+    };
+  
 
   // Reactive table helper (for update/edit orders)
   Template.tmp_EditOrder.helpers({
@@ -707,39 +730,16 @@ if (Meteor.isClient) {
         }
       },
       position: function  (){
-        /*
-        var ses = Session.get("selectedDocId")
-
-        var order = Order.find({_id: ses}).fetch();
-        for (var i = 0; i < order.length; i++) {
-          var actualposition = order[i].Position;
-        }
-        console.log("actualposition: " + actualposition );
-      */
-      /*
-      Meteor.call('countPosSp1', function(err, data1) {
-        //var countSP1set = data1;
-        Session.set("ses_countPosSp1", data1);
-        console.log("ses_countPosSp1: " + data1);
-      });
-      Meteor.call('countPosSp2', function(err, data2) {
-        //var countSP2set = data2;
-        Session.set("ses_countPosSp2", data2);
-        console.log("ses_countPosSp2: " + data2);
-      });
-      Meteor.call('arrayofPosSp1', function(err,data) {
-        console.log("arrayofPosSp1: " + data);
-      });
-      Meteor.call('arrayofPosSp2', function(err,data) {
-        console.log("arrayofPosSp2: " + data);
-      });*/
-
-      var  arrayofPosSp2 = Session.get('arrayofPosSp');
-      //console.log("test: " + test);
-      //var ret = [1,2];
-      //console.log("ret: " + ret);
+        var  arrayofPosSp2 = Session.get('ses_arrayofPosSp');
+        //console.log("test: " + test);
+        //var ret = [1,2];
+        //console.log("ret: " + ret);
     
-      return arrayofPosSp2;
+        return arrayofPosSp2;
+      },
+      status: function (){
+        var  arrayofStasus = Session.get('ses_arrayofStatus');
+        return arrayofStasus;
       },
       /*isSpreaded: function () {
         var ses = Session.get("selectedDocId")
@@ -783,6 +783,7 @@ if (Meteor.isClient) {
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
       closable: true,
+      removeOnHide: true,
       buttons: {
         //"cancel": {
         //  class: 'btn-danger',
@@ -803,7 +804,8 @@ if (Meteor.isClient) {
       //modalDialogClass: "modal-dialog", //optional
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
-      closable: false,
+      closable: true,
+      removeOnHide: true,
       buttons: {
         //"cancel": {
         //  class: 'btn-danger',
@@ -825,6 +827,7 @@ if (Meteor.isClient) {
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
       closable: false,
+      removeOnHide: true,
       buttons: {
         //"cancel": {
         //  class: 'btn-danger',
@@ -838,10 +841,11 @@ if (Meteor.isClient) {
       }
   };
 
+    
+/*
   // Import Order from MD Analytics on click (in nav button) - Reactive Modal
   var rm_ImportOrderAnalyitics = {
-      /*
-      template: Template.tmp_ImportOrderAnalytics, 
+      /*template: Template.tmp_ImportOrderAnalytics, 
       title: "Import orders from MD Analytics",
       //modalDialogClass: "modal-dialog", //optional
       //modalBodyClass: "modal-body", //optional
@@ -858,8 +862,8 @@ if (Meteor.isClient) {
             label: 'Back'
           }
       }
-    */
   };
+*/
 
   // Import Order from Planned Markers file (in nav button) - Reactive Modal
   var rm_ImportPlannedMarkers = {
@@ -869,6 +873,7 @@ if (Meteor.isClient) {
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
       closable: false,
+      removeOnHide: true,
       buttons: {
         //"cancel": {
         //  class: 'btn-danger',
@@ -889,6 +894,7 @@ if (Meteor.isClient) {
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
       closable: false,
+      removeOnHide: true,
       buttons: {
         //"cancel": {
         //  class: 'btn-danger',
@@ -1209,10 +1215,9 @@ if (Meteor.isClient) {
 
       // Define rd_addneworder
       var rd_importPlannedMarkers = ReactiveModal.initDialog(rm_ImportPlannedMarkers);
-      
-      
       // Show rd_addneworder
       rd_importPlannedMarkers.show();
+
     },
 
     'click #export_orders' : function () {
@@ -1286,10 +1291,6 @@ if (Meteor.isClient) {
         );
       }
       alert("LengthSum fields are refreshed! \n ______________________________ \n If LengthSum is 0, that's because some fields \n(Length, Extra or Layers) are missing!  ");
-
-
-      
-
 
     },
 
@@ -1492,6 +1493,52 @@ if (Meteor.isClient) {
     'click #saveposition': function(e){
       console.log("saveposition clicked");
 
+      var orderToEdit = Session.get("selectedDocId");
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var actualPosition = order[i].Position;
+          var actualStatus = order[i].Status;
+      }
+      console.log("actualPosition: " + actualPosition);
+      console.log("actualStatus: " + actualStatus);
+
+      var arrayofPosSp = Session.get("ses_arrayofPosSp");
+      console.log("ses_arrayofPosSp: " + arrayofPosSp);
+      //Session.set("ses_arrayofPosSp", '');
+
+      var countPosSp1 = Session.get("ses_countPosSp1");
+      console.log("ses_countPosSp1: " + countPosSp1);
+      //Session.set("ses_countPosSp1", '');
+
+      var countPosSp2 = Session.get("ses_countPosSp2");
+      console.log("ses_countPosSp2: " + countPosSp2);
+      //Session.set("ses_countPosSp2", '');
+
+      var selectedPosition = $('.in #selectPosition').find(":selected").text();
+      console.log("selectedPosition: " + selectedPosition);
+
+      var selectedStatus = $('.in #selectStatus').find(":selected").text();
+      console.log("selectedStatus: " + selectedStatus);
+
+      $(".in #selectPosition").change(function () {
+        var selectedStatus2 = "";
+          $( ".in #selectPosition:selected" ).each(function() {
+            selectedStatus2 = $( ".in selectPosition :selected" ).text()
+            console.log("selectedStatus2: " + selectedStatus2)
+          })
+      console.log("selectedStatus22: " + selectedStatus2);
+      })
+
+
+        // Define rd_editorder
+        //var rd_editorder = ReactiveModal.initDialog(rm_EditOrder);
+        // show rd_editorder
+        // rd_editorder.show();
+      //Template.alert.preserve(["#myModal"]);
+
+      //var selectedStatus3 = $(rd_editorder).find("#selectPosition :selected").text()
+      //Meteor.autorun();
+      rm_EditOrder.hide();
     },
     /*
     'click #saveCommentOrder': function (){
@@ -1623,13 +1670,14 @@ if (Meteor.isClient) {
               //var countSP1 = Order.find({Status: status}); // WRRONG it must be from server side query not form table
               //console.log("countSP1.count(): " + countSP1.count());
 
-              /*Meteor.call('countPosSp1', function(err, data) {
+              /*Meteor.call('method_countPosSp1', function(err, data) {
                 if (err){
                   console.log(err);
                 }
               var countSP1set = data;
               console.log("data1: " + data);
               });*/
+
               var countPosSp1 = Session.get("ses_countPosSp1");
               var countPosSp1 = countPosSp1 + 1;
               console.log("countPosSp1+1: " + countPosSp1);
@@ -1661,6 +1709,8 @@ if (Meteor.isClient) {
               status = 'Not assigned';
               setPos = 999;
             }
+
+            // STATUS = ['Not assigned','SP 1','SP 2','CUT','Finish']
 
            //One by One
             if ((orderd != 0) || (orderd)) { 
@@ -1879,13 +1929,13 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
 
   Meteor.methods({ 
-  countPosSp1: function() {
+  method_countPosSp1: function() {
     return Order.find({Status: 'SP 1'}).count();
   },
-  countPosSp2: function() {
+  method_countPosSp2: function() {
     return Order.find({Status: 'SP 2'}).count();
   },
-  arrayofPosSp1: function() {
+  method_arrayofPosSp1: function() {
     var order = Order.find({Status: 'SP 1'}).fetch();
       var posarray = [];
 
@@ -1896,7 +1946,7 @@ if (Meteor.isServer) {
       posarray.sort(function(a, b){return a-b});
     return posarray;
   },
-  arrayofPosSp2: function() {
+  method_arrayofPosSp2: function() {
     var order = Order.find({Status: 'SP 2'}).fetch();
       var posarray = [];
 
@@ -1906,6 +1956,21 @@ if (Meteor.isServer) {
       }
       posarray.sort(function(a, b){return a-b});
     return posarray;
+  },
+  method_arrayofStatus: function() {
+    /*
+    var order = Order.find({Status: { $exists: true}}).fetch();
+      var statusarray = [];
+
+      for (var i = 0; i < order.length; i++) {
+        sta = order[i].Status;
+        statusarray.push(sta);
+      }
+      statusarray.sort(function(a, b){return a-b});
+    */
+    //statusarray = ["Not assigned","SP 1","SP 2","CUT","Finished"];
+    statusarray = ["Not assigned","SP 1","SP 2","CUT"];
+    return statusarray;
   },
   });
  
@@ -1975,7 +2040,6 @@ if (Meteor.isServer) {
       ]
     })
   });
-  
 
 }
 
@@ -1989,6 +2053,9 @@ var cut2 = "";  // c2c2c2
 
 // kill -9 `ps ax | grep node | grep meteor | awk '{print $1}'`
 // export MONGO_URL=mongodb://localhost:27017/spread
+
+
+// STATUS = ['Not assigned','SP 1','SP 2','CUT','Finished']
 
 // meteor add accounts-base
 // meteor add accounts-password
