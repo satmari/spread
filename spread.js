@@ -106,7 +106,7 @@ if (Meteor.isClient) {
       Meteor.subscribe('filter_orderWithoutJob');
 
     } else if ( ses_statusfilter) { 
-      Meteor.subscribe('filter_statusfilter', ses_statusfilter, ses_DaysBefore, ses_DaysAfter);
+      Meteor.subscribe('filter_statusfilter', ses_statusfilter/*, ses_DaysBefore, ses_DaysAfter*/);
 
     } else if ( ses_datefilter == "" ) { 
       Meteor.subscribe('filter_orderAll');
@@ -1498,9 +1498,11 @@ if (Meteor.isClient) {
         for (var i = 0; i < order.length; i++) {
           var actualPosition = order[i].Position;
           var actualStatus = order[i].Status;
+          var actual_Id = order[i]._ID;
       }
       console.log("actualPosition: " + actualPosition);
       console.log("actualStatus: " + actualStatus);
+      console.log("actual_Id: " + actual_Id);
 
       var arrayofPosSp = Session.get("ses_arrayofPosSp");
       console.log("ses_arrayofPosSp: " + arrayofPosSp);
@@ -1528,6 +1530,43 @@ if (Meteor.isClient) {
           })
       console.log("selectedStatus22: " + selectedStatus2);
       })
+
+      var arrayofPosSp = Session.get("ses_arrayofPosSp");
+      console.log("array length: "+ arrayofPosSp.length);
+
+
+      // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
+      for (var i = 1; i < arrayofPosSp.length; i++) {
+        //console.log(i);
+        //console.log("i: " + i + " ,arrayofPosSp[i]: " + arrayofPosSp[i]);
+
+        if (actualPosition < arrayofPosSp[i]){
+          Meteor.call('method_smanjizajedan', arrayofPosSp[i], actualStatus, function(err, data) {
+            console.log("method_smanjizajedan je pozvan: " + data);
+
+          });   
+        }
+      }
+      // Stavi zeljnu pozicuju
+      /*Meteor.call('method_ubacinapoz', actualPosition, actualStatus, selectedPosition, function(err, data) {
+        console.log("method_ubacinapoz je pozvan: " + data);
+      }); */
+
+      // Povecaj za jednu poziciju od selektovane pozicije ispod tj pomeri za jednu poziciju dole sve ispod selektovane
+      /*for (var i = 1; i < arrayofPosSp.length; i++) {
+        //console.log(i);
+        //console.log("i: " + i + " ,arrayofPosSp[i]: " + arrayofPosSp[i]);
+
+        if (selectPosition > arrayofPosSp[i]){
+          Meteor.call('method_povecajzajedan', actualStatus, selectPosition, function(err, data) {
+            console.log("method_povecajzajedan je pozvan: " + data);
+
+          });   
+        }
+      }*/
+        
+
+      
 
 
         // Define rd_editorder
@@ -1951,6 +1990,7 @@ if (Meteor.isServer) {
       var posarray = [];
 
       for (var i = 0; i < order.length; i++) {
+        id = order[i]._Id;
         pos = order[i].Position;
         posarray.push(pos);
       }
@@ -1972,7 +2012,49 @@ if (Meteor.isServer) {
     statusarray = ["Not assigned","SP 1","SP 2","CUT"];
     return statusarray;
   },
-  });
+  method_smanjizajedan: function(actualPosition, actualStatus){
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$inc: {Position: -1}}, 
+          {multi: true}
+        );
+      }
+    return "Done";
+  },
+  method_ubacinapoz: function (actualPosition, actualStatus, selectedPosition){
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$set: {Position: selectedPosition}}
+          //{$inc: {Position: -1}}, 
+          //{multi: true}
+        ); 
+      }
+    return "Done";
+  },
+  method_ubacinapozVise: function (actualPosition, actualStatus, selectedPosition){
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$set: {Position: selectedPosition}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        );
+      }
+    return "Done";
+  },
+  method_povecajzajedan: function(actualStatus, selectedPosition){
+    var order = Order.find({Position: selectedPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$inc: {Position: 1}}, 
+          {multi: true}
+        );
+      }
+    return "OOOOOO";
+  },
+});
  
   Meteor.publish("filter_orderAll", function(){
     return Order.find();
@@ -2032,11 +2114,11 @@ if (Meteor.isServer) {
 
   });
 
-  Meteor.publish("filter_statusfilter", function(status, Daysbefore , Daysafter){
+  Meteor.publish("filter_statusfilter", function(status/*, Daysbefore , Daysafter*/){
     return Order.find({ 
       $and: [
       {Status: status},
-      {Date: {$gte: Daysbefore, $lt: Daysafter}}
+      //{Date: {$gte: Daysbefore, $lt: Daysafter}}
       ]
     })
   });
