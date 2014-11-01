@@ -1491,14 +1491,14 @@ if (Meteor.isClient) {
     },
     */ 
     'click #saveposition': function(e){
-      console.log("saveposition clicked");
+      //console.log("saveposition clicked");
 
       var orderToEdit = Session.get("selectedDocId");
       var order = Order.find({_id: orderToEdit}).fetch();
         for (var i = 0; i < order.length; i++) {
           var actualPosition = order[i].Position;
           var actualStatus = order[i].Status;
-          var actual_Id = order[i]._ID;
+          var actual_Id = order[i]._Id;
       }
       console.log("actualPosition: " + actualPosition);
       console.log("actualStatus: " + actualStatus);
@@ -1508,66 +1508,82 @@ if (Meteor.isClient) {
       console.log("ses_arrayofPosSp: " + arrayofPosSp);
       //Session.set("ses_arrayofPosSp", '');
 
+      var uniqarrayofPosSp = $.makeArray($(arrayofPosSp).filter(function(i,itm){ 
+        // note: 'index', not 'indexOf'
+        return i == $(arrayofPosSp).index(itm);
+      }));
+      console.log("uniqarrayofPosSp: " + uniqarrayofPosSp);
+
       var countPosSp1 = Session.get("ses_countPosSp1");
-      console.log("ses_countPosSp1: " + countPosSp1);
+      //console.log("ses_countPosSp1: " + countPosSp1);
       //Session.set("ses_countPosSp1", '');
 
       var countPosSp2 = Session.get("ses_countPosSp2");
-      console.log("ses_countPosSp2: " + countPosSp2);
+      //console.log("ses_countPosSp2: " + countPosSp2);
       //Session.set("ses_countPosSp2", '');
 
-      var selectedPosition = $('.in #selectPosition').find(":selected").text();
-      console.log("selectedPosition: " + selectedPosition);
+      var selectedPosition = $('.in #selectPosition').find(":selected").val();
+      var selectedPositionN = Number(selectedPosition);
+      console.log("selectedPositionN: " + selectedPositionN);
 
       var selectedStatus = $('.in #selectStatus').find(":selected").text();
-      console.log("selectedStatus: " + selectedStatus);
+      //console.log("selectedStatus: " + selectedStatus);
 
-      $(".in #selectPosition").change(function () {
+      /*$(".in #selectPosition").change(function () {
         var selectedStatus2 = "";
           $( ".in #selectPosition:selected" ).each(function() {
             selectedStatus2 = $( ".in selectPosition :selected" ).text()
             console.log("selectedStatus2: " + selectedStatus2)
           })
       console.log("selectedStatus22: " + selectedStatus2);
-      })
+      })*/
 
       var arrayofPosSp = Session.get("ses_arrayofPosSp");
-      console.log("array length: "+ arrayofPosSp.length);
+      //console.log("array length: "+ arrayofPosSp.length);
 
+      // Izbrisi aktuelnu pozicuju, tj stavi poziciju na 0
+      Meteor.call('method_stavipozna0', actualPosition, actualStatus, function(err, data) {
+        console.log("method_stavipozna0: " + data);
+      }); 
+      //console.log('kraj method_stavipozna0')
 
       // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
-      for (var i = 1; i < arrayofPosSp.length; i++) {
+      /*for (var i = 1; i < arrayofPosSp.length; i++) {
         //console.log(i);
         //console.log("i: " + i + " ,arrayofPosSp[i]: " + arrayofPosSp[i]);
-
         if (actualPosition < arrayofPosSp[i]){
           Meteor.call('method_smanjizajedan', arrayofPosSp[i], actualStatus, function(err, data) {
-            console.log("method_smanjizajedan je pozvan: " + data);
-
+            console.log("method_smanjizajedan: " + data);
           });   
         }
       }
-      // Stavi zeljnu pozicuju
-      /*Meteor.call('method_ubacinapoz', actualPosition, actualStatus, selectedPosition, function(err, data) {
-        console.log("method_ubacinapoz je pozvan: " + data);
-      }); */
+      //console.log('kraj method_smanjizajedan')
+      */
+      Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
+            console.log("method_smanjizajedan: " + data);
+      });   
 
       // Povecaj za jednu poziciju od selektovane pozicije ispod tj pomeri za jednu poziciju dole sve ispod selektovane
       /*for (var i = 1; i < arrayofPosSp.length; i++) {
         //console.log(i);
         //console.log("i: " + i + " ,arrayofPosSp[i]: " + arrayofPosSp[i]);
-
-        if (selectPosition > arrayofPosSp[i]){
-          Meteor.call('method_povecajzajedan', actualStatus, selectPosition, function(err, data) {
-            console.log("method_povecajzajedan je pozvan: " + data);
-
+        if (selectedPositionN <= arrayofPosSp[i]){ // moze da se koristi < sa bi spojili
+          Meteor.call('method_povecajzajedan', arrayofPosSp[i], actualStatus, function(err, data) {
+            console.log("method_povecajzajedan: " + data);
           });   
         }
-      }*/
-        
-
+      }
+      //console.log('kraj method_povecajzajedan')
+      */
+      Meteor.call('method_povecajzajedan', selectedPositionN, actualStatus, function(err, data) {
+            console.log("method_povecajzajedan: " + data);
+      }); 
       
-
+      // Stavi zeljnu pozicuju
+      Meteor.call('method_ubacinapoz', actualPosition, actualStatus, selectedPosition, function(err, data) {
+         console.log("method_ubacinapoz: " + data);
+      });
+      //console.log('kraj method_ubacinapoz')
 
         // Define rd_editorder
         //var rd_editorder = ReactiveModal.initDialog(rm_EditOrder);
@@ -2012,48 +2028,85 @@ if (Meteor.isServer) {
     statusarray = ["Not assigned","SP 1","SP 2","CUT"];
     return statusarray;
   },
-  method_smanjizajedan: function(actualPosition, actualStatus){
-    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+  method_smanjizajedan: function(Position, Status){
+    var order = Order.find({Position: {$gt: Position}, Status: Status }).fetch();
+    for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$inc: {Position: -1}}, 
+          {multi: true}
+        );
+    }
+    return "Done";
+    /*
+    var order = Order.find({Position: Position, Status: Status }).fetch();
       for (var i = 0; i < order.length; i++) {
         Order.update({ _id: order[i]._id},
           {$inc: {Position: -1}}, 
           {multi: true}
         );
+        return order[i].No;
       }
-    return "Done";
+    return "Not found method_smanjizajedan";
+    */
   },
-  method_ubacinapoz: function (actualPosition, actualStatus, selectedPosition){
-    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+  method_povecajzajedan: function(Position, Status){
+    var order = Order.find({Position: {$gte: Position}, Status: Status }).fetch();
+    for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$inc: {Position: 1}}, 
+          {multi: true}
+        );
+    }  
+    return "Done";
+    /*
+    var order = Order.find({Position: Position, Status: Status }).fetch();
       for (var i = 0; i < order.length; i++) {
         Order.update({ _id: order[i]._id},
-          {$set: {Position: selectedPosition}}
-          //{$inc: {Position: -1}}, 
-          //{multi: true}
-        ); 
+          {$inc: {Position: 1}},
+          {multi: true}
+      );
+        //return order[i].No;
       }
-    return "Done";
+    return "Not Found method_povecajzajedan";
+    */
+  },
+  method_ubacinapoz: function (actualPosition, actualStatus, selectedPosition){
+    var order = Order.find({Position: 0, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$set: {Position: selectedPosition}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+      }
+    return "Not found method_ubacinapoz";
   },
   method_ubacinapozVise: function (actualPosition, actualStatus, selectedPosition){
-    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+    var order = Order.find({Position: 0, Status: actualStatus }).fetch();
       for (var i = 0; i < order.length; i++) {
         Order.update({ _id: order[i]._id},
           {$set: {Position: selectedPosition}},
           //{$inc: {Position: -1}}, 
           {multi: true}
         );
+        //return order.No;
       }
-    return "Done";
+    return "Not found method_ubacinapozVise";
   },
-  method_povecajzajedan: function(actualStatus, selectedPosition){
-    var order = Order.find({Position: selectedPosition, Status: actualStatus }).fetch();
+  method_stavipozna0: function (actualPosition, actualStatus){
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
       for (var i = 0; i < order.length; i++) {
         Order.update({ _id: order[i]._id},
-          {$inc: {Position: 1}}, 
+          {$set: {Position: 0}},
+          //{$inc: {Position: -1}}, 
           {multi: true}
-        );
+        ); 
+        //return order[i].No;
       }
-    return "OOOOOO";
+    return "Not found method_stavipozna0";
   },
+  
 });
  
   Meteor.publish("filter_orderAll", function(){

@@ -596,17 +596,31 @@
                         {{/each}}
                       </select>
                       <br />
+                      
+                        <!--<div class="form-group">-->
+                        <button type="submit" id="saveposition" class="btn btn-primary">Save Position</button>
+                      
+                        <!--<li style="padding-left: 30%;list-style-type: none;">-->
+                        <input type="radio" name="optradio" id="insertorder"/>Insert Order
+                        <!--</li>
+                        <li style="padding-left: 30%;list-style-type: none;">-->
+                        <input type="radio" name="optradio" id="mergeorder"/>Merge Orders
+                        <!--</li>
+                        </div>-->
+                      
+                      <br />
+
                         <!--{{#each position}} 
                            <button type="submit" id="{{this}}" class="btn btn-primary">{{this}}</button>
                         {{/each}}-->
-                      
+
+                      <br />
                       <select class="form-control" id="selectStatus">
                         {{#each status}}
                            <option>{{this}}</option>
                         {{/each}}
                       </select>
                       <br />
-                      <button type="submit" id="saveposition" class="btn btn-primary">Save Position</button>
 
               <hr />
 
