@@ -12,7 +12,7 @@
 .table > tbody > tr.active > td {
   /*color: #000;*/
   background-color: #89C0E4 !important;
-  border-bottom: 1px solid #555;
+  border-top: 1px solid #555;
   /*border-color: #2077b2 !important;*/
   /* load #A3CFEC */
   /* spread #285E81 */
@@ -20,7 +20,7 @@
 .table > tbody > tr.info > td {
   /*color: #000;*/
   background-color: #285E81 !important;
-  border-bottom: 1px solid #555;
+  border-top: 1px solid #555;
   /*border-color: #2077b2 !important;*/
   /* load #A3CFEC */
   /* load #285E81 */
@@ -28,7 +28,7 @@
 .table > tbody > tr.load > td {
   /*color: #000;*/
   background-color: #E2F0FF !important;
-  border-bottom: 1px solid #555;
+  border-top: 1px solid #555;
   /*border-color: #2077b2 !important;*/
   /* load #A3CFEC */
   /* load #285E81 */
@@ -36,7 +36,7 @@
 .table > tbody > tr.success > td {
   /*color: #000;*/
   /*background-color: #E2F0FF !important;*/
-  border-bottom: 1px solid #555;
+  border-top: 1px solid #555;
   /*border-color: #2077b2 !important;*/
   /* load #A3CFEC */
   /* load #285E81 */
@@ -44,7 +44,7 @@
 .table > tbody > tr.default > td {
   /*color: #000;*/
   /*background-color: #E2F0FF !important;*/
-  border-bottom: 1px solid #555;
+  border-top: 1px solid #555;
   /*border-color: #2077b2 !important;*/
   /* load #A3CFEC */
   /* load #285E81 */

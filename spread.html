@@ -587,43 +587,52 @@
                       <button type="submit" class="btn btn-primary">Save</button>
                        
               {{/autoForm}}
-              -->
-              
-
-                      <select class="form-control" id="selectPosition">
-                        {{#each position}}
+              --> 
+                      <big><b>Change Position</b></big>
+                      
+                      <select class="form-control small" id="selectPosition">
+                        {{#each positionSelect}}
                            <option>{{this}}</option>
                         {{/each}}
                       </select>
                       <br />
-                      
-                        <!--<div class="form-group">-->
-                        <button type="submit" id="saveposition" class="btn btn-primary">Save Position</button>
-                      
-                        <!--<li style="padding-left: 30%;list-style-type: none;">-->
-                        <input type="radio" name="optradio" id="insertorder"/>Insert Order
+                      <!--
+                      <div class="radio">
+                        <label><input type="radio" name="optradio" id="insertorder"/> Insert Order</label>
+                      </div>
+                      <div class="radio">
+                        <label><input type="radio" name="optradio" id="mergeorder"/> Merge Orders</label>
+                      </div>
+                      -->
+                      <div>
+                        <button type="submit" id="insertposition" class="btn btn-primary small">Insert Position</button>
+                        <button type="submit" id="linkposition" class="btn btn-primary small">Link Position</button>
+                      </div>
+                      <br />
+                        <!--<li style="padding-left: 30%;list-style-type: none;">
+                        <input type="radio" name="optradio" id="insertorder"/>Insert Order-->
                         <!--</li>
-                        <li style="padding-left: 30%;list-style-type: none;">-->
-                        <input type="radio" name="optradio" id="mergeorder"/>Merge Orders
+                        <li style="padding-left: 30%;list-style-type: none;">
+                        <input type="radio" name="optradio" id="mergeorder"/>Merge Orders-->
                         <!--</li>
                         </div>-->
-                      
-                      <br />
-
                         <!--{{#each position}} 
                            <button type="submit" id="{{this}}" class="btn btn-primary">{{this}}</button>
                         {{/each}}-->
+                      <hr />
+                      <big><b>Change Status</b></big>
 
-                      <br />
                       <select class="form-control" id="selectStatus">
-                        {{#each status}}
+                        {{#each statusSelect}}
                            <option>{{this}}</option>
                         {{/each}}
                       </select>
                       <br />
 
+                      <div>
+                        <button type="submit" id="changestatus" class="btn btn-primary small">Change Status</button>  
+                      </div>
               <hr />
-
               {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="LengthSum,Created,S,M,L,SpreadDate,CutDate"}}
               <div class="">
                 <br />
