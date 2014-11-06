@@ -575,6 +575,15 @@ if (Meteor.isClient) {
 
         //$('.in #insertorder').attr('checked');
         //$('#selectPosition select').val(5);
+
+        Meteor.call('method_uniquecountPosSp1', function(err, data) {
+          //console.log("method_uniquecountPosSp1: " + data);
+          Session.set("ses_uniquecountPosSp1", data);
+        });
+        Meteor.call('method_uniquecountPosSp2', function(err, data) {
+          //console.log("method_uniquecountPosSp2: " + data);
+          Session.set("ses_uniquecountPosSp2", data);
+        });
         
         // Define rd_editorder
         var rd_editorder = ReactiveModal.initDialog(rm_EditOrder);
@@ -698,7 +707,7 @@ if (Meteor.isClient) {
 
       },
       isLoaded: function () {
-        var ses = Session.get("selectedDocId")
+        var ses = Session.get("selectedDocId");
 
         var order = Order.find({_id: ses}).fetch();
         for (var i = 0; i < order.length; i++) {
@@ -788,6 +797,14 @@ if (Meteor.isClient) {
         }).prop('selected', true);*/
 
       },
+      isSPfilter: function (){
+        var statusFilter = Session.get("ses_statusfilter");
+        if ((statusFilter == "SP 1") || (statusFilter == "SP 2")) {
+          return true;
+        } else {
+          return false;
+        }
+      }
       /*isSpreaded: function () {
         var ses = Session.get("selectedDocId")
 
@@ -1195,7 +1212,7 @@ if (Meteor.isClient) {
       Session.set("ses_DaysBefore", "");
       Session.set("ses_DaysAfter", "");
 
-      console.log("Delete - ses_datefilter,ses_DaysBefore,ses_DaysAfter");
+      //console.log("Delete - ses_datefilter,ses_DaysBefore,ses_DaysAfter");
 
       $('#filterOrderDate').val("");
       $('#filterOrderDateBefore').val("");
@@ -1212,7 +1229,7 @@ if (Meteor.isClient) {
       
       Session.set("ses_datefilter", datesel1);
       datesel1 = "";
-      console.log("Set-ses_datefilter: " + Session.get("ses_datefilter"));
+      //console.log("Set-ses_datefilter: " + Session.get("ses_datefilter"));
     },
 
     'change #filterOrderDateBefore': function (e, t) {
@@ -1224,7 +1241,7 @@ if (Meteor.isClient) {
       Session.set("ses_DaysBefore", datesel1);
       Session.set("ses_datefilter", datesel1); //just to skip all
       datesel1 = "";
-      console.log("Set-ses_DaysBefore: " + Session.get("ses_DaysBefore"));
+      //console.log("Set-ses_DaysBefore: " + Session.get("ses_DaysBefore"));
     },
 
     'change #filterOrderDateAfter': function (e, t) {
@@ -1236,7 +1253,7 @@ if (Meteor.isClient) {
       Session.set("ses_DaysAfter", datesel1);
       Session.set("ses_datefilter", datesel1); //just to skip all
       datesel1 = "";
-      console.log("Set-ses_DaysAfter: " + Session.get("ses_DaysAfter"));
+      //console.log("Set-ses_DaysAfter: " + Session.get("ses_DaysAfter"));
     },
 
     'click #new_order': function (e, t) {
@@ -1432,16 +1449,35 @@ if (Meteor.isClient) {
     'click #deleteOrder': function (e, t) {
       var orderToDelete = Session.get("selectedDocId");
       //console.log("orderToDelete" + orderToDelete);
+      var order = Order.find({_id: orderToDelete}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var actualPosition = order[i].Position;
+          var actualStatus = order[i].Status;
+          var actual_id = order[i]._id;
+        }
 
       if (confirm('Are you sure you want to DELETE this Order?')) {
-        // Save it!
-        Order.remove({_id: orderToDelete});
-        rm_EditOrder.hide();
+
+        var order = Order.find({Position: actualPosition, Status: actualStatus}).fetch();
+        var linked = order.length;
+        //console.log("is linked: " + linked);
+
+        if (linked > 1) {
+          Order.remove({_id: orderToDelete});
+
+        } else {
+          // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
+          Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
+          //console.log("method_smanjizajedan: " + data);
+          });  
+          Order.remove({_id: orderToDelete});
+        }
+
       } else {
         // Do nothing!
-        rm_EditOrder.hide();
       }
 
+      rm_EditOrder.hide();
     },
     'click #loadOrder': function (){
       //console.log("click load Order");
@@ -1471,7 +1507,7 @@ if (Meteor.isClient) {
       var input_actuallaysers = Session.get("ses_change_al");
       //var input_actuallaysers = $('#input_actuallaysers').val();
       //input_actuallaysers = Number(input_actuallaysers);
-      console.log("input_actuallaysers form ses: " + input_actuallaysers); // Problem!!
+      console.log("input_actuallaysers form ses: " + input_actuallaysers); // Problem!!!
 
       //console.log("click spread Order");
       var orderToEdit = Session.get("selectedDocId");
@@ -1499,6 +1535,9 @@ if (Meteor.isClient) {
           var LonLayer = order[i].LonLayer;
           var layers = order[i].Layers;
           var layersactual = order[i].LayersActual;
+          var actualPosition = order[i].Position;
+          var actualStatus = order[i].Status;
+          var actual_id = order[i]._id;
       }
 
       if (layersactual) {
@@ -1511,8 +1550,14 @@ if (Meteor.isClient) {
       var CutM = LayersToCount * MonLayer;
       var CutL = LayersToCount * LonLayer;
 
+      // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
+      Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
+        //console.log("method_smanjizajedan: " + data);
+      });
+
       Order.update({_id: orderToEdit},{$set: {Position: 999,Spread: userEditSpread, SpreadDate: spreadDate, Status: "CUT",LayersActual: input_actuallaysers, CutS: CutS, CutM: CutM, CutL: CutL}});
       delete input_actuallaysers;
+    
 
       rm_EditOrder.hide();
     },
@@ -1584,6 +1629,9 @@ if (Meteor.isClient) {
       console.log("selectedStatus22: " + selectedStatus2);
       })*/
       
+      if (actualPosition == selectedPosition) {
+        alert("No way!!! \nActual position and Selected position are the same! \n \n:P ");
+      } else {
       // Izbrisi aktuelnu pozicuju, tj stavi poziciju na 0
       Meteor.call('method_stavipozna0', actualPosition, actualStatus, function(err, data) {
         //console.log("method_stavipozna0: " + data);
@@ -1604,6 +1652,7 @@ if (Meteor.isClient) {
       Meteor.call('method_ubacinapoz', actualPosition, actualStatus, selectedPositionN, function(err, data) {
         //console.log("method_ubacinapoz: " + data);
       });
+    }
 
     rm_EditOrder.hide();
 
@@ -1624,6 +1673,10 @@ if (Meteor.isClient) {
 
       //var selectedPositionChange = $( "#insertorder option:selected" ).text();
       //console.log("selectedPositionChange: " +selectedPositionChange )
+
+      if (actualPosition == selectedPosition) {
+        alert("No way!!! \nActual position and Selected position are the same! \n \n:P ");
+      } else {
 
       // Izbrisi aktuelnu pozicuju, tj stavi poziciju na 0
       Meteor.call('method_stavipozna0', actualPosition, actualStatus, function(err, data) {
@@ -1646,7 +1699,45 @@ if (Meteor.isClient) {
         //console.log("method_ubacinapoz: " + data);
       });
       
+      }
+
       rm_EditOrder.hide();
+    },
+    'click #unlinkposition' : function(e){
+      var orderToEdit = Session.get("selectedDocId");
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var actualPosition = order[i].Position;
+          var actualStatus = order[i].Status;
+          var actual_id = order[i]._id;
+        }
+
+      if (actualStatus == "SP 1"){
+        var uniquecountPosSp1 = Session.get("ses_uniquecountPosSp1");
+        var uniquecountSelected = uniquecountPosSp1;
+      
+      } else if (actualStatus == "SP 2"){
+        var uniquecountPosSp2 = Session.get("ses_uniquecountPosSp2");
+        var uniquecountSelected = uniquecountPosSp2;
+      } else {
+        var uniquecountSelected = 0;
+      }
+      //console.log("uniquecountSelected" + uniquecountSelected);
+
+      var uniquecountSelectedPosition = uniquecountSelected + 1;
+      //console.log("uniquecountSelectedPosition: " + uniquecountSelectedPosition);
+
+      // Proveri da li postoji linkovana pozicija i vrati broj
+      var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      var linked = order.length;
+  
+      if (linked > 1 ){
+        Order.update({_id: actual_id}, {$set: {Position: uniquecountSelectedPosition}});  
+      } else {
+        alert("No way!!! \nThis position have only one order! \n:P")
+      }
+
+      rm_EditOrder.hide();      
     },
     'click #changestatus': function(e){
 
@@ -1659,10 +1750,10 @@ if (Meteor.isClient) {
         }
 
       var selectedStatus = $('.in #selectStatus').find(":selected").text();
-      console.log("selectedStatus: " + selectedStatus); 
+      //console.log("selectedStatus: " + selectedStatus); 
 
       if (selectedStatus == "SP 1"){
-        var uniquecountPosSp1 = Session.get("ses_uniquecountPosSp1");  
+        var uniquecountPosSp1 = Session.get("ses_uniquecountPosSp1");
         var uniquecountSelected = uniquecountPosSp1;
       
       } else if (selectedStatus == "SP 2"){
@@ -1676,13 +1767,20 @@ if (Meteor.isClient) {
       var uniquecountSelectedPosition = uniquecountSelected + 1;
       //console.log("uniquecountSelectedPosition: " + uniquecountSelectedPosition);
 
-      Order.update({_id: actual_id}, {$set: {Status: selectedStatus, Position: uniquecountSelectedPosition}});
+      if (actualStatus == selectedStatus) {
+        alert("Actual status and Selected status are the same, \nselected order will be at last position \n:P")
+      }
+
+      // 
+      Meteor.call('method_changeStatus', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, function(err, data) {
+        //console.log("method_changeStatus: " + data);
+      }); 
 
       // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
       Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
         //console.log("method_smanjizajedan: " + data);
-      }); 
-
+      });  
+      
       rm_EditOrder.hide();
     },
 
@@ -2080,7 +2178,7 @@ if (Meteor.isServer) {
       var largest2 = Math.max.apply(null, posarray);
       return largest2;
     }
- },
+  },
   method_arrayofPosSp1: function() {
     var order = Order.find({Status: 'SP 1'}).fetch();
       var posarray = [];
@@ -2197,6 +2295,18 @@ if (Meteor.isServer) {
       }
     return "Not found method_stavipozna0";
   },
+  method_changeStatus: function(actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition){
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$set: {Status: selectedStatus, Position: uniquecountSelectedPosition}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+      }
+    return "Not found method_changeStatus";
+  }
   
 });
  
