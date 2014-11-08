@@ -85,30 +85,6 @@
       <div class="navbar-form">
         
         {{#if isAdmin}}
-        <div class="form-group" style="border: 1px solid #000; border-radius: 5px;">
-          <!--<span style="color: white">Filter Order Date : </span>
-          <input type="date" id="filterOrderDate" class="form-control" placeholder="Filter Order Date"/>-->
-          <span style="color: white">Filter Order Range: </span>
-          <input type="date" id="filterOrderDateBefore" class="form-control" placeholder="Filter Order Date Before"/> <span style="color: white"> - </span>
-          <input type="date" id="filterOrderDateAfter" class="form-control" placeholder="Filter Order Date After"/>
-          <!--<button id="btnfilterOrderDate" class="btn btn-default">Clear Filter</button> -->
-          <ul class="nav navbar-nav">
-          <li><a href="#"></a></li>
-        </ul>
-        </div>
-        
-
-        <!--
-        <select class="form-control" id="filter_select">
-          <option>none</option>
-          <option>SP 1</option>
-          <option>SP 2</option>
-          <option>CUT</option>
-          <option>Finished</option>
-          <option>Not Assigned</option>
-          <option>All</option>
-        </select>
-        -->
         
         <div class="btn-group" data-toggle="buttons" style="border: 1px solid #000; border-radius: 5px;">
        
@@ -131,6 +107,18 @@
           <label class="btn btn-success">
             <input type="radio" name="options" id="finished"> Finished
           </label>
+        </div>
+
+        <div class="form-group" style="border: 1px solid #000; border-radius: 5px;">
+          <!--<span style="color: white">Filter Order Date : </span>
+          <input type="date" id="filterOrderDate" class="form-control" placeholder="Filter Order Date"/>-->
+          <span style="color: white">Filter Order Range: </span>
+          <input type="date" id="filterOrderDateBefore" class="form-control" placeholder="Filter Order Date Before"/> <span style="color: white"> - </span>
+          <input type="date" id="filterOrderDateAfter" class="form-control" placeholder="Filter Order Date After"/>
+          <!--<button id="btnfilterOrderDate" class="btn btn-default">Clear Filter</button> -->
+          <ul class="nav navbar-nav">
+          <li><a href="#"></a></li>
+        </ul>
         </div>
 
         {{/if}}
@@ -589,7 +577,8 @@
               {{/autoForm}}
               -->   
                       {{#if isSPfilter}}
-                      <big><b>Change Position</b></big>
+                      <big><b>Change Position</b></big><br />
+                      <big>{{CurrentPosition}}</big>
                       
                       <select class="form-control small" id="selectPosition">
                         {{#each positionSelect}}
@@ -606,9 +595,9 @@
                       </div>
                       -->
                       <div>
-                        <button type="submit" id="insertposition" class="btn btn-primary small">Insert Position</button>
-                        <button type="submit" id="linkposition" class="btn btn-primary small">Link Position</button>
-                        <button type="submit" id="unlinkposition" class="btn btn-primary small">Unlink Position</button>
+                        <button type="submit" id="insertposition" class="btn btn-primary btn-sm">Insert in Position</button>
+                        <button type="submit" id="linkposition" class="btn btn-warning btn-sm">Link to Position</button>
+                        <button type="submit" id="unlinkposition" class="btn btn-danger btn-sm">Unlink Position</button>
                       </div>
                       <br />
                       <hr />
@@ -624,7 +613,8 @@
                            <button type="submit" id="{{this}}" class="btn btn-primary">{{this}}</button>
                         {{/each}}-->
                     
-                      <big><b>Change Status</b></big>
+                      <big><b>Change Status</b></big><br />
+                      <big>{{CurrentStatus}}</big>
 
                       <select class="form-control" id="selectStatus">
                         {{#each statusSelect}}
@@ -634,10 +624,11 @@
                       <br />
 
                       <div>
-                        <button type="submit" id="changestatus" class="btn btn-primary small">Change Status</button>  
+                        <button type="submit" id="changestatus" class="btn btn-info btn-sm">Change Status</button>  
                       </div>
               <hr />
-              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="LengthSum,Created,S,M,L,SpreadDate,CutDate"}}
+              <big><b>Order Information</b></big><br />
+              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,SpreadDate,CutDate,Status,Position"}}
 
               <div class="">
                 <br />

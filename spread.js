@@ -29,7 +29,7 @@ if (Meteor.isClient) {
     Session.set("ses_DaysAfter", treeDaysafter);
     Session.set("ses_datenotexist", false);
     Session.set("ses_jobnotexist", false);
-    Session.set("ses_statusfilter", false);
+    Session.set("ses_statusfilter", "Not assigned");
 
     Date.prototype.toDateInputValue = (function() {
         var local = new Date(this);
@@ -689,6 +689,28 @@ if (Meteor.isClient) {
         return OrderInfo;
 
       },
+      CurrentPosition: function (){
+        var ses = Session.get("selectedDocId")
+        //console.log("ses: " + ses);
+
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var Pos = order[i].Position;       
+        }
+        var CurrentPosition = "Current Position: " + Pos;
+        return CurrentPosition;
+      },
+      CurrentStatus: function (){
+        var ses = Session.get("selectedDocId")
+        //console.log("ses: " + ses);
+
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var Stat = order[i].Status;       
+        }
+        var CurrentStatus = "Current Status: " + Stat;
+        return CurrentStatus;
+      },
       FabricInfo: function () {
         var ses = Session.get("selectedDocId")
         //console.log("ses: " + ses);
@@ -804,7 +826,8 @@ if (Meteor.isClient) {
         } else {
           return false;
         }
-      }
+      },
+
       /*isSpreaded: function () {
         var ses = Session.get("selectedDocId")
 
@@ -1550,15 +1573,29 @@ if (Meteor.isClient) {
       var CutM = LayersToCount * MonLayer;
       var CutL = LayersToCount * LonLayer;
 
+      //Order.update({_id: orderToEdit},{$set: {Position: 999,Spread: userEditSpread, SpreadDate: spreadDate, Status: "CUT",LayersActual: input_actuallaysers, CutS: CutS, CutM: CutM, CutL: CutL}});
+
+      // Izbrisi aktuelnu pozicuju, tj stavi poziciju na 0
+      Meteor.call('method_stavipozna0', actualPosition, actualStatus, function(err, data) {
+        //console.log("method_stavipozna0: " + data);
+      }); 
+      //console.log('kraj method_stavipozna0')
+
       // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
       Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
         //console.log("method_smanjizajedan: " + data);
-      });
+      });   
 
-      Order.update({_id: orderToEdit},{$set: {Position: 999,Spread: userEditSpread, SpreadDate: spreadDate, Status: "CUT",LayersActual: input_actuallaysers, CutS: CutS, CutM: CutM, CutL: CutL}});
+      var actualPosition = 0;
+      var selectedStatus = "CUT";
+      var uniquecountSelectedPosition = 500;
+
+      // 
+      Meteor.call('method_changeStatus', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, function(err, data) {
+        //console.log("method_changeStatus: " + data);
+      }); 
+      
       delete input_actuallaysers;
-    
-
       rm_EditOrder.hide();
     },
     'click #cutOrder': function (){
