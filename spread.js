@@ -116,6 +116,10 @@ if (Meteor.isClient) {
       Meteor.subscribe('filter_orderWithDate', ses_datefilter);
     }
 
+      Meteor.call('method_uniquecountPosNA', function(err, data) {
+        //console.log("method_uniquecountPosNA: " + data);
+        Session.set("ses_uniquecountPosNA", data);
+      });
       Meteor.call('method_uniquecountPosSp1', function(err, data) {
         //console.log("method_uniquecountPosSp1: " + data);
         Session.set("ses_uniquecountPosSp1", data);
@@ -123,6 +127,14 @@ if (Meteor.isClient) {
       Meteor.call('method_uniquecountPosSp2', function(err, data) {
         //console.log("method_uniquecountPosSp2: " + data);
         Session.set("ses_uniquecountPosSp2", data);
+      });
+      Meteor.call('method_uniquecountPosCUT', function(err, data) {
+        //console.log("method_uniquecountPosCUT: " + data);
+        Session.set("ses_uniquecountPosCUT", data);
+      });
+      Meteor.call('method_uniquecountPosF', function(err, data) {
+        //console.log("method_uniquecountPosF: " + data);
+        Session.set("ses_uniquecountPosF", data);
       });
     
     /*
@@ -576,6 +588,10 @@ if (Meteor.isClient) {
         //$('.in #insertorder').attr('checked');
         //$('#selectPosition select').val(5);
 
+        Meteor.call('method_uniquecountPosNA', function(err, data) {
+          //console.log("method_uniquecountPosNA: " + data);
+          Session.set("ses_uniquecountPosNA", data);
+        });
         Meteor.call('method_uniquecountPosSp1', function(err, data) {
           //console.log("method_uniquecountPosSp1: " + data);
           Session.set("ses_uniquecountPosSp1", data);
@@ -584,7 +600,15 @@ if (Meteor.isClient) {
           //console.log("method_uniquecountPosSp2: " + data);
           Session.set("ses_uniquecountPosSp2", data);
         });
-        
+        Meteor.call('method_uniquecountPosCUT', function(err, data) {
+          //console.log("method_uniquecountPosCUT: " + data);
+          Session.set("ses_uniquecountPosCUT", data);
+        });
+        Meteor.call('method_uniquecountPosF', function(err, data) {
+          //console.log("method_uniquecountPosF: " + data);
+          Session.set("ses_uniquecountPosF", data);
+        });
+
         // Define rd_editorder
         var rd_editorder = ReactiveModal.initDialog(rm_EditOrder);
 
@@ -746,6 +770,17 @@ if (Meteor.isClient) {
       },
       positionSelect: function  (){
 
+        Meteor.call('method_arrayofPosNA', function(err,data) {
+          var arrayofPosNA = data;
+          Session.set('ses_arrayofPosNA', arrayofPosNA);
+          //console.log("ses_arrayofPosNA: " + arrayofPosNA);
+        });
+        var uniqarrayofPosNA = $.makeArray($(Session.get('ses_arrayofPosNA')).filter(function(i,itm){ 
+          return i == $(Session.get('ses_arrayofPosNA')).index(itm);
+        }));
+        //Session.set('ses_uniqarrayofPosSp1', uniqarrayofPosSp1);
+        //console.log("uniqarrayofPosSp1: " + uniqarrayofPosSp1);
+        
         Meteor.call('method_arrayofPosSp1', function(err,data) {
           var arrayofPosSp1 = data;
           Session.set('ses_arrayofPosSp1', arrayofPosSp1);
@@ -756,8 +791,7 @@ if (Meteor.isClient) {
         }));
         //Session.set('ses_uniqarrayofPosSp1', uniqarrayofPosSp1);
         //console.log("uniqarrayofPosSp1: " + uniqarrayofPosSp1);
-        
-        
+          
         Meteor.call('method_arrayofPosSp2', function(err,data) {
           var arrayofPosSp2 = data;
           Session.set('ses_arrayofPosSp2', arrayofPosSp2);
@@ -772,31 +806,17 @@ if (Meteor.isClient) {
         var click_id_status = Session.get('click_id_status');
 
         if (click_id_status == 'SP 1'){
-          //Session.set("ses_arrayofPosSp", Session.get('ses_uniqarrayofPosSp1'));
-          //Session.set("ses_arrayofPosSp", uniqarrayofPosSp1);
-          //var arrayofPosSp = uniqarrayofPosSp1;
           return uniqarrayofPosSp1;
         } else if (click_id_status == 'SP 2'){
-          //Session.set("ses_arrayofPosSp", Session.get('ses_uniqarrayofPosSp2'));
-          //Session.set("ses_arrayofPosSp", uniqarrayofPosSp2);
-          //var arrayofPosSp = uniqarrayofPosSp2;
           return uniqarrayofPosSp2;
+        } else if (click_id_status == 'Not assigned'){
+          return uniqarrayofPosNA;
         } else {
           //Session.set("ses_arrayofPosSp", "None");
           //var arrayofPosSp = "None";
           return ['None'];
         }
 
-        //$('.in #selectPosition').find(":selected").val();
-        //$('.in #selectPosition select').val();
-
-        /*$(".in #selectPosition option").filter(function() {
-          return $(this).text() == 2; 
-        }).prop('selected', true);*/
-
-        //var  arrayofPosSp = Session.get('ses_arrayofPosSp');
-        //console.log("position: " + arrayofPosSp);
-        //return arrayofPosSp;
       },
       statusSelect: function (){
         
@@ -821,7 +841,7 @@ if (Meteor.isClient) {
       },
       isSPfilter: function (){
         var statusFilter = Session.get("ses_statusfilter");
-        if ((statusFilter == "SP 1") || (statusFilter == "SP 2")) {
+        if ((statusFilter == "SP 1") || (statusFilter == "SP 2") || (statusFilter == "Not assigned")) {
           return true;
         } else {
           return false;
@@ -1300,14 +1320,25 @@ if (Meteor.isClient) {
     'click #import_from_planned_markers' : function () {
       //console.log('import from planned markers - click')
 
+      Meteor.call('method_uniquecountPosNA', function(err, data) {
+        Session.set("ses_uniquecountPosNA", data);
+        //console.log("method_uniquecountPosSp1: " + data);
+      });
       Meteor.call('method_uniquecountPosSp1', function(err, data) {
         Session.set("ses_uniquecountPosSp1", data);
         //console.log("method_uniquecountPosSp1: " + data);
       });
-
       Meteor.call('method_uniquecountPosSp2', function(err, data) {
         Session.set("ses_uniquecountPosSp2", data);
        //console.log("method_uniquecountPosSp2: " + data);
+      });
+      Meteor.call('method_uniquecountPosCUT', function(err, data) {
+        Session.set("ses_uniquecountPosCUT", data);
+        //console.log("method_uniquecountPosSp1: " + data);
+      });
+      Meteor.call('method_uniquecountPosF', function(err, data) {
+        Session.set("ses_uniquecountPosF", data);
+        //console.log("method_uniquecountPosSp1: " + data);
       });
 
       // Define rd_addneworder
@@ -1752,12 +1783,15 @@ if (Meteor.isClient) {
       if (actualStatus == "SP 1"){
         var uniquecountPosSp1 = Session.get("ses_uniquecountPosSp1");
         var uniquecountSelected = uniquecountPosSp1;
-      
       } else if (actualStatus == "SP 2"){
         var uniquecountPosSp2 = Session.get("ses_uniquecountPosSp2");
         var uniquecountSelected = uniquecountPosSp2;
+      } else if (actualStatus == "Not assigned"){
+        var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
+        var uniquecountSelected = uniquecountPosNA;
+        //var uniquecountSelected = 0;
       } else {
-        var uniquecountSelected = 0;
+        var uniquecountSelected = '';
       }
       //console.log("uniquecountSelected" + uniquecountSelected);
 
@@ -1787,17 +1821,22 @@ if (Meteor.isClient) {
         }
 
       var selectedStatus = $('.in #selectStatus').find(":selected").text();
-      //console.log("selectedStatus: " + selectedStatus); 
+      console.log("selectedStatus: " + selectedStatus); 
 
       if (selectedStatus == "SP 1"){
         var uniquecountPosSp1 = Session.get("ses_uniquecountPosSp1");
         var uniquecountSelected = uniquecountPosSp1;
-      
       } else if (selectedStatus == "SP 2"){
         var uniquecountPosSp2 = Session.get("ses_uniquecountPosSp2");
         var uniquecountSelected = uniquecountPosSp2;
+      } else if (selectedStatus == "Not assigned"){
+        var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
+        var uniquecountSelected = uniquecountPosNA;
+      } else if (selectedStatus == "CUT"){
+        var uniquecountPosCUT = Session.get("ses_uniquecountPosCUT");
+        var uniquecountSelected = uniquecountPosCUT;
       } else {
-        var uniquecountSelected = 0;
+        var uniquecountSelected;
       }
       //console.log("uniquecountSelected" + uniquecountSelected);
 
@@ -1947,24 +1986,23 @@ if (Meteor.isClient) {
               
             if (status == "1" ){
               status = 'SP 1';
-
               var uniquecountPosSp1 = Session.get("ses_uniquecountPosSp1");
               var uniquecountPosSp1 = uniquecountPosSp1 + 1;
               Session.set("ses_uniquecountPosSp1", uniquecountPosSp1);
               setPos = uniquecountPosSp1;
-
             } else if (status == "2" ){
               status = 'SP 2';
-
               var uniquecountPosSp2 = Session.get("ses_uniquecountPosSp2");
               var uniquecountPosSp2 = uniquecountPosSp2 + 1;
               Session.set("ses_uniquecountPosSp2", uniquecountPosSp2);
-              setPos = uniquecountPosSp2;
-              
-            
+              setPos = uniquecountPosSp2;         
             } else {
+              var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
+              var uniquecountPosNA = uniquecountPosNA + 1;
+              Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+              setPos = uniquecountPosNA;
               status = 'Not assigned';
-              setPos = 999;
+              //setPos = 999;
             }
 
             // STATUS = ['Not assigned','SP 1','SP 2','CUT','Finish']
@@ -2188,6 +2226,20 @@ if (Meteor.isServer) {
   method_countPosSp2: function() {
     return Order.find({Status: 'SP 2'}).count();
   },
+  method_uniquecountPosNA: function() {
+    var order = Order.find({Status: 'Not assigned'}).fetch();
+    var posarray = [];
+    for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+    }
+    if (isNaN(posarray[0])) {
+      return 0;
+    } else {
+      var largest1 = Math.max.apply(null, posarray);
+      return largest1;
+    }
+  },
   method_uniquecountPosSp1: function() {
     var order = Order.find({Status: 'SP 1'}).fetch();
     var posarray = [];
@@ -2215,6 +2267,45 @@ if (Meteor.isServer) {
       var largest2 = Math.max.apply(null, posarray);
       return largest2;
     }
+  },
+  method_uniquecountPosCUT: function() {
+    var order = Order.find({Status: 'CUT'}).fetch();
+    var posarray = [];
+    for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+    }
+    if (isNaN(posarray[0])) {
+      return 0;
+    } else {
+      var largest2 = Math.max.apply(null, posarray);
+      return largest2;
+    }
+  },
+  method_uniquecountPosF: function() {
+    var order = Order.find({Status: 'Finished'}).fetch();
+    var posarray = [];
+    for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+    }
+    if (isNaN(posarray[0])) {
+      return 0;
+    } else {
+      var largest2 = Math.max.apply(null, posarray);
+      return largest2;
+    }
+  },
+  method_arrayofPosNA: function() {
+    var order = Order.find({Status: 'Not assigned'}).fetch();
+      var posarray = [];
+
+      for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+      }
+    posarray.sort(function(a, b){return a-b});
+    return posarray;
   },
   method_arrayofPosSp1: function() {
     var order = Order.find({Status: 'SP 1'}).fetch();
