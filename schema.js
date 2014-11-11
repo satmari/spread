@@ -253,7 +253,7 @@ Order = new Meteor.Collection("order", {
     },
     'OrderLink' : {
         type: Boolean,
-        label: "Order Link (OrderDate + Marker + Komesa)",
+        label: "Order Linked",
         defaultValue: false,
     },
     /*

@@ -642,22 +642,17 @@
                     <p>User:  <big>{{User}}</big></p>
                     <p>Oredr Info:  <big>{{OrderInfo}}</big></p>
                     <p>Fabric Info:  <big>{{FabricInfo}}</big></p>
+                    <hr />
 
                     {{#if isLoaded}}
                     <tr>
                       <td>
-                        <a href="#" id="loadOrder" class="btn btn-default btn-lg btn-block btn-primary">
-                        Load Order</a>
+                        <a href="#" id="loadOrder" class="btn btn-default btn-lg btn-block" style="color:#000;">Load Order</a>
                       </td>
                     </tr>
                     <br />
                     {{else}}
-                    <tr>
-                      <td>
-                        <a href="#" id="spreadOrder" class="btn btn-default btn-lg btn-block btn-success"> Spread Order</a>
-                      </td>
-                    </tr>
-                    <br />
+                                        
                     <!--
                     <tr>
                       {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,SonLayer,CutS,M,MonLayer,CutM,L,LonLayer,CutL,Status,Priority,LengthSum,Created,Load,Spread,SpreadDate,Cut,CutDate,OrderLink,Position"}}
@@ -667,9 +662,17 @@
                       <fieldset>
                         <!--<legend>Actual Layers</legend>-->
                         {{> afQuickField name='LayersActual'}}
+                        {{> afQuickField name='Comment'}}
                       </fieldset>
-                      <button type="submit" class="btn btn-primary">Save</button>
+                      <button type="submit" class="btn btn-danger">Save</button>
                       {{/autoForm}}
+
+                      <hr />
+                      <tr>
+                        <td>
+                          <a href="#" id="spreadOrder" class="btn btn-info btn-lg btn-block"> Spread Order</a>
+                        </td>
+                      </tr>
 
                     {{/if}}
                   </tbody>
@@ -682,17 +685,11 @@
                     <p>User:  <big>{{User}}</big></p>
                     <p>Order Info:  <big>{{OrderInfo}}</big></p>
                     <p>Fabric Info:  <big>{{FabricInfo}}</big></p>
-                    <tr>
-                      <td>
-                        <a href="#" id="cutOrder" class="btn btn-default btn-lg btn-block btn-success">Cut Order</a>
-                      </td>
-                    </tr>
-                    <br />
-                    <tr>
+                                       
                     <!--
                       {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,LayersActual,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,Status,Priority,LengthSum,Created,Load,Spread,SpreadDate,Cut,CutDate,OrderLink,Position"}}
                     -->
-                    {{#autoForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc }}
+                     {{#autoForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc }}
                       <fieldset>
                         <!--<legend>Actual Layers</legend>-->
                         {{> afQuickField name='CutS'}}
@@ -700,10 +697,16 @@
                         {{> afQuickField name='CutL'}}
                         {{> afQuickField name='Comment'}}
                       </fieldset>
-                      <button type="submit" class="btn btn-primary">Save</button>
+                      <button type="submit" class="btn btn-danger">Save</button>
                     {{/autoForm}}
-
+                    
+                    <hr />
+                    <tr>
+                      <td>
+                        <a href="#" id="cutOrder" class="btn btn-success btn-lg btn-block">Cut Order</a>
+                      </td>
                     </tr>
+
                   </tbody>
                 </table>
             {{/if}}

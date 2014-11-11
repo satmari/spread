@@ -105,8 +105,10 @@ if (Meteor.isClient) {
     } else if ( ses_jobnotexist == true ) {
       Meteor.subscribe('filter_orderWithoutJob');
 
-    } else if ( ses_statusfilter) { 
-      Meteor.subscribe('filter_statusfilter', ses_statusfilter/*, ses_DaysBefore, ses_DaysAfter*/);
+    } else if (ses_statusfilter == 'Finished') { 
+      Meteor.subscribe('filter_statusfilterwithDate', ses_statusfilter, ses_DaysBefore, ses_DaysAfter);
+    } else if (ses_statusfilter) { 
+      Meteor.subscribe('filter_statusfilter', ses_statusfilter);
 
     } else if ( ses_datefilter == "" ) { 
       Meteor.subscribe('filter_orderAll');
@@ -1537,6 +1539,14 @@ if (Meteor.isClient) {
       //console.log("click load Order");
       var orderToEdit = Session.get("selectedDocId");
       //console.log("orderToEdit: " + orderToEdit);
+
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var actualPosition = order[i].Position;
+          var actualStatus = order[i].Status;
+          var actual_id = order[i]._id;
+      }
+
       var userEdit = Session.get("ses_loggedUserName");
       //console.log("userEdit: " + userEdit);
       var userEditLoad;
@@ -1554,46 +1564,55 @@ if (Meteor.isClient) {
       //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
       //console.log(orderToEdit[0]._id);
 
-      Order.update({_id: orderToEdit},{$set: {Load: userEditLoad}});
+      //Order.update({_id: orderToEdit},{$set: {Load: userEditLoad}});
+
+      // Dodaj load order u znavisnosti od korisnika 
+      Meteor.call('method_loadOrder', actualPosition, actualStatus, userEditLoad, function(err, data) {
+        //console.log("method_stavipozna0: " + data);
+      }); 
+      //console.log('kraj method_stavipozna0')
+
       rm_EditOrder.hide();
     },
     'click #spreadOrder': function (){
-      var input_actuallaysers = Session.get("ses_change_al");
+      //var input_actuallaysers = Session.get("ses_change_al");
       //var input_actuallaysers = $('#input_actuallaysers').val();
       //input_actuallaysers = Number(input_actuallaysers);
-      console.log("input_actuallaysers form ses: " + input_actuallaysers); // Problem!!!
+      //console.log("input_actuallaysers form ses: " + input_actuallaysers); // Problem!!!
 
       //console.log("click spread Order");
       var orderToEdit = Session.get("selectedDocId");
       //console.log("orderToEdit: " + orderToEdit);
-      var userEdit = Session.get("ses_loggedUserName");
-      //console.log("userEdit: " + userEdit);
-      var userEditSpread;
-
-      if (userEdit == "sp11"){
-        userEditSpread = "SP 1-1";
-      } else if (userEdit == "sp12") {
-        userEditSpread = "SP 1-2";
-      } else if (userEdit == "sp21") {
-        userEditSpread = "SP 2-1";
-      } else if (userEdit == "sp22") {
-        userEditSpread = "SP 2-2";
-      }
-
-      var spreadDate = new Date();
-
       var order = Order.find({_id: orderToEdit}).fetch();
         for (var i = 0; i < order.length; i++) {
+          /*
           var SonLayer = order[i].SonLayer;
           var MonLayer = order[i].MonLayer;
           var LonLayer = order[i].LonLayer;
           var layers = order[i].Layers;
           var layersactual = order[i].LayersActual;
+          */
           var actualPosition = order[i].Position;
           var actualStatus = order[i].Status;
           var actual_id = order[i]._id;
       }
 
+      var userEdit = Session.get("ses_loggedUserName");
+      //console.log("userEdit: " + userEdit);
+      
+      if (userEdit == "sp11"){
+        var userEditSpread = "SP 1-1";
+      } else if (userEdit == "sp12") {
+        var userEditSpread = "SP 1-2";
+      } else if (userEdit == "sp21") {
+        var userEditSpread = "SP 2-1";
+      } else if (userEdit == "sp22") {
+        var userEditSpread = "SP 2-2";
+      }
+
+      var spreadDate = new Date();
+
+      /*
       if (layersactual) {
           LayersToCount = layersactual;
       } else {
@@ -1603,15 +1622,15 @@ if (Meteor.isClient) {
       var CutS = LayersToCount * SonLayer;
       var CutM = LayersToCount * MonLayer;
       var CutL = LayersToCount * LonLayer;
+      */
 
-      //Order.update({_id: orderToEdit},{$set: {Position: 999,Spread: userEditSpread, SpreadDate: spreadDate, Status: "CUT",LayersActual: input_actuallaysers, CutS: CutS, CutM: CutM, CutL: CutL}});
+      //Order.update({_id: orderToEdit},{$set: {Position: 999,Spread: userEditSpread, SpreadDate: spreadDate, Status: "CUT" ,LayersActual: input_actuallaysers, CutS: CutS, CutM: CutM, CutL: CutL}});
 
       // Izbrisi aktuelnu pozicuju, tj stavi poziciju na 0
       Meteor.call('method_stavipozna0', actualPosition, actualStatus, function(err, data) {
         //console.log("method_stavipozna0: " + data);
       }); 
-      //console.log('kraj method_stavipozna0')
-
+      
       // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
       Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
         //console.log("method_smanjizajedan: " + data);
@@ -1619,33 +1638,62 @@ if (Meteor.isClient) {
 
       var actualPosition = 0;
       var selectedStatus = "CUT";
-      var uniquecountSelectedPosition = 500;
+      //var uniquecountSelectedPosition = 500;
 
-      // 
-      Meteor.call('method_changeStatus', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, function(err, data) {
-        //console.log("method_changeStatus: " + data);
-      }); 
+      var uniquecountSelected = Session.get("ses_uniquecountPosCUT");
+      var uniquecountSelectedPosition = uniquecountSelected + 1;
+
+      Meteor.call('method_spreadOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, /*layersactual, CutS, CutM, CutL,*/ function(err, data) {
+        //console.log("method_spreadOrder: " + data);
+      });
       
-      delete input_actuallaysers;
+      //delete input_actuallaysers;
       rm_EditOrder.hide();
     },
     'click #cutOrder': function (){
-      //console.log("click spread Order");
+
       var orderToEdit = Session.get("selectedDocId");
       //console.log("orderToEdit: " + orderToEdit);
+
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          
+          var actualPosition = order[i].Position;
+          var actualStatus = order[i].Status;
+          var actual_id = order[i]._id;
+      }
+
       var userEdit = Session.get("ses_loggedUserName");
       //console.log("userEdit: " + userEdit);
-      var userEditCut;
-
       if (userEdit == "cut1"){
-        userEditCut = "CUT 1";
+        var userEditCut = "CUT 1";
       } else if (userEdit == "cut2") {
-        userEditCut = "CUT 2";
+        var userEditCut = "CUT 2";
       } 
 
       var cutDate = new Date();
 
-      Order.update({_id: orderToEdit},{$set: {Cut: userEditCut, CutDate: cutDate, Status: "Finished" }});
+      //Order.update({_id: orderToEdit},{$set: {Cut: userEditCut, CutDate: cutDate, Status: "Finished" }});
+      
+      // Izbrisi aktuelnu pozicuju, tj stavi poziciju na 0
+      Meteor.call('method_stavipozna0', actualPosition, actualStatus, function(err, data) {
+        //console.log("method_stavipozna0: " + data);
+      }); 
+
+      // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
+      Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
+        //console.log("method_smanjizajedan: " + data);
+      }); 
+
+      var actualPosition = 0;
+      var selectedStatus = "Finished";
+      var uniquecountSelected = Session.get("ses_uniquecountPosF");
+      var uniquecountSelectedPosition = uniquecountSelected + 1;
+
+      Meteor.call('method_cutOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditCut, cutDate, /*layersactual, CutS, CutM, CutL,*/ function(err, data) {
+        //console.log("method_spreadOrder: " + data);
+      });
+
       rm_EditOrder.hide();
     },
     /*
@@ -2331,17 +2379,7 @@ if (Meteor.isServer) {
     return posarray;
   },
   method_arrayofStatus: function() {
-    /*
-    var order = Order.find({Status: { $exists: true}}).fetch();
-      var statusarray = [];
 
-      for (var i = 0; i < order.length; i++) {
-        sta = order[i].Status;
-        statusarray.push(sta);
-      }
-      statusarray.sort(function(a, b){return a-b});
-    */
-    //statusarray = ["Not assigned","SP 1","SP 2","CUT","Finished"];
     statusarray = ["Not assigned","SP 1","SP 2","CUT"];
     return statusarray;
   },
@@ -2354,17 +2392,18 @@ if (Meteor.isServer) {
         );
     }
     return "Done";
-    /*
-    var order = Order.find({Position: Position, Status: Status }).fetch();
+  },
+  method_stavipozna0: function (actualPosition, actualStatus){
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
       for (var i = 0; i < order.length; i++) {
         Order.update({ _id: order[i]._id},
-          {$inc: {Position: -1}}, 
+          {$set: {Position: 0}},
+          //{$inc: {Position: -1}}, 
           {multi: true}
-        );
-        return order[i].No;
+        ); 
+        //return order[i].No;
       }
-    return "Not found method_smanjizajedan";
-    */
+    return "Not found method_stavipozna0";
   },
   method_povecajzajedan: function(Position, Status){
     var order = Order.find({Position: {$gte: Position}, Status: Status }).fetch();
@@ -2374,18 +2413,7 @@ if (Meteor.isServer) {
           {multi: true}
         );
     }  
-    return "Done";
-    /*
-    var order = Order.find({Position: Position, Status: Status }).fetch();
-      for (var i = 0; i < order.length; i++) {
-        Order.update({ _id: order[i]._id},
-          {$inc: {Position: 1}},
-          {multi: true}
-      );
-        //return order[i].No;
-      }
-    return "Not Found method_povecajzajedan";
-    */
+    return "Not found method_povecajzajedan";
   },
   method_ubacinapoz: function (actualPosition, actualStatus, selectedPosition){
     var order = Order.find({Position: 0, Status: actualStatus }).fetch();
@@ -2411,18 +2439,6 @@ if (Meteor.isServer) {
       }
     return "Not found method_ubacinapozVise";
   },
-  method_stavipozna0: function (actualPosition, actualStatus){
-    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
-      for (var i = 0; i < order.length; i++) {
-        Order.update({ _id: order[i]._id},
-          {$set: {Position: 0}},
-          //{$inc: {Position: -1}}, 
-          {multi: true}
-        ); 
-        //return order[i].No;
-      }
-    return "Not found method_stavipozna0";
-  },
   method_changeStatus: function(actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition){
     var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
       for (var i = 0; i < order.length; i++) {
@@ -2434,7 +2450,69 @@ if (Meteor.isServer) {
         //return order[i].No;
       }
     return "Not found method_changeStatus";
-  }
+  },
+  method_loadOrder: function (actualPosition, actualStatus, userEditLoad){
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        var layers = order[i].Layers; // set layers to actual layers
+
+        Order.update({ _id: order[i]._id},
+          {$set: {Load: userEditLoad, LayersActual: layers}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+      }
+    return "Not found method_loadOrder";
+  }, 
+  method_spreadOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate) {
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        var oreder_id = order[i]._id;
+        var layers = order[i].Layers;
+        var layersactual = order[i].LayersActual;
+
+        if (layersactual) {
+          var LayersToCount = layersactual;
+        } else {
+          var LayersToCount = layers;
+        }
+
+        var SonLayer = order[i].SonLayer;
+        var MonLayer = order[i].MonLayer;
+        var LonLayer = order[i].LonLayer;
+        var S = LayersToCount * SonLayer;
+        var M = LayersToCount * MonLayer;
+        var L = LayersToCount * LonLayer;
+        var CutS = S;
+        var CutM = M;
+        var CutL = L;
+
+        Order.update({ _id: order[i]._id},
+          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Spread: userEditSpread, SpreadDate: spreadDate, S: S, M: M, L: L, CutS: CutS, CutM: CutM, CutL: CutL}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+      }
+    return "Not found method_spreadOrder";
+  },
+  method_cutOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditCut, cutDate) {
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        var oreder_id = order[i]._id;
+        var layers = order[i].Layers;
+        var layersactual = order[i].LayersActual;
+      
+        Order.update({ _id: order[i]._id},
+          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Cut: userEditCut, CutDate: cutDate}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+      }
+    return "Not found method_cutOrder";
+  },
   
 });
  
@@ -2493,17 +2571,25 @@ if (Meteor.isServer) {
           ]},
       ]
     })*/
-
   });
 
-  Meteor.publish("filter_statusfilter", function(status/*, Daysbefore , Daysafter*/){
+  Meteor.publish("filter_statusfilter", function(status){
     return Order.find({ 
       $and: [
       {Status: status},
-      //{Date: {$gte: Daysbefore, $lt: Daysafter}}
+      
       ]
     })
   });
+  Meteor.publish("filter_statusfilterwithDate", function(status, Daysbefore , Daysafter){
+    return Order.find({ 
+      $and: [
+      {Status: status},
+      {CutDate: {$gte: Daysbefore, $lt: Daysafter}}
+      ]
+    })
+  });
+
 
 }
 
