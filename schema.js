@@ -256,51 +256,7 @@ Order = new Meteor.Collection("order", {
         label: "Order Linked",
         defaultValue: false,
     },
-    /*
-    'OrderLink': {
-        type: String,
-        label: "OrderLink", 
-        optional: false,
-        autoValue: function (){
-            
-            var val = this.siblingField("Komesa").value;
-            var val2 = "test";
-            if (this.siblingField("Link").value == true) {
-                return val.value.split(' ')[0];
-                //return val;
-            } else {
-                this.unset();
-                //return val2;
-            }
-        },      
-
-        /*
-        autoform: {
-            options: [
-            {label: "One", value: "One"},
-            {label: "Two", value: "Two"},
-            {label: "Three", value: "Three"}
-            ],
-            noselect: true,
-            template: "tmp_EditOrder"
-        }
-        */
-        /*
-        allowed: function () {
-            var val;
-            val = this("Marker");
-            return val;
-        }
-
-        allowedValues: [" ", allowed],
-        */
-        /*autoValue:function(){
-                var result = (this.siblingField("orderLength").value + this.siblingField("orderExtra").value) * this.siblingField("orderLayers").value;
-                //console.log(result);
-                return result;
-        }*/
-    //},
-
+    
   }
 });
 
@@ -347,3 +303,56 @@ CutDate
 Comment
 OrderLink 
 */
+
+Message = new Meteor.Collection("message",  {
+schema: {
+    'No': {
+        type: Number,
+        unique: true,
+        label: "No",
+        optional: false,
+        decimal: false, 
+        min: 0
+    },
+    'Text': {
+        type: String,
+        label: "Text",
+        optional: true,
+        defaultValue: "" 
+    }, 
+    'Type': {
+        type: String,
+        label: "Type",
+        optional: true,
+        defaultValue: "",
+        allowedValues: ["", "Warning", "Normal"]
+    },
+    'Status': {
+        type: String,
+        label: "Status",
+        optional: true,
+        defaultValue: "Not assigned",
+        allowedValues: ["Not assigned", "SP 1", "SP 2","CUT","Finished"]
+    },
+    'Created': {
+        type: Date,
+        label: "Created",
+         autoValue: function() {
+            if (this.isInsert) {
+                return new Date;
+            } else if (this.isUpsert) {
+                return {$setOnInsert: new Date};
+            } else {
+                this.unset();
+            }
+        }
+    },
+    'Active': {
+        type: Boolean,
+        label: "Active",
+        defaultValue: true,
+
+    }
+
+  }
+});

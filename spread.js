@@ -20,13 +20,20 @@ if (Meteor.isClient) {
     //console.log("treeDaysbefore: " + treeDaysbefore);
 
     var treeDaysafter = new Date();
-    //treeDaysafter.setHours(74,0,0,0); // three days + 2h timezone 
     treeDaysafter.setHours(75,0,0,0);   // three days + 2h timezone + 1h
     //console.log("treeDaysafter: " + treeDaysafter);
 
+    var oneDaybefore = new Date();
+    oneDaybefore.setHours(0,0,0,0);
+    
+    var oneDayafter = new Date();
+    oneDayafter.setHours(24,0,0,0);   
+
     Session.set("ses_datefilter", todayAt02);
-    Session.set("ses_DaysBefore", treeDaysbefore);
-    Session.set("ses_DaysAfter", treeDaysafter);
+    //Session.set("ses_DaysBefore", treeDaysbefore);
+    //Session.set("ses_DaysAfter", treeDaysafter);
+    Session.set("ses_DaysBefore", oneDaybefore);
+    Session.set("ses_DaysAfter", oneDayafter);
     Session.set("ses_datenotexist", false);
     Session.set("ses_jobnotexist", false);
     Session.set("ses_statusfilter", "Not assigned");
@@ -39,12 +46,12 @@ if (Meteor.isClient) {
 
     $('#filterOrderDate').val(new Date().toDateInputValue());
     
-    var filterOrderDateBefore = new Date(treeDaysbefore).toDateInputValue();
+    var filterOrderDateBefore = new Date(oneDaybefore).toDateInputValue();
     //filterOrderDateBefore = filterOrderDateBefore.setHours(-70,0,0,0);
     //console.log(filterOrderDateBefore);
     $('#filterOrderDateBefore').val(filterOrderDateBefore);
 
-    var filterOrderDateAfter = new Date(treeDaysafter).toDateInputValue();
+    var filterOrderDateAfter = new Date(oneDayafter).toDateInputValue();
     //filterOrderDateAfter = filterOrderDateAfter.setHours(75,0,0,0);
     //console.log(filterOrderDateAfter);
     $('#filterOrderDateAfter').val(filterOrderDateAfter);
@@ -63,6 +70,10 @@ if (Meteor.isClient) {
         //console.log("Startup: UserId: " + User._id);
         //console.log("Startup: UserName: " + User.username);
     }
+
+    Session.set("ses_SP1message", "");
+    Session.set("ses_SP2message", "");
+
   })
 
   Meteor.autosubscribe(function () {
@@ -139,23 +150,25 @@ if (Meteor.isClient) {
         Session.set("ses_uniquecountPosF", data);
       });
     
-    /*
-      var userId = Meteor.userId();
-      if (userId) {
-        var User = Meteor.users.findOne({_id: userId});
-        if (User._id == "hzsGmdDpJXrDFiujZ") {
-          console.log('admin je ulogovan');
-        } else {
-          console.log('NIJE admin je ulogovan');
-        }
+      var ses_SP1message = Session.get("ses_SP1message");
+      //console.log("ses_SP1message: " + ses_SP1message);
+      var ses_SP2message = Session.get("ses_SP2message");
+      //console.log("ses_SP2message: " + ses_SP2message);
+
+      if ((ses_SP1message == "") || (typeof ses_SP1message === 'undefined')) {
+      } else {
+        alert(ses_SP1message);
+        console.log("ses_SP1message: " + ses_SP1message);
+        Session.set("ses_SP1message", "");
+
+      } 
+      if ((ses_SP2message == "") || (typeof ses_SP2message === 'undefined')) {
+      } else {
+        alert(ses_SP2message);
+        console.log("ses_SP2message: " + ses_SP2message);
+        Session.set("ses_SP2message", "");
       }
-    */
-    /*
-    if (Session.get("userId") === adminId) {
-      console.log("Wellcome admin");
-      Session.set("logged", "admin");
-    }     
-    */     
+
   });
     
   Template.nav.helpers ({
@@ -1531,6 +1544,17 @@ if (Meteor.isClient) {
 
       } else {
         // Do nothing!
+      }
+
+      // message
+      var time = new Date();
+      if (actualStatus == 'SP 1') {
+
+        var message = time + ": Order deleted from SP 1 !";
+        Session.set('ses_SP1message', message);
+      } else if (actualStatus == 'SP 2') {  
+        var message = time + ": Order deleted from SP 2 !";
+        Session.set('ses_SP2message', message);
       }
 
       rm_EditOrder.hide();
