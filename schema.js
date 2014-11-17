@@ -146,63 +146,63 @@ Order = new Meteor.Collection("order", {
     },
     'S': {
         type: Number,
-        label: "S",
+        label: "S Marker",
         optional: true,
         decimal: true, 
         min: 0
     },
     'SonLayer': {
         type: Number,
-        label: "SonLayer",
+        label: "S per Layer",
         optional: true,
         decimal: true, 
         min: 0
     },
-    'CutS': {
+    'S_Cut': {
         type: Number,
-        label: "Cut S",
+        label: "S Cut",
         optional: true,
         decimal: true, 
         min: 0
     },
     'M': {
         type: Number,
-        label: "M",
+        label: "M Marker",
         optional: true,
         decimal: true, 
         min: 0
     },
     'MonLayer': {
         type: Number,
-        label: "MonLayer",
+        label: "M per Layer",
         optional: true,
         decimal: true, 
         min: 0
     },
-    'CutM': {
+    'M_Cut': {
         type: Number,
-        label: "Cut M",
+        label: "M Cut",
         optional: true,
         decimal: true, 
         min: 0
     },
     'L': {
         type: Number,
-        label: "L",
+        label: "L Marker",
         optional: true,
         decimal: true, 
         min: 0
     },
     'LonLayer': {
         type: Number,
-        label: "LonLayer",
+        label: "L per Layer",
         optional: true,
         decimal: true, 
         min: 0
     },
-    'CutL': {
+    'L_Cut': {
         type: Number,
-        label: "Cut L",
+        label: "L Cut",
         optional: true,
         decimal: true, 
         min: 0
@@ -286,13 +286,13 @@ LengthSum
 Width
 S
 SonLayer
-CutS
+S_Cut
 M
 MonLayer
-CutM
+M_Cut
 L
 LonLayer
-CutL
+L_Cut
 Status
 Priority
 Load
