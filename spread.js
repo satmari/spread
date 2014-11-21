@@ -5,12 +5,6 @@ if (Meteor.isClient) {
   
   Meteor.startup(function () {
    
-
-    //Session.set("ses_namefilter", "");
-    //Session.set("ses_datefilter", "");
-
-    //var t = Date();
-
     var todayAt02 = new Date();
     todayAt02.setHours(2,0,0,0);
     //console.log("todayAt02" + todayAt02);
@@ -70,7 +64,6 @@ if (Meteor.isClient) {
         //console.log("Startup: UserId: " + User._id);
         //console.log("Startup: UserName: " + User.username);
     }
-
     Session.set("ses_SP1message", "");
     Session.set("ses_SP2message", "");
 
@@ -122,7 +115,7 @@ if (Meteor.isClient) {
     } else if (ses_statusfilter) { 
       Meteor.subscribe('filter_statusfilter', ses_statusfilter);
 
-    } else if ( ses_datefilter == "" ) { 
+    } else if ( ses_datefilter == "" ) { // date filter is always set to today, only if you set date range this session have to be deleted 
       Meteor.subscribe('filter_orderAll');
     } else if ( (ses_DaysBefore) || (ses_DaysAfter) ) {
       Meteor.subscribe('filter_orderWithDateRange', ses_DaysBefore, ses_DaysAfter);
@@ -179,14 +172,14 @@ if (Meteor.isClient) {
   });*/
 
   Template.nav.helpers ({
-    isAdmin: function() {
+    isAdminOrGuest: function() {
       //var loggedUserName = Session.get("loggedUserName");
       //console.log(loggedUserName);
 
       var userId = Meteor.userId();
       if (userId) {
         var User = Meteor.users.findOne({_id: userId});
-        if (User.username == "admin") {
+        if ((User.username == "admin") || (User.username == "guest")) {
           return true;
         } else {
           return false;  
@@ -216,6 +209,17 @@ if (Meteor.isClient) {
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
           if (User.username == "admin") {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+    },
+    isUserGuest: function() {
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "guest") {
             return true;
           } else {
             return false;  
@@ -297,7 +301,7 @@ if (Meteor.isClient) {
               } 
           },
           { key: 'Extra', label: 'Extra (cm)' },
-          { key: 'LengthSum', label: 'LengthSum (m)',
+          { key: 'LengthSum', label: 'Tot Meters Required (m)',
               fn: function  (value){
                 var v = Number(value);
                 return v.toFixed(2);
@@ -335,7 +339,17 @@ if (Meteor.isClient) {
               }
             }
           },
-          { key: 'Priority', label: 'Priority' },
+          { key: 'Priority', label: 'Priority', 
+            fn: function (value){
+              if (value == 2) {
+                return "High";
+              } else if (value == 3) {
+                return "Top Priority" ;
+              } else {
+                return "Normal" ;
+              }
+            }
+          },
           { key: 'Load', label: 'Load',
             /*fn: function (value){ 
               if (value == true) {
@@ -375,28 +389,7 @@ if (Meteor.isClient) {
           //useFontAwesome: true,
           //group: 'orderExtra'
           //rowClass: "warning", //warning, danger
-          /*rowClass: function(item) {
-            var priority = item.Priority;
-            var load = item.Load;
-            var spread = item.Spread;
-            var cut = item.Cut;
-            
-            // treba da se doradi
-
-            if (cut)  {
-              return 'success';
-            } else if (spread) {
-              return 'info';
-            } else if (load) {
-              return 'active';
-            } else if (priority == 4) {
-              return 'warning';
-            } else if (priority == 5){
-              return 'danger'; //active, success, info, warning, danger
-            } else {
-
-            }
-          },*/
+          
           rowClass: function(item) {
             var priority = item.Priority;
             var load = item.Load;
@@ -413,9 +406,169 @@ if (Meteor.isClient) {
               return 'load';    // greey
             } else if ((status == "SP 1") || (status == "SP 2")) {
               return 'active';  // light blue
-            } else if (priority == 4) {
+            } else if (priority == 2) {
               return 'warning'; // orange
-            } else if (priority == 5) {
+            } else if (priority == 3) {
+              return 'danger';  // red
+              //active, success, info, warning, danger
+            } else {
+
+            }
+          },
+      };
+    },
+    settingsGuest: function () {
+      return {
+        rowsPerPage: 100,
+        showFilter: true,
+        showNavigation: 'auto',
+        fields: [
+          //{ key: '_id', label: '_ID' },
+          { key: 'Position', label: 'Pos' , sort: 'ascending'},
+          { key: 'No', label: 'No', /*sort: 'descending' */},
+          { key: 'Date', label: 'Date',
+            fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD");
+              } else {
+                return "";
+              }
+              //return moment(value).format("DD-MM-YYYY");
+            }//, sort: 'descending' // ascending
+          },
+          //{ key: 'Created', label: 'Created' },
+          { key: 'Komesa', label: 'Komesa' },
+          { key: 'Marker', label: 'Marker' },
+          { key: 'Style', label: 'Style' },
+          { key: 'Fabric', label: 'Fabric' },
+          { key: 'ColorCode', label: 'Color Code' },
+          { key: 'ColorDesc', label: 'Color Desc' },
+          { key: 'Bagno', label: 'Bagno' },
+          { key: 'Layers', label: 'Layers' },
+          { key: 'LayersActual', label: 'Layers Actual',
+            fn: function (value){
+              if (value == 0) {
+                return "";
+              } else {
+                return value ;
+              };
+            }
+          },
+          { key: 'Length', label: 'Length (m)', 
+              fn: function  (value){
+                var v = Number(value);
+                return v.toFixed(3);
+              } 
+          },
+          { key: 'Extra', label: 'Extra (cm)' },
+          { key: 'LengthSum', label: 'Tot Meters Required (m)',
+              fn: function  (value){
+                var v = Number(value);
+                return v.toFixed(2);
+              }
+            },
+          { key: 'Width', label: 'Width (cm)' },
+          { key: 'SonLayer', label: 'S per Layer'},
+          { key: 'S', label: 'S Marker' },
+          { key: 'S_Cut', label: 'S Cut'},
+          { key: 'MonLayer', label: 'M per Layer'},
+          { key: 'M', label: 'M Marker' },
+          { key: 'M_Cut', label: 'M Cut'},
+          { key: 'LonLayer', label: 'L per Layer'},
+          { key: 'L', label: 'L Marker' },
+          { key: 'L_Cut', label: 'L Cut'},
+          { key: 'Status', label: 'Status',
+            fn: function (value) {
+              if (value == "SP 1") {
+                return "SP 1";
+              }
+              else if (value == "SP 2") {
+                return "SP 2";
+              }
+              else if (value == "CUT") {
+                return "CUT";
+              }
+              else if (value == "Finished") {
+                return "Finished";
+              }
+              else if (value == "Not assigned") {
+                return "Not assigned";
+              }
+              else {
+                return "Not Defined";
+              }
+            }
+          },
+          { key: 'Priority', label: 'Priority', 
+            fn: function (value){
+              if (value == 2) {
+                return "High";
+              } else if (value == 3) {
+                return "Top Priority" ;
+              } else {
+                return "Normal" ;
+              }
+            }
+          },
+          { key: 'Load', label: 'Load',
+            /*fn: function (value){ 
+              if (value == true) {
+                return "Load";
+              };
+            }*/
+          },
+          { key: 'Spread', label: 'Spread', 
+            /*fn: function (value){
+              if (value == true) {
+                return "Spread";
+              };
+            }*/
+          },
+          { key: 'SpreadDate', label: 'Spread Date',
+             fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD HH:mm:ss");
+              } else {
+                return "";
+              }
+            }
+          },
+          { key: 'Cut', label: 'Cut' },
+          { key: 'CutDate', label: 'Cut Date',
+             fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD HH:mm:ss");
+              } else {
+                return "";
+              }
+            }
+          },
+          { key: 'Comment', label: 'Comment' },
+        ],
+
+          //useFontAwesome: true,
+          //group: 'orderExtra'
+          //rowClass: "warning", //warning, danger
+          
+          rowClass: function(item) {
+            var priority = item.Priority;
+            var load = item.Load;
+            var spread = item.Spread;
+            var status = item.Status;
+            
+            // treba da se doradi
+
+            if (status == "Finished")  {
+              return 'success'; // green
+            } else if (status == 'CUT') {
+              return 'info';    // dark blue
+            } else if (load) {
+              return 'load';    // greey
+            } else if ((status == "SP 1") || (status == "SP 2")) {
+              return 'active';  // light blue
+            } else if (priority == 2) {
+              return 'warning'; // orange
+            } else if (priority == 3) {
               return 'danger';  // red
               //active, success, info, warning, danger
             } else {
@@ -468,7 +621,7 @@ if (Meteor.isClient) {
               } 
             },
             //{ key: 'Extra', label: 'Extra (cm)' },
-            { key: 'LengthSum', label: 'LengthSum (m)',
+            { key: 'LengthSum', label: 'Tot Meters Required (m)',
               fn: function  (value){
                 var v = Number(value);
                 return v.toFixed(0);
@@ -505,9 +658,9 @@ if (Meteor.isClient) {
               return 'load';    // greey
             } else if ((status == "SP 1") || (status == "SP 2")) {
               return 'active';  // light blue
-            } else if (priority == 4) {
+            } else if (priority == 2) {
               return 'warning'; // orange
-            } else if (priority == 5) {
+            } else if (priority == 3) {
               return 'danger';  // red
               //active, success, info, warning, danger
             } else {
@@ -565,7 +718,17 @@ if (Meteor.isClient) {
             //{ key: 'L', label: 'L' },
             { key: 'L_Cut', label: 'L Cut'},
             //{ key: 'Status', label: 'Status'},
-            { key: 'Priority', label: 'Priority', sort: 'descending' },
+            { key: 'Priority', label: 'Priority', sort: 'descending' , 
+              fn: function (value){
+                if (value == 2) {
+                  return "High";
+                } else if (value == 3) {
+                 return "Top Priority" ;
+                } else {
+                 return "Normal" ;
+                }
+              }
+            },
             /*{ key: 'Load', label: 'Load'},*/
             /*{ key: 'Spread', label: 'Spread'},*/
             { key: 'SpreadDate', label: 'Spread Date',
@@ -595,9 +758,9 @@ if (Meteor.isClient) {
             if (status == "Finished")  {
               return 'success'; // green
             
-            } else if (priority == 4) {
+            } else if (priority == 2) {
               return 'warning'; // orange
-            } else if (priority == 5) {
+            } else if (priority == 3) {
               return 'danger';  // red
               //active, success, info, warning, danger
 
@@ -709,7 +872,18 @@ if (Meteor.isClient) {
             return false;  
           }
         }
-       },
+      },
+      isUserGuest: function() {
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "guest") {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+      },
       isUserSp: function() {
         //var loggedUserName = Session.get("loggedUserName");
         //console.log(loggedUserName);
@@ -1347,7 +1521,7 @@ if (Meteor.isClient) {
 
   // Navigation events
   Template.nav.events({
-    'click #btnfilterOrderDate': function (e, t) {
+    /*'click #btnfilterOrderDate': function (e, t) {
 
       Session.set("ses_datefilter", "");
       Session.set("ses_DaysBefore", "");
@@ -1372,15 +1546,16 @@ if (Meteor.isClient) {
       datesel1 = "";
       //console.log("Set-ses_datefilter: " + Session.get("ses_datefilter"));
     },
-
+    */
+    /*
     'change #filterOrderDateBefore': function (e, t) {
       var datesel = $('#filterOrderDateBefore').val();
 
       var datesel1 = new Date(datesel);
       datesel1.setHours(1,0,0,0);
 
-      Session.set("ses_DaysBefore", datesel1);
-      Session.set("ses_datefilter", datesel1); //just to skip all
+      Session.set("ses_DaysBefore1", datesel1);
+      Session.set("ses_datefilter1", datesel1); //just to skip all
       datesel1 = "";
       //console.log("Set-ses_DaysBefore: " + Session.get("ses_DaysBefore"));
     },
@@ -1391,10 +1566,32 @@ if (Meteor.isClient) {
       var datesel1 = new Date(datesel);
       datesel1.setHours(3,0,0,0);
 
-      Session.set("ses_DaysAfter", datesel1);
-      Session.set("ses_datefilter", datesel1); //just to skip all
+      Session.set("ses_DaysAfter1", datesel1);
+      Session.set("ses_datefilter1", datesel1); //just to skip all
       datesel1 = "";
       //console.log("Set-ses_DaysAfter: " + Session.get("ses_DaysAfter"));
+    },
+    */
+    'click #btnfilterOrderDateStart' : function (e, t) {
+
+      var dateselBefore = $('#filterOrderDateBefore').val();
+      var dateselBefore1 = new Date(dateselBefore);
+      dateselBefore1.setHours(1,0,0,0);
+      //console.log(dateselBefore1);
+
+      Session.set("ses_DaysBefore", dateselBefore1);
+      Session.set("ses_datefilter", dateselBefore1); //just to skip all
+      dateselBefore1 = "";
+
+      var dateselAfter = $('#filterOrderDateAfter').val();
+      var dateselAfter1 = new Date(dateselAfter);
+      dateselAfter1.setHours(3,0,0,0);
+      //console.log(dateselAfter1);
+
+      Session.set("ses_DaysAfter", dateselAfter1);
+      Session.set("ses_datefilter", dateselAfter1); //just to skip all
+      dateselAfter1 = "";
+
     },
 
     'click #new_order': function (e, t) {
@@ -2233,12 +2430,15 @@ if (Meteor.isClient) {
             var lonlayer = Number(all[i]['LonLayer']);
             var l_cut = Number(all[i]['L_Cut']);
             var status = all[i]['Status'];
+
             var priority = all[i]['Priority'];
+            var priority = Number(all[i]['Priority']);
+
             var load = all[i]['Load'];
             var spread = all[i]['Spread'];
             var comment = all[i]['Comment'];
 
-            var priority = Number(all[i]['Priority']);
+            
 
             var orderDate = all[i]['Date'];
             if (orderDate) {

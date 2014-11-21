@@ -211,8 +211,8 @@ Order = new Meteor.Collection("order", {
         type: Number,
         label: "Priority",
         optional: false,
-        defaultValue: 3,
-        allowedValues: [5, 4, 3, 2, 1],
+        defaultValue: 1,
+        allowedValues: [1, 2, 3],
         max: 10
     },
     'Load': {
