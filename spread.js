@@ -858,6 +858,7 @@ if (Meteor.isClient) {
   Template.tmp_EditOrder.helpers({
       editingDoc: function editingDocHelper() {
         return Order.findOne({_id: Session.get("selectedDocId")});
+        
       },
       isAdmin: function() {
         //var loggedUserName = Session.get("loggedUserName");
@@ -2893,6 +2894,7 @@ if (Meteor.isServer) {
 }
 
 var admin = ""; //123123
+var guest = ""; // 111111
 var sp11 = "";  // 111111
 var sp12 = "";  // 121212
 var sp21 = "";  // 212121
