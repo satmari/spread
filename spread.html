@@ -1,5 +1,9 @@
+
 <head>
   <title>Gordon Cutting Orders - Web application </title>
+  <!--<link rel="icon" type="image/x-icon" href="/public/logo.png">-->
+  <!--<link rel="shortcut icon" type="image/png" href="public/logo.png">-->
+  <link rel="icon" sizes="16x16 32x32" href="/logo.png?v=2">
 </head>
 
 <body>
@@ -61,20 +65,22 @@
       <li><a href="#">|</a></li>
     </ul>
     -->
-    <!--
+    
     <ul class="nav navbar-nav">
       <div class="navbar-form">
         <div class="form-group">
-          <li><span style="color: white">Orders without Order Date: </span></li>
-          <li><span style="color: white">Orders without Status SP.. : </span></li>
+          <!--<li><span style="color: white">Orders without Order Date: </span></li>-->
+          <!--<li><span style="color: white">Orders without Status SP.. : </span></li>-->
+          <li><span style="color: white">All orders (+date range): </span></li>
         </div>
         <div class="form-group">
-          <li style="padding-left: 50%;"><input type="checkbox" id="orderWithoutDate"/></li>
-          <li style="padding-left: 50%;"><input type="checkbox" id="orderWithoutJob"/></li>
+          <!--<li style="padding-left: 50%;"><input type="checkbox" id="orderWithoutDate"/></li>-->
+          <!--<li style="padding-left: 50%;"><input type="checkbox" id="orderWithoutJob"/></li>-->
+          <li style="padding-left: 50%;"><input type="checkbox" id="allorder_date"/></li>
         </div>
       </div>
     </ul>
-    -->
+    
     <!--
     <ul class="nav navbar-nav">
       <li><a href="#">|</a></li>
@@ -90,12 +96,7 @@
         {{#if isAdminOrGuest}}
         
         <div class="btn-group" data-toggle="buttons" style="border: 1px solid #000; border-radius: 5px;">
-       
-        <ul class="nav navbar-nav">
-          <li><a href="#"></a></li>
-        </ul>
-        
-           <label class="btn btn-primary">
+          <label class="btn btn-primary">
             <input type="radio" name="options" id="not_assigned"> Not Assigned
           </label>
           <label class="btn btn-default">
@@ -103,6 +104,9 @@
           </label>
           <label class="btn btn-default ">
             <input type="radio" name="options" id="sp2"> SP 2 
+          </label>
+          <label class="btn btn-default ">
+            <input type="radio" name="options" id="ms1"> MS 1 
           </label>
           <label class="btn btn-info">
             <input type="radio" name="options" id="cut"> CUT
@@ -204,7 +208,7 @@
   {{/if}}
 
   {{#if isUserSp}}
-    <h3>Order table</h3>
+    <!--<h3>Order table</h3>-->
     {{> reactiveTable collection=orders settings=settingsUserSp}}
   {{/if}}
 
@@ -715,7 +719,7 @@ _id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;
       <hr />
       <p><b>Stastistic for - Spreader 1</b></p>
       
-      Assigned orders to Spreader 1 : {{SP1noRolls}}
+      Assigned orders to Spreader 1: {{SP1noRolls}}
       <table class="table table-bordered table-hover">
           <thead>
             <tr>
@@ -746,7 +750,7 @@ _id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;
       <hr />
       <p><b>Stastistic for - Spreader 2</b></p>
       
-      Assigned orders to Spreader 2 : {{SP2noRolls}}
+      Assigned orders to Spreader 2: {{SP2noRolls}}
       <table class="table table-bordered table-hover">
         <thead>
           <tr>
@@ -771,6 +775,30 @@ _id;No;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;
             <td>{{SP2LoadMetShift2}}</td>
             <td>{{SP2noSpreadRollsShift2}}</td>
             <td>{{SP2SpreadMetShift2}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <hr />
+      <p><b>Stastistic for - Manual Spreader 1</b></p>
+      
+      Assigned orders to Manual Spreader 1: {{MS1noRolls}}
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Load orders</th>
+            <th>Load meters</th>
+            <th>Spread oredrs</th>
+            <th>Spread meters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Shift</td>
+            <td>{{MS1noLoadRollsShift}}</td>
+            <td>{{MS1LoadMetShift}}</td>
+            <td>{{MS1noSpreadRollsShift}}</td>
+            <td>{{MS1SpreadMetShift}}</td>
           </tr>
         </tbody>
       </table>
