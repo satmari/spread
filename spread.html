@@ -71,12 +71,16 @@
         <div class="form-group">
           <!--<li><span style="color: white">Orders without Order Date: </span></li>-->
           <!--<li><span style="color: white">Orders without Status SP.. : </span></li>-->
-          <li><span style="color: white">All orders (+date range): </span></li>
+          <li><span style="color: white">All orders (+date range (Date)): </span></li>
+          <li><span style="color: white">All orders (+date range (Spread Date)): </span></li>
+          <li><span style="color: white">All orders (+date range (Cut Date)): </span></li>
         </div>
         <div class="form-group">
           <!--<li style="padding-left: 50%;"><input type="checkbox" id="orderWithoutDate"/></li>-->
           <!--<li style="padding-left: 50%;"><input type="checkbox" id="orderWithoutJob"/></li>-->
           <li style="padding-left: 50%;"><input type="checkbox" id="allorder_date"/></li>
+          <li style="padding-left: 50%;"><input type="checkbox" id="allorder_spreaddate"/></li>
+          <li style="padding-left: 50%;"><input type="checkbox" id="allorder_cutdate"/></li>
         </div>
       </div>
     </ul>
@@ -109,7 +113,7 @@
             <input type="radio" name="options" id="ms1"> MS 1 
           </label>
           <label class="btn btn-info">
-            <input type="radio" name="options" id="cut"> CUT
+            <input type="radio" name="options" id="cut"> toCUT
           </label>
           <label class="btn btn-success">
             <input type="radio" name="options" id="finished"> Finished
@@ -494,12 +498,20 @@
                     <hr />
 
                     {{#if isLoaded}}
+                    
+                    {{#autoForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc }}
+                      <fieldset>
+                        {{> afQuickField name='Comment'}}
+                      </fieldset>
+                      <button type="submit" class="btn btn-danger">Save</button>
+                      {{/autoForm}}
+
+                    <hr />
                     <tr>
                       <td>
                         <a href="#" id="loadOrder" class="btn btn-default btn-lg btn-block" style="color:#000;">Load Order</a>
                       </td>
                     </tr>
-                    <br />
                     {{else}}
                                         
                     <!--

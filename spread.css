@@ -9,6 +9,13 @@
 */
 /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
 
+tbody .S_Cut,tbody .M_Cut,tbody .L_Cut, tbody .Komesa {
+  border-left: 1px solid #fff !important;
+  border-right: 1px solid #fff !important;
+  font-size: 16px;
+  /*background-color: #2E6A91 !important;*/
+}
+
 .table > tbody > tr.active > td {
   /*color: #000;*/
   background-color: #89C0E4 !important;
@@ -17,6 +24,10 @@
   /* load #A3CFEC */
   /* spread #285E81 */
 }
+.table-hover > tbody > tr.active:hover > td {
+  color: #fff;
+}
+
 .table > tbody > tr.info > td {
   /*color: #000;*/
   background-color: #285E81 !important;
@@ -25,6 +36,10 @@
   /* load #A3CFEC */
   /* load #285E81 */
 }
+.table-hover > tbody > tr.info:hover > td {
+  background-color: #2F7FB3 !important;
+}
+
 .table > tbody > tr.load > td {
   /*color: #000;*/
   background-color: #E2F0FF !important;
@@ -33,6 +48,10 @@
   /* load #A3CFEC */
   /* load #285E81 */
 }
+.table-hover > tbody > tr.load:hover > td {
+  background-color: #CAE3FD !important;
+}
+
 .table > tbody > tr.success > td {
   /*color: #000;*/
   /*background-color: #E2F0FF !important;*/
@@ -41,6 +60,10 @@
   /* load #A3CFEC */
   /* load #285E81 */
 }
+.table-hover > tbody > tr.success:hover > td {
+  
+}
+
 .table > tbody > tr.default > td {
   /*color: #000;*/
   /*background-color: #E2F0FF !important;*/
@@ -48,6 +71,9 @@
   /*border-color: #2077b2 !important;*/
   /* load #A3CFEC */
   /* load #285E81 */
+}
+.table-hover > tbody > tr.default:hover > td {
+  
 }
 
 

@@ -31,6 +31,8 @@ if (Meteor.isClient) {
     //Session.set("ses_datenotexist", false);
     //Session.set("ses_jobnotexist", false);
     Session.set("ses_allorder_date", false);
+    Session.set("ses_allorder_spreaddate", false);
+    Session.set("ses_allorder_cutdate", false);
     Session.set("ses_statusfilter", "Not assigned");
 
     Date.prototype.toDateInputValue = (function() {
@@ -94,6 +96,9 @@ if (Meteor.isClient) {
     //var ses_existdate = Session.get("ses_datenotexist");
     //var ses_jobnotexist = Session.get("ses_jobnotexist");
     var ses_allorder_date = Session.get("ses_allorder_date");
+    var ses_allorder_spreaddate = Session.get("ses_allorder_spreaddate");
+    var ses_allorder_cutdate = Session.get("ses_allorder_cutdate");
+
     var ses_statusfilter = Session.get("ses_statusfilter");
 
     //console.log("Autosubcribe sesion: " + ses + " , typeof: " + typeof ses);
@@ -111,6 +116,11 @@ if (Meteor.isClient) {
     
     } else if (ses_allorder_date) {
       Meteor.subscribe('filter_allOrderswithDate', ses_DaysBefore, ses_DaysAfter);
+    } else if (ses_allorder_spreaddate) {
+      Meteor.subscribe('filter_allOrderswithSpreadDate', ses_DaysBefore, ses_DaysAfter);
+    } else if (ses_allorder_cutdate) {
+      Meteor.subscribe('filter_allOrderswithCutDate', ses_DaysBefore, ses_DaysAfter);
+    
     } else if (ses_statusfilter == 'Finished') { 
       Meteor.subscribe('filter_statusfilterwithDate', ses_statusfilter, ses_DaysBefore, ses_DaysAfter);
     } else if (ses_statusfilter) { 
@@ -125,27 +135,27 @@ if (Meteor.isClient) {
     }
 
       Meteor.call('method_uniquecountPosNA', function(err, data) {
-        //console.log("method_uniquecountPosNA: " + data);
+        console.log("method_uniquecountPosNA: " + data);
         Session.set("ses_uniquecountPosNA", data);
       });
       Meteor.call('method_uniquecountPosSp1', function(err, data) {
-        //console.log("method_uniquecountPosSp1: " + data);
+        console.log("method_uniquecountPosSp1: " + data);
         Session.set("ses_uniquecountPosSp1", data);
       });
       Meteor.call('method_uniquecountPosSp2', function(err, data) {
-        //console.log("method_uniquecountPosSp2: " + data);
+        console.log("method_uniquecountPosSp2: " + data);
         Session.set("ses_uniquecountPosSp2", data);
       });
       Meteor.call('method_uniquecountPosMs1', function(err, data) {
-        //console.log("method_uniquecountPosSp2: " + data);
+        console.log("method_uniquecountPosMs1: " + data);
         Session.set("ses_uniquecountPosMs1", data);
       });
       Meteor.call('method_uniquecountPosCUT', function(err, data) {
-        //console.log("method_uniquecountPosCUT: " + data);
+        console.log("method_uniquecountPosCUT: " + data);
         Session.set("ses_uniquecountPosCUT", data);
       });
       Meteor.call('method_uniquecountPosF', function(err, data) {
-        //console.log("method_uniquecountPosF: " + data);
+        console.log("method_uniquecountPosF: " + data);
         Session.set("ses_uniquecountPosF", data);
       });
     
@@ -336,7 +346,7 @@ if (Meteor.isClient) {
                 return "MS 1";
               }
               else if (value == "CUT") {
-                return "CUT";
+                return "toCUT";
               }
               else if (value == "Finished") {
                 return "Finished";
@@ -499,7 +509,7 @@ if (Meteor.isClient) {
                 return "MS 1";
               }
               else if (value == "CUT") {
-                return "CUT";
+                return "toCUT";
               }
               else if (value == "Finished") {
                 return "Finished";
@@ -597,8 +607,9 @@ if (Meteor.isClient) {
           showNavigation: 'auto',
           fields: [
             //{ key: '_id', label: '_ID' },
-            /*{ key: 'No', label: 'No', sort: 'descending' },*/
+            
             { key: 'Position', label: 'Pos' , sort: 'ascending'},
+            { key: 'No', label: 'No' },
             /*{ key: 'Date', label: 'Date',
               fn: function (value) {
                 if (value){
@@ -813,27 +824,27 @@ if (Meteor.isClient) {
         //$('#selectPosition select').val(5);
 
         Meteor.call('method_uniquecountPosNA', function(err, data) {
-          //console.log("method_uniquecountPosNA: " + data);
+          console.log("method_uniquecountPosNA: " + data);
           Session.set("ses_uniquecountPosNA", data);
         });
         Meteor.call('method_uniquecountPosSp1', function(err, data) {
-          //console.log("method_uniquecountPosSp1: " + data);
+          console.log("method_uniquecountPosSp1: " + data);
           Session.set("ses_uniquecountPosSp1", data);
         });
         Meteor.call('method_uniquecountPosSp2', function(err, data) {
-          //console.log("method_uniquecountPosSp2: " + data);
+          console.log("method_uniquecountPosSp2: " + data);
           Session.set("ses_uniquecountPosSp2", data);
         });
         Meteor.call('method_uniquecountPosMs1', function(err, data) {
-        //console.log("method_uniquecountPosSp2: " + data);
-        Session.set("ses_uniquecountPosMs1", data);
+          console.log("method_uniquecountPosMs1: " + data);
+          Session.set("ses_uniquecountPosMs1", data);
         });
         Meteor.call('method_uniquecountPosCUT', function(err, data) {
-          //console.log("method_uniquecountPosCUT: " + data);
+          console.log("method_uniquecountPosCUT: " + data);
           Session.set("ses_uniquecountPosCUT", data);
         });
         Meteor.call('method_uniquecountPosF', function(err, data) {
-          //console.log("method_uniquecountPosF: " + data);
+          console.log("method_uniquecountPosF: " + data);
           Session.set("ses_uniquecountPosF", data);
         });
 
@@ -1126,7 +1137,7 @@ if (Meteor.isClient) {
         var click_id_status = Session.get('click_id_status');
 
         Meteor.call('method_arrayofStatus', function(err,data) {
-          Session.set('ses_arrayofStatus', data);
+          Session.set('ses_arrayofStatus', data); 
           //console.log('ses_arrayofStatus: ' + data);
           //arrayofStatus = data;
           //return arrayofStatus;
@@ -1346,7 +1357,7 @@ if (Meteor.isClient) {
         sumLengths += order[i].LengthSum;
       }
       sumLengths = Number(sumLengths);
-      sumLengths = sumLengths.toFixed(3);
+      sumLengths = sumLengths.toFixed(2);
       return sumLengths;
     },
     allS: function(){
@@ -1443,7 +1454,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     SP1LoadMetShift2: function (){
@@ -1453,7 +1464,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     SP2LoadMetShift1: function (){
@@ -1463,7 +1474,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     SP2LoadMetShift2: function (){
@@ -1473,7 +1484,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     MS1LoadMetShift: function (){
@@ -1483,7 +1494,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     SP1SpreadMetShift1: function (){
@@ -1493,7 +1504,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     SP1SpreadMetShift2: function (){
@@ -1503,7 +1514,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     SP2SpreadMetShift1: function (){
@@ -1513,7 +1524,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     SP2SpreadMetShift2: function (){
@@ -1523,7 +1534,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     MS1SpreadMetShift: function (){
@@ -1533,7 +1544,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     CutMetShift1: function (){
@@ -1543,7 +1554,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     CutMetShift2: function (){
@@ -1553,7 +1564,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
 
@@ -1680,27 +1691,27 @@ if (Meteor.isClient) {
 
       Meteor.call('method_uniquecountPosNA', function(err, data) {
         Session.set("ses_uniquecountPosNA", data);
-        //console.log("method_uniquecountPosSp1: " + data);
+        console.log("method_uniquecountPosNA: " + data);
       });
       Meteor.call('method_uniquecountPosSp1', function(err, data) {
         Session.set("ses_uniquecountPosSp1", data);
-        //console.log("method_uniquecountPosSp1: " + data);
+        console.log("method_uniquecountPosSp1: " + data);
       });
       Meteor.call('method_uniquecountPosSp2', function(err, data) {
         Session.set("ses_uniquecountPosSp2", data);
-       //console.log("method_uniquecountPosSp2: " + data);
+        console.log("method_uniquecountPosSp2: " + data);
       });
       Meteor.call('method_uniquecountPosMs1', function(err, data) {
         Session.set("ses_uniquecountPosMs1", data);
-       //console.log("method_uniquecountPosMs1: " + data);
+        console.log("method_uniquecountPosMs1: " + data);
       });
       Meteor.call('method_uniquecountPosCUT', function(err, data) {
         Session.set("ses_uniquecountPosCUT", data);
-        //console.log("method_uniquecountPosSp1: " + data);
+        console.log("method_uniquecountPosCUT: " + data);
       });
       Meteor.call('method_uniquecountPosF', function(err, data) {
         Session.set("ses_uniquecountPosF", data);
-        //console.log("method_uniquecountPosSp1: " + data);
+        console.log("method_uniquecountPosF: " + data);
       });
 
       // Define rd_addneworder
@@ -1758,7 +1769,7 @@ if (Meteor.isClient) {
         //LengthSum
         var sum = Number((length + (extra/100)) * LayersToCount);
         //console.log(sum);
-        var sumf =sum.toFixed(3);
+        var sumf =sum.toFixed(2);
         //console.log(sumf);
 
         if (sumf == "NaN") {
@@ -1828,6 +1839,26 @@ if (Meteor.isClient) {
         } else {
           console.log("allorder_date: unchecked");
           Session.set("ses_allorder_date", false);
+        }
+    },
+    'change #allorder_spreaddate': function (e, t) {
+
+        if ($('#allorder_spreaddate').prop('checked')){
+          console.log("allorder_spreaddate: checked");
+          Session.set("ses_allorder_spreaddate", true);
+        } else {
+          console.log("allorder_spreaddate: unchecked");
+          Session.set("ses_allorder_spreaddate", false);
+        }
+    },
+    'change #allorder_cutdate': function (e, t) {
+
+        if ($('#allorder_cutdate').prop('checked')){
+          console.log("allorder_cutdate: checked");
+          Session.set("ses_allorder_cutdate", true);
+        } else {
+          console.log("allorder_cutdate: unchecked");
+          Session.set("ses_allorder_cutdate", false);
         }
     },
 
@@ -2011,18 +2042,6 @@ if (Meteor.isClient) {
 
       var spreadDate = new Date();
 
-      /*
-      if (layersactual) {
-          LayersToCount = layersactual;
-      } else {
-          LayersToCount = layers;
-      }
-
-      var S_Cut = LayersToCount * SonLayer;
-      var M_Cut = LayersToCount * MonLayer;
-      var L_Cut = LayersToCount * LonLayer;
-      */
-
       //Order.update({_id: orderToEdit},{$set: {Position: 999,Spread: userEditSpread, SpreadDate: spreadDate, Status: "CUT" ,LayersActual: input_actuallaysers, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut}});
 
       // Izbrisi aktuelnu pozicuju, tj stavi poziciju na 0
@@ -2128,9 +2147,6 @@ if (Meteor.isClient) {
         alert("No way!!! \nActual position and Selected position are the same! \n \n:P ");
       } else {
 
-      if (actualPosition < selectedPositionN) {
-        selectedPositionN = selectedPositionN - 1;
-      }
       // Izbrisi aktuelnu pozicuju, tj stavi poziciju na 0
       Meteor.call('method_stavipozna0', actualPosition, actualStatus, function(err, data) {
         //console.log("method_stavipozna0: " + data);
@@ -2161,10 +2177,14 @@ if (Meteor.isClient) {
       var orderToEdit = Session.get("selectedDocId");
       var order = Order.find({_id: orderToEdit}).fetch();
         for (var i = 0; i < order.length; i++) {
-          var actualPosition = order[i].Position;
+          var actualPosition = order[i].Position; 
           var actualStatus = order[i].Status;
           var actual_Id = order[i]._Id;
       }
+
+      Order.update({ _id: actual_Id},
+          {$set: {OrderLink: true}}
+      );
 
       var selectedPosition = $('.in #selectPosition').find(":selected").val();
       var selectedPositionN = Number(selectedPosition);
@@ -2200,7 +2220,7 @@ if (Meteor.isClient) {
       // Stavi zeljnu pozicuju
       Meteor.call('method_ubacinapoz', actualPosition, actualStatus, selectedPositionN, function(err, data) {
         //console.log("method_ubacinapoz: " + data);
-      });
+      });       
       
       }
 
@@ -2214,6 +2234,10 @@ if (Meteor.isClient) {
           var actualStatus = order[i].Status;
           var actual_id = order[i]._id;
         }
+
+      Order.update({ _id: actual_Id},
+          {$set: {OrderLink: false}}
+      );
 
       if (actualStatus == "SP 1"){
         var uniquecountPosSp1 = Session.get("ses_uniquecountPosSp1");
@@ -2391,7 +2415,7 @@ if (Meteor.isClient) {
             //console.log(length);
             var extra = Number(all[i]['Length All. [cm]']);
             var lengthsumX = Number((length + (extra/100)) * layers);
-            var lengthsum = Number(lengthsumX).toFixed(3);
+            var lengthsum = Number(lengthsumX).toFixed(2);
             var width = Number(all[i]['Marker Width [cm]']);
             var s = Number(all[i]['tot S']);
             var sonlayer = Number(all[i]['S']);
@@ -2428,9 +2452,9 @@ if (Meteor.isClient) {
             } else {
               var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
               var uniquecountPosNA = uniquecountPosNA + 1;
-              Session.set("ses_uniquecountPosNA", uniquecountPosNA);
-              setPos = uniquecountPosNA;
-              status = 'Not assigned';
+              Session.set("ses_uniquecountPosNA", uniquecountPosNA); 
+              setPos = uniquecountPosNA;                             
+              status = 'Not assigned';                            
               //setPos = 999;
             }
 
@@ -2793,7 +2817,7 @@ if (Meteor.isServer) {
   },
   method_arrayofStatus: function() {
 
-    statusarray = ["Not assigned","SP 1","SP 2","MS 1","CUT"];
+    statusarray = ["Not assigned","SP 1","SP 2","MS 1"/*,"CUT"*/];
     return statusarray;
   },
   method_smanjizajedan: function(Position, Status){
@@ -3013,10 +3037,17 @@ if (Meteor.isServer) {
     })
   });
   Meteor.publish("filter_allOrderswithDate", function(Daysbefore , Daysafter){
-    return Order.find({Created: {$gte: Daysbefore, $lt: Daysafter}})
+    return Order.find({Date: {$gte: Daysbefore, $lt: Daysafter}})
     
   });
-
+  Meteor.publish("filter_allOrderswithSpreadDate", function(Daysbefore , Daysafter){
+    return Order.find({SpreadDate: {$gte: Daysbefore, $lt: Daysafter}})
+    
+  });
+  Meteor.publish("filter_allOrderswithCutDate", function(Daysbefore , Daysafter){
+    return Order.find({CutDate: {$gte: Daysbefore, $lt: Daysafter}})
+    
+  });
 
 }
 
