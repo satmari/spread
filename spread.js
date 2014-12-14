@@ -2182,9 +2182,7 @@ if (Meteor.isClient) {
           var actual_Id = order[i]._Id;
       }
 
-      Order.update({ _id: actual_Id},
-          {$set: {OrderLink: true}}
-      );
+      //Order.update({_id: actual_Id}, {$set: {OrderLink: true}});
 
       var selectedPosition = $('.in #selectPosition').find(":selected").val();
       var selectedPositionN = Number(selectedPosition);
@@ -2221,6 +2219,10 @@ if (Meteor.isClient) {
       Meteor.call('method_ubacinapoz', actualPosition, actualStatus, selectedPositionN, function(err, data) {
         //console.log("method_ubacinapoz: " + data);
       });       
+
+      Meteor.call('method_linkpoz', actualStatus, selectedPositionN, function(err, data) {
+        console.log("method_linkpoz: " + data);
+      }); 
       
       }
 
@@ -2235,9 +2237,7 @@ if (Meteor.isClient) {
           var actual_id = order[i]._id;
         }
 
-      Order.update({ _id: actual_Id},
-          {$set: {OrderLink: false}}
-      );
+      //Order.update({ _id: actual_Id}, {$set: {OrderLink: false}});
 
       if (actualStatus == "SP 1"){
         var uniquecountPosSp1 = Session.get("ses_uniquecountPosSp1");
@@ -2256,6 +2256,10 @@ if (Meteor.isClient) {
         var uniquecountSelected = '';
       }
       //console.log("uniquecountSelected" + uniquecountSelected);
+
+      Meteor.call('method_unlinkpoz', actualStatus, actualPosition, function(err, data) {
+        console.log("method_unlinkpoz: " + data);
+      }); 
 
       var uniquecountSelectedPosition = uniquecountSelected + 1;
       //console.log("uniquecountSelectedPosition: " + uniquecountSelectedPosition);
@@ -2863,6 +2867,30 @@ if (Meteor.isServer) {
         //return order[i].No;
       }
     return "Not found method_ubacinapoz";
+  },
+  method_linkpoz: function (actualStatus, selectedPosition){
+    var order = Order.find({Position: selectedPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$set: {OrderLink: true}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+      }
+    return "Not found method_linkpoz";
+  },
+  method_unlinkpoz: function (actualStatus, selectedPosition){
+    var order = Order.find({Position: selectedPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$set: {OrderLink: false}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+      }
+    return "Not found method_unlinkpoz";
   },
   method_ubacinapozVise: function (actualPosition, actualStatus, selectedPosition){
     var order = Order.find({Position: 0, Status: actualStatus }).fetch();

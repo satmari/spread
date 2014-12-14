@@ -254,6 +254,7 @@ Order = new Meteor.Collection("order", {
     'OrderLink' : {
         type: Boolean,
         label: "Order Linked",
+        optional: true,
         defaultValue: false,
     },
     
