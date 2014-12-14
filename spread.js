@@ -2515,8 +2515,24 @@ if (Meteor.isClient) {
           for (var i = 0; i < all.length; i++) {
             //console.log(all[i]);
 
+            /*_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;
+            Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink*/
+
             var id = all[i]['_id'];
             var no  = Number(all[i]['No']);
+            var position = Number(all[i]['Position']);
+            var status = all[i]['Status'];
+            var orderDate = all[i]['Date'];
+            if (orderDate) {
+              var orderDate2 = new Date(orderDate);  
+              //var orderDateP = Date.parse(orderDate);
+              //var orderDateM = moment(all[i]['Date']).format("DD-MM-YYYY");
+              //var orderDateM2 = new Date(orderDateM);
+            } else {
+              orderDate2 = "";
+            }
+            var orderCreated = all[i]['Created'];
+            var orderCreated2 = new Date(orderCreated);
             var komesa = all[i]['Komesa'];
             var marker = all[i]['Marker'];
             var style = all[i]['Style'];
@@ -2533,6 +2549,7 @@ if (Meteor.isClient) {
             //var lengthsum = lengthsumX.toFixed(3);
             var lengthsum = Number(all[i]['LengthSum']);
             var width = Number(all[i]['Width']);
+
             var s = Number(all[i]['S']);
             var sonlayer = Number(all[i]['SonLayer']);
             var s_cut = Number(all[i]['S_Cut']);
@@ -2542,33 +2559,39 @@ if (Meteor.isClient) {
             var l = Number(all[i]['L']);
             var lonlayer = Number(all[i]['LonLayer']);
             var l_cut = Number(all[i]['L_Cut']);
-            var status = all[i]['Status'];
-
+            
             var priority = all[i]['Priority'];
             var priority = Number(all[i]['Priority']);
 
             var load = all[i]['Load'];
             var spread = all[i]['Spread'];
-            var comment = all[i]['Comment'];
-
-            
-
-            var orderDate = all[i]['Date'];
-            if (orderDate) {
-              var orderDate2 = new Date(orderDate);  
+            var spreaddate = all[i]['SpreadDate'];
+            if (spreaddate) {
+              var spreaddate2 = new Date(spreaddate);  
               //var orderDateP = Date.parse(orderDate);
               //var orderDateM = moment(all[i]['Date']).format("DD-MM-YYYY");
               //var orderDateM2 = new Date(orderDateM);
             } else {
-              orderDate2 = "";
+              spreaddate2 = "";
+            }
+            var cut = all[i]['Cut'];
+            var cutdate = all[i]['CutDate'];
+            if (cutdate) {
+              var cutdate2 = new Date(cutdate);  
+              //var orderDateP = Date.parse(orderDate);
+              //var orderDateM = moment(all[i]['Date']).format("DD-MM-YYYY");
+              //var orderDateM2 = new Date(orderDateM);
+            } else {
+              cutdate2 = "";
             }
 
-            var orderCreated = all[i]['Created'];
-            var orderCreated2 = new Date(orderCreated);
+            var comment = all[i]['Comment'];
+            var orderlink = all[i]['OrderLink'];
 
             //One by One
             //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,Status: all[i]['Status'], Priority: priority});    
-            Order.insert({No: no, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, Status: status, Load: load, Spread: spread, Comment: comment }); 
+            /*_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink*/
+            Order.insert({No: no, Position: position, Status: status, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, S_Cut: s_cut, M: m, MonLayer: monlayer, M_Cut: m_cut, L: l, LonLayer: lonlayer, L_Cut: l_cut,Load: load, Spread: spread, SpreadDate: spreaddate2, Cut: cut, CutDate: cutdate2, Comment: comment, OrderLink: orderlink}); 
             // Can not insert order created and _id , this values is automaticali created
             //Created: orderCreated2  
             //_id: id
