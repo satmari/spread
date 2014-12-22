@@ -283,6 +283,7 @@ if (Meteor.isClient) {
           //{ key: '_id', label: '_ID' },
           { key: 'Position', label: 'Pos' , sort: 'ascending'},
           { key: 'No', label: 'No', /*sort: 'descending' */},
+          { key: 'OrderLink', label: 'Linked' },
           { key: 'Date', label: 'Date',
             fn: function (value) {
               if (value){
@@ -415,11 +416,18 @@ if (Meteor.isClient) {
             var load = item.Load;
             var spread = item.Spread;
             var status = item.Status;
-            
+            var linked = item.OrderLink;
+
             // treba da se doradi
+
+            /*if (linked == true) {
+              return 'linked';    // red
+            }*/
 
             if (status == "Finished")  {
               return 'success'; // green
+            //} else if (linked == true) {
+            //  return 'linked';    // red
             } else if (status == 'CUT') {
               return 'info';    // dark blue
             } else if (load) {
@@ -434,6 +442,10 @@ if (Meteor.isClient) {
             } else {
 
             }
+
+            
+
+
           },
       };
     },
@@ -446,6 +458,7 @@ if (Meteor.isClient) {
           //{ key: '_id', label: '_ID' },
           { key: 'Position', label: 'Pos' , sort: 'ascending'},
           { key: 'No', label: 'No', /*sort: 'descending' */},
+          { key: 'OrderLink', label: 'Linked' },
           { key: 'Date', label: 'Date',
             fn: function (value) {
               if (value){
@@ -566,6 +579,7 @@ if (Meteor.isClient) {
               }
             }
           },
+          //{ key: 'OrderLink', label: 'Linked' },
           { key: 'Comment', label: 'Comment' },
         ],
 
@@ -660,6 +674,7 @@ if (Meteor.isClient) {
             { key: 'Load', label: 'Load'},
             //{ key: 'Spread', label: 'Spread'},
             //{ key: 'Cut', label: 'Cut' },
+            //{ key: 'OrderLink', label: 'Linked' },
             { key: 'Comment', label: 'Comment' },
           ],
 
@@ -765,6 +780,7 @@ if (Meteor.isClient) {
             }
           },
             //{ key: 'Cut', label: 'Cut' },
+            //{ key: 'OrderLink', label: 'Linked' },
             { key: 'Comment', label: 'Comment' },
           ],
 
