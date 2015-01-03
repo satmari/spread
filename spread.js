@@ -1,47 +1,56 @@
 if (Meteor.isClient) {
   //SimpleSchema.debug = true;
   //UI.registerHelper("Schemas", Schemas);
+
   
   Meteor.startup(function () {
-    //Session.set("ses_namefilter", "");
-    //Session.set("ses_datefilter", "");
-
-    //var t = Date();
-
+   
     var todayAt02 = new Date();
     todayAt02.setHours(2,0,0,0);
-    console.log("todayAt02" + todayAt02);
+    //console.log("todayAt02" + todayAt02);
 
     var treeDaysbefore = new Date();
     treeDaysbefore.setHours(-70,0,0,0);
-    console.log("treeDaysbefore: " + treeDaysbefore);
+    //console.log("treeDaysbefore: " + treeDaysbefore);
 
     var treeDaysafter = new Date();
-    //treeDaysafter.setHours(74,0,0,0); // three days + 2h timezone 
     treeDaysafter.setHours(75,0,0,0);   // three days + 2h timezone + 1h
-    console.log("treeDaysafter: " + treeDaysafter);
+    //console.log("treeDaysafter: " + treeDaysafter);
+
+    var oneDaybefore = new Date();
+    oneDaybefore.setHours(0,0,0,0);
+    
+    var oneDayafter = new Date();
+    oneDayafter.setHours(24,0,0,0);   
 
     Session.set("ses_datefilter", todayAt02);
-    Session.set("ses_DaysBefore", treeDaysbefore);
-    Session.set("ses_DaysAfter", treeDaysafter);
-    Session.set("ses_datenotexist", false);
-    Session.set("ses_jobnotexist", false);
+    //Session.set("ses_DaysBefore", treeDaysbefore);
+    //Session.set("ses_DaysAfter", treeDaysafter);
+    Session.set("ses_DaysBefore", oneDaybefore);
+    Session.set("ses_DaysAfter", oneDayafter);
+    //Session.set("ses_datenotexist", false);
+    //Session.set("ses_jobnotexist", false);
+    Session.set("ses_allorder_date", false);
+    Session.set("ses_allorder_spreaddate", false);
+    Session.set("ses_allorder_cutdate", false);
+    Session.set("ses_statusfilter", "Not assigned");
 
     Date.prototype.toDateInputValue = (function() {
         var local = new Date(this);
         local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
         return local.toJSON().slice(0,10);
     });
+
     $('#filterOrderDate').val(new Date().toDateInputValue());
     
-    var filterOrderDateBefore = new Date(treeDaysbefore).toDateInputValue();
+    var filterOrderDateBefore = new Date(oneDaybefore).toDateInputValue();
     //filterOrderDateBefore = filterOrderDateBefore.setHours(-70,0,0,0);
-    console.log(filterOrderDateBefore);
+    //console.log(filterOrderDateBefore);
     $('#filterOrderDateBefore').val(filterOrderDateBefore);
 
-    var filterOrderDateAfter = new Date(treeDaysafter).toDateInputValue();
+    var filterOrderDateAfter = new Date(oneDayafter).toDateInputValue();
     //filterOrderDateAfter = filterOrderDateAfter.setHours(75,0,0,0);
-    console.log(filterOrderDateAfter);
+    //console.log(filterOrderDateAfter);
     $('#filterOrderDateAfter').val(filterOrderDateAfter);
 
     // User auth
@@ -55,9 +64,12 @@ if (Meteor.isClient) {
 
         Session.set("loggedUserId", User._id);
         Session.set("loggedUserName", User.username);
-        console.log("Startup: UserId: " + User._id);
-        console.log("Startup: UserName: " + User.username);
+        //console.log("Startup: UserId: " + User._id);
+        //console.log("Startup: UserName: " + User.username);
     }
+    Session.set("ses_SP1message", "");
+    Session.set("ses_SP2message", "");
+
   })
 
   Meteor.autosubscribe(function () {
@@ -70,8 +82,8 @@ if (Meteor.isClient) {
     if (user) {
       var UserId = Meteor.userId();
       var UserA = Meteor.users.findOne({_id: UserId});
-      console.log("Autosubscribe = UserA_Id: " + UserA._id);
-      console.log("Autosubscribe = UserName: " + UserA.username);
+      //console.log("Autosubscribe = UserA_Id: " + UserA._id);
+      //console.log("Autosubscribe = UserName: " + UserA.username);
 
       Session.set("ses_loggedUserId", UserA._id);
       Session.set("ses_loggedUserName", UserA.username);
@@ -81,58 +93,110 @@ if (Meteor.isClient) {
     var ses_datefilter = Session.get("ses_datefilter");
     var ses_DaysBefore = Session.get("ses_DaysBefore");
     var ses_DaysAfter = Session.get("ses_DaysAfter");
-    var ses_existdate = Session.get("ses_datenotexist");
-    var ses_jobnotexist = Session.get("ses_jobnotexist");
+    //var ses_existdate = Session.get("ses_datenotexist");
+    //var ses_jobnotexist = Session.get("ses_jobnotexist");
+    var ses_allorder_date = Session.get("ses_allorder_date");
+    var ses_allorder_spreaddate = Session.get("ses_allorder_spreaddate");
+    var ses_allorder_cutdate = Session.get("ses_allorder_cutdate");
+
+    var ses_statusfilter = Session.get("ses_statusfilter");
 
     //console.log("Autosubcribe sesion: " + ses + " , typeof: " + typeof ses);
+
     if ((ses_loggedUserName == "cut1") || (ses_loggedUserName == "cut2")){
-      Meteor.subscribe('cutter');
+      Meteor.subscribe('filter_cutter');
     } else if ((ses_loggedUserName == "sp11") || (ses_loggedUserName == "sp12")){
       //Meteor.subscribe('spreader1', Session.get("ses_datefilter"));
-      Meteor.subscribe('spreader1');
+      Meteor.subscribe('filter_spreader1');
     } else if ((ses_loggedUserName == "sp21") || (ses_loggedUserName == "sp22")){
       //Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
-      Meteor.subscribe('spreader2');
-    } else if ( ses_existdate == true ) {
-      Meteor.subscribe('orderWithoutDate');
-    } else if ( ses_jobnotexist == true ) { 
-      Meteor.subscribe('orderWithoutJob');
-    } else if ( ses_datefilter == "" ) { 
-      Meteor.subscribe('orderAll');
+      Meteor.subscribe('filter_spreader2');
+    } else if (ses_loggedUserName == "ms1"){
+      Meteor.subscribe('filter_spreaderm1');
+    
+    } else if (ses_allorder_date) {
+      Meteor.subscribe('filter_allOrderswithDate', ses_DaysBefore, ses_DaysAfter);
+    } else if (ses_allorder_spreaddate) {
+      Meteor.subscribe('filter_allOrderswithSpreadDate', ses_DaysBefore, ses_DaysAfter);
+    } else if (ses_allorder_cutdate) {
+      Meteor.subscribe('filter_allOrderswithCutDate', ses_DaysBefore, ses_DaysAfter);
+    
+    } else if (ses_statusfilter == 'Finished') { 
+      Meteor.subscribe('filter_statusfilterwithDate', ses_statusfilter, ses_DaysBefore, ses_DaysAfter);
+    } else if (ses_statusfilter) { 
+      Meteor.subscribe('filter_statusfilter', ses_statusfilter);
+
+    } else if ( ses_datefilter == "" ) { // date filter is always set to today, only if you set date range this session have to be deleted 
+      Meteor.subscribe('filter_orderAll');
     } else if ( (ses_DaysBefore) || (ses_DaysAfter) ) {
-      Meteor.subscribe('orderWithDateRange', ses_DaysBefore, ses_DaysAfter);
+      Meteor.subscribe('filter_orderWithDateRange', ses_DaysBefore, ses_DaysAfter);
     } else {
-      Meteor.subscribe('orderWithDate', ses_datefilter);
+      Meteor.subscribe('filter_orderWithDate', ses_datefilter);
     }
+
+      Meteor.call('method_uniquecountPosNA', function(err, data) {
+        console.log("method_uniquecountPosNA: " + data);
+        Session.set("ses_uniquecountPosNA", data);
+      });
+      Meteor.call('method_uniquecountPosSp1', function(err, data) {
+        console.log("method_uniquecountPosSp1: " + data);
+        Session.set("ses_uniquecountPosSp1", data);
+      });
+      Meteor.call('method_uniquecountPosSp2', function(err, data) {
+        console.log("method_uniquecountPosSp2: " + data);
+        Session.set("ses_uniquecountPosSp2", data);
+      });
+      Meteor.call('method_uniquecountPosMs1', function(err, data) {
+        console.log("method_uniquecountPosMs1: " + data);
+        Session.set("ses_uniquecountPosMs1", data);
+      });
+      Meteor.call('method_uniquecountPosCUT', function(err, data) {
+        console.log("method_uniquecountPosCUT: " + data);
+        Session.set("ses_uniquecountPosCUT", data);
+      });
+      Meteor.call('method_uniquecountPosF', function(err, data) {
+        console.log("method_uniquecountPosF: " + data);
+        Session.set("ses_uniquecountPosF", data);
+      });
     
-    /*
-      var userId = Meteor.userId();
-      if (userId) {
-        var User = Meteor.users.findOne({_id: userId});
-        if (User._id == "hzsGmdDpJXrDFiujZ") {
-          console.log('admin je ulogovan');
-        } else {
-          console.log('NIJE admin je ulogovan');
-        }
+
+      /* Messages */
+      var ses_SP1message = Session.get("ses_SP1message");
+      //console.log("ses_SP1message: " + ses_SP1message);
+      var ses_SP2message = Session.get("ses_SP2message");
+      //console.log("ses_SP2message: " + ses_SP2message);
+
+      if ((ses_SP1message == "") || (typeof ses_SP1message === 'undefined')) {
+      } else {
+        alert(ses_SP1message);
+        console.log("ses_SP1message: " + ses_SP1message);
+        Session.set("ses_SP1message", "");
+
+      } 
+      if ((ses_SP2message == "") || (typeof ses_SP2message === 'undefined')) {
+      } else {
+        alert(ses_SP2message);
+        console.log("ses_SP2message: " + ses_SP2message);
+        Session.set("ses_SP2message", "");
       }
-    */
-    /*
-    if (Session.get("userId") === adminId) {
-      console.log("Wellcome admin");
-      Session.set("logged", "admin");
-    }     
-    */     
+
   });
-    
+  
+  /*FlashMessages.configure({
+    autoHide: true,
+    hideDelay: 5000,
+    autoScroll: true
+  });*/
+
   Template.nav.helpers ({
-    isAdmin: function() {
+    isAdminOrGuest: function() {
       //var loggedUserName = Session.get("loggedUserName");
       //console.log(loggedUserName);
 
       var userId = Meteor.userId();
       if (userId) {
         var User = Meteor.users.findOne({_id: userId});
-        if (User.username == "admin") {
+        if ((User.username == "admin") || (User.username == "guest")) {
           return true;
         } else {
           return false;  
@@ -168,6 +232,17 @@ if (Meteor.isClient) {
           }
         }
     },
+    isUserGuest: function() {
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "guest") {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+    },
     isUserSp: function() {
         //var loggedUserName = Session.get("loggedUserName");
         //console.log(loggedUserName);
@@ -175,7 +250,7 @@ if (Meteor.isClient) {
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp21") || (User.username == "sp22")) {
+          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "ms1")) {
             return true;
           } else {
             return false;  
@@ -196,6 +271,9 @@ if (Meteor.isClient) {
           }
         }
     },
+    filter: function() {
+        return ses_statusfilter = Session.get("ses_statusfilter");
+    },
     settingsAdmin: function () {
       return {
         rowsPerPage: 100,
@@ -203,7 +281,9 @@ if (Meteor.isClient) {
         showNavigation: 'auto',
         fields: [
           //{ key: '_id', label: '_ID' },
-          { key: 'No', label: 'No', sort: 'descending' },
+          { key: 'Position', label: 'Pos' , sort: 'ascending'},
+          { key: 'No', label: 'No', /*sort: 'descending' */},
+          { key: 'OrderLink', label: 'Linked' },
           { key: 'Date', label: 'Date',
             fn: function (value) {
               if (value){
@@ -232,17 +312,30 @@ if (Meteor.isClient) {
               };
             }
           },
-          { key: 'Length', label: 'Length (m)' },
+          { key: 'Length', label: 'Length (m)', 
+              fn: function  (value){
+                var v = Number(value);
+                return v.toFixed(3);
+              } 
+          },
           { key: 'Extra', label: 'Extra (cm)' },
-          { key: 'LengthSum', label: 'LengthSum (m)' },
+          { key: 'LengthSum', label: 'Tot Meters Required (m)',
+              fn: function  (value){
+                var v = Number(value);
+                return v.toFixed(2);
+              }
+            },
           { key: 'Width', label: 'Width (cm)' },
-          { key: 'S', label: 'S' },
-          /*{ key: 'SonLayer', label: 'S on Layer'},*/
-          { key: 'M', label: 'M' },
-          /*{ key: 'MonLayer', label: 'M on Layer'},*/
-          { key: 'L', label: 'L' },
-          /*{ key: 'LonLayer', label: 'L on layer'},*/
-          { key: 'AssignSpreader', label: 'Assign',
+          { key: 'SonLayer', label: 'S per Layer'},
+          { key: 'S', label: 'S Marker' },
+          { key: 'S_Cut', label: 'S Cut'},
+          { key: 'MonLayer', label: 'M per Layer'},
+          { key: 'M', label: 'M Marker' },
+          { key: 'M_Cut', label: 'M Cut'},
+          { key: 'LonLayer', label: 'L per Layer'},
+          { key: 'L', label: 'L Marker' },
+          { key: 'L_Cut', label: 'L Cut'},
+          { key: 'Status', label: 'Status',
             fn: function (value) {
               if (value == "SP 1") {
                 return "SP 1";
@@ -250,12 +343,34 @@ if (Meteor.isClient) {
               else if (value == "SP 2") {
                 return "SP 2";
               }
+              else if (value == "MS 1") {
+                return "MS 1";
+              }
+              else if (value == "CUT") {
+                return "toCUT";
+              }
+              else if (value == "Finished") {
+                return "Finished";
+              }
+              else if (value == "Not assigned") {
+                return "Not assigned";
+              }
               else {
-                return "Not Assigned";
+                return "Not Defined";
               }
             }
           },
-          { key: 'Priority', label: 'Priority' },
+          { key: 'Priority', label: 'Priority', 
+            fn: function (value){
+              if (value == 2) {
+                return "High";
+              } else if (value == 3) {
+                return "Top Priority" ;
+              } else {
+                return "Normal" ;
+              }
+            }
+          },
           { key: 'Load', label: 'Load',
             /*fn: function (value){ 
               if (value == true) {
@@ -270,31 +385,229 @@ if (Meteor.isClient) {
               };
             }*/
           },
+          { key: 'SpreadDate', label: 'Spread Date',
+             fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD HH:mm:ss");
+              } else {
+                return "";
+              }
+            }
+          },
           { key: 'Cut', label: 'Cut' },
+          { key: 'CutDate', label: 'Cut Date',
+             fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD HH:mm:ss");
+              } else {
+                return "";
+              }
+            }
+          },
           { key: 'Comment', label: 'Comment' },
         ],
 
           //useFontAwesome: true,
           //group: 'orderExtra'
           //rowClass: "warning", //warning, danger
+          
           rowClass: function(item) {
             var priority = item.Priority;
             var load = item.Load;
             var spread = item.Spread;
-            var cut = item.Cut;
+            var status = item.Status;
+            var linked = item.OrderLink;
+
+            // treba da se doradi
+
+            /*if (linked == true) {
+              return 'linked';    // red
+            }*/
+
+            if (status == "Finished")  {
+              return 'success'; // green
+            //} else if (linked == true) {
+            //  return 'linked';    // red
+            } else if (status == 'CUT') {
+              return 'info';    // dark blue
+            } else if (load) {
+              return 'load';    // greey
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "MS 1")) {
+              return 'active';  // light blue
+            } else if (priority == 2) {
+              return 'warning'; // orange
+            } else if (priority == 3) {
+              return 'danger';  // red
+              //active, success, info, warning, danger
+            } else {
+
+            }
+
+            
+
+
+          },
+      };
+    },
+    settingsGuest: function () {
+      return {
+        rowsPerPage: 100,
+        showFilter: true,
+        showNavigation: 'auto',
+        fields: [
+          //{ key: '_id', label: '_ID' },
+          { key: 'Position', label: 'Pos' , sort: 'ascending'},
+          { key: 'No', label: 'No', /*sort: 'descending' */},
+          { key: 'OrderLink', label: 'Linked' },
+          { key: 'Date', label: 'Date',
+            fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD");
+              } else {
+                return "";
+              }
+              //return moment(value).format("DD-MM-YYYY");
+            }//, sort: 'descending' // ascending
+          },
+          //{ key: 'Created', label: 'Created' },
+          { key: 'Komesa', label: 'Komesa' },
+          { key: 'Marker', label: 'Marker' },
+          { key: 'Style', label: 'Style' },
+          { key: 'Fabric', label: 'Fabric' },
+          { key: 'ColorCode', label: 'Color Code' },
+          { key: 'ColorDesc', label: 'Color Desc' },
+          { key: 'Bagno', label: 'Bagno' },
+          { key: 'Layers', label: 'Layers' },
+          { key: 'LayersActual', label: 'Layers Actual',
+            fn: function (value){
+              if (value == 0) {
+                return "";
+              } else {
+                return value ;
+              };
+            }
+          },
+          { key: 'Length', label: 'Length (m)', 
+              fn: function  (value){
+                var v = Number(value);
+                return v.toFixed(3);
+              } 
+          },
+          { key: 'Extra', label: 'Extra (cm)' },
+          { key: 'LengthSum', label: 'Tot Meters Required (m)',
+              fn: function  (value){
+                var v = Number(value);
+                return v.toFixed(2);
+              }
+            },
+          { key: 'Width', label: 'Width (cm)' },
+          { key: 'SonLayer', label: 'S per Layer'},
+          { key: 'S', label: 'S Marker' },
+          { key: 'S_Cut', label: 'S Cut'},
+          { key: 'MonLayer', label: 'M per Layer'},
+          { key: 'M', label: 'M Marker' },
+          { key: 'M_Cut', label: 'M Cut'},
+          { key: 'LonLayer', label: 'L per Layer'},
+          { key: 'L', label: 'L Marker' },
+          { key: 'L_Cut', label: 'L Cut'},
+          { key: 'Status', label: 'Status',
+            fn: function (value) {
+              if (value == "SP 1") {
+                return "SP 1";
+              }
+              else if (value == "SP 2") {
+                return "SP 2";
+              }
+              else if (value == "MS 1") {
+                return "MS 1";
+              }
+              else if (value == "CUT") {
+                return "toCUT";
+              }
+              else if (value == "Finished") {
+                return "Finished";
+              }
+              else if (value == "Not assigned") {
+                return "Not assigned";
+              }
+              else {
+                return "Not Defined";
+              }
+            }
+          },
+          { key: 'Priority', label: 'Priority', 
+            fn: function (value){
+              if (value == 2) {
+                return "High";
+              } else if (value == 3) {
+                return "Top Priority" ;
+              } else {
+                return "Normal" ;
+              }
+            }
+          },
+          { key: 'Load', label: 'Load',
+            /*fn: function (value){ 
+              if (value == true) {
+                return "Load";
+              };
+            }*/
+          },
+          { key: 'Spread', label: 'Spread', 
+            /*fn: function (value){
+              if (value == true) {
+                return "Spread";
+              };
+            }*/
+          },
+          { key: 'SpreadDate', label: 'Spread Date',
+             fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD HH:mm:ss");
+              } else {
+                return "";
+              }
+            }
+          },
+          { key: 'Cut', label: 'Cut' },
+          { key: 'CutDate', label: 'Cut Date',
+             fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD HH:mm:ss");
+              } else {
+                return "";
+              }
+            }
+          },
+          //{ key: 'OrderLink', label: 'Linked' },
+          { key: 'Comment', label: 'Comment' },
+        ],
+
+          //useFontAwesome: true,
+          //group: 'orderExtra'
+          //rowClass: "warning", //warning, danger
+          
+          rowClass: function(item) {
+            var priority = item.Priority;
+            var load = item.Load;
+            var spread = item.Spread;
+            var status = item.Status;
             
             // treba da se doradi
 
-            if (cut)  {
-              return 'success';
-            } else if (spread) {
-              return 'info';
+            if (status == "Finished")  {
+              return 'success'; // green
+            } else if (status == 'CUT') {
+              return 'info';    // dark blue
             } else if (load) {
-              return 'active';
-            } else if (priority == 4) {
-              return 'warning';
-            } else if (priority == 5){
-              return 'danger'; //active, success, info, warning, danger
+              return 'load';    // greey
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "MS 1")) {
+              return 'active';  // light blue
+            } else if (priority == 2) {
+              return 'warning'; // orange
+            } else if (priority == 3) {
+              return 'danger';  // red
+              //active, success, info, warning, danger
             } else {
 
             }
@@ -308,8 +621,10 @@ if (Meteor.isClient) {
           showNavigation: 'auto',
           fields: [
             //{ key: '_id', label: '_ID' },
-            { key: 'No', label: 'No', sort: 'descending' },
-            { key: 'Date', label: 'Date',
+            
+            { key: 'Position', label: 'Pos' , sort: 'ascending'},
+            { key: 'No', label: 'No' },
+            /*{ key: 'Date', label: 'Date',
               fn: function (value) {
                 if (value){
                   return moment(value).format("DD-MMM");
@@ -318,7 +633,7 @@ if (Meteor.isClient) {
                 }
                 //return moment(value).format("DD-MM-YYYY");
               }//, sort: 'descending' // ascending
-            },
+            },*/
             //{ key: 'Created', label: 'Created' },
             { key: 'Komesa', label: 'Komesa' },
             { key: 'Marker', label: 'Marker' },
@@ -337,31 +652,30 @@ if (Meteor.isClient) {
                 };
               }
             },
-            { key: 'Length', label: 'Length (m)' },
+            { key: 'Length', label: 'Length (m)', 
+              fn: function  (value){
+                var v = Number(value);
+                return v.toFixed(3);
+              } 
+            },
             //{ key: 'Extra', label: 'Extra (cm)' },
-            { key: 'LengthSum', label: 'LengthSum (m)' },
+            { key: 'LengthSum', label: 'Tot Meters Required (m)',
+              fn: function  (value){
+                var v = Number(value);
+                return v.toFixed(0);
+              }
+            },
             { key: 'Width', label: 'Width (cm)' },
             //{ key: 'S', label: 'S' },
             //{ key: 'M', label: 'M' },
             //{ key: 'L', label: 'L' },
-            /*{ key: 'AssignSpreader', label: 'Assign',
-              fn: function (value) {
-                if (value == "SP 1") {
-                  return "SP 1";
-                }
-                else if (value == "SP 2") {
-                  return "SP 2";
-                }
-                else {
-                  return "Not Assigned";
-                }
-              }
-            },*/
-            { key: 'Priority', label: 'Priority' },
+            //{ key: 'Status', label: 'Status'},
+            //{ key: 'Priority', label: 'Priority' },
             { key: 'Load', label: 'Load'},
-            { key: 'Spread', label: 'Spread'},
+            //{ key: 'Spread', label: 'Spread'},
             //{ key: 'Cut', label: 'Cut' },
-            //{ key: 'Comment', label: 'Comment' },
+            //{ key: 'OrderLink', label: 'Linked' },
+            { key: 'Comment', label: 'Comment' },
           ],
 
             //useFontAwesome: true,
@@ -371,20 +685,23 @@ if (Meteor.isClient) {
             var priority = item.Priority;
             var load = item.Load;
             var spread = item.Spread;
-            var cut = item.Cut;
-
+            var status = item.Status;
+            
             // treba da se doradi
 
-            if (cut)  {
-              return 'success';
-            } else if (spread) {
-              return 'info';
+            if (status == "Finished")  {
+              return 'success'; // green
+            } else if (status == 'CUT') {
+              return 'info';    // dark blue
             } else if (load) {
-              return 'active';
-            } else if (priority == 4) {
-              return 'warning';
-            } else if (priority == 5){
-              return 'danger'; //active, success, info, warning, danger
+              return 'load';    // greey
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "MS 1")) {
+              return 'active';  // light blue
+            } else if (priority == 2) {
+              return 'warning'; // orange
+            } else if (priority == 3) {
+              return 'danger';  // red
+              //active, success, info, warning, danger
             } else {
 
             }
@@ -398,7 +715,8 @@ if (Meteor.isClient) {
           showNavigation: 'auto',
           fields: [
             //{ key: '_id', label: '_ID' },
-            { key: 'No', label: 'No', sort: 'descending' },
+            /*{ key: 'No', label: 'No', sort: 'descending' },*/
+            { key: 'Position', label: 'Pos'},
             /*{ key: 'Date', label: 'Date',
               fn: function (value) {
                 if (value){
@@ -409,6 +727,7 @@ if (Meteor.isClient) {
                 //return moment(value).format("DD-MM-YYYY");
               }//, sort: 'descending' // ascending
             },*/
+            
             //{ key: 'Created', label: 'Created' },
             { key: 'Komesa', label: 'Komesa' },
             { key: 'Marker', label: 'Marker' },
@@ -417,7 +736,7 @@ if (Meteor.isClient) {
             { key: 'ColorCode', label: 'Color Code' },
             { key: 'ColorDesc', label: 'Color Desc' },
             { key: 'Bagno', label: 'Bagno' },
-            { key: 'Layers', label: 'Layers' },
+            //{ key: 'Layers', label: 'Layers' },
             { key: 'LayersActual', label: 'Layers Actual',
               fn: function (value){
                 if (value == 0) {
@@ -427,31 +746,42 @@ if (Meteor.isClient) {
                 };
               }
             },
-            { key: 'Length', label: 'Length (m)' },
+            { key: 'Length', label: 'Length(m)' },
             //{ key: 'Extra', label: 'Extra (cm)' },
-            { key: 'LengthSum', label: 'LengthSum (m)' },
+            //{ key: 'LengthSum', label: 'Length Sum (m)' },
             { key: 'Width', label: 'Width (cm)' },
             //{ key: 'S', label: 'S' },
+            { key: 'S_Cut', label: 'S Cut'},
             //{ key: 'M', label: 'M' },
+            { key: 'M_Cut', label: 'M Cut'},
             //{ key: 'L', label: 'L' },
-            /*{ key: 'AssignSpreader', label: 'Assign',
-              fn: function (value) {
-                if (value == "SP 1") {
-                  return "SP 1";
-                }
-                else if (value == "SP 2") {
-                  return "SP 2";
-                }
-                else {
-                  return "Not Assigned";
+            { key: 'L_Cut', label: 'L Cut'},
+            //{ key: 'Status', label: 'Status'},
+            { key: 'Priority', label: 'Priority', sort: 'descending' , 
+              fn: function (value){
+                if (value == 2) {
+                  return "High";
+                } else if (value == 3) {
+                 return "Top Priority" ;
+                } else {
+                 return "Normal" ;
                 }
               }
-            },*/
-            { key: 'Priority', label: 'Priority' },
+            },
             /*{ key: 'Load', label: 'Load'},*/
             /*{ key: 'Spread', label: 'Spread'},*/
-            { key: 'Cut', label: 'Cut' },
-            //{ key: 'Comment', label: 'Comment' },
+            { key: 'SpreadDate', label: 'Spread Date',
+             fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD HH:mm:ss");
+              } else {
+                return "";
+              }
+            }
+          },
+            //{ key: 'Cut', label: 'Cut' },
+            //{ key: 'OrderLink', label: 'Linked' },
+            { key: 'Comment', label: 'Comment' },
           ],
 
             //useFontAwesome: true,
@@ -461,20 +791,25 @@ if (Meteor.isClient) {
             var priority = item.Priority;
             var load = item.Load;
             var spread = item.Spread;
-            var cut = item.Cut;
-
+            var status = item.Status;
+            
             // treba da se doradi
 
-            if (cut)  {
-              return 'success';
-            } else if (spread) {
-              return 'info';
+            if (status == "Finished")  {
+              return 'success'; // green
+            
+            } else if (priority == 2) {
+              return 'warning'; // orange
+            } else if (priority == 3) {
+              return 'danger';  // red
+              //active, success, info, warning, danger
+
+            } else if (status == 'CUT') {
+              return 'info';    // dark blue
             } else if (load) {
-              return 'active';
-            } else if (priority == 4) {
-              return 'warning';
-            } else if (priority == 5){
-              return 'danger'; //active, success, info, warning, danger
+              return 'load';    // greey
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "MS 1")) {
+              return 'active';  // light blue
             } else {
 
             }
@@ -489,45 +824,87 @@ if (Meteor.isClient) {
         // set the blog post we'll display details and news for
         var click_id = this._id;
         //console.log('selectedDocId: ', click_id);
-        Session.set('selectedDocId', click_id);
+        Session.set('selectedDocId', this._id);
+        //console.log("ses: " + ses);
+
+        var click_id_pos = this.Position;
+        //console.log("click_id_pos: " + click_id_pos );
+        var click_id_status = this.Status;
+        //console.log("click_id_status: " + click_id_status );
+        //var statusfilter = Session.get("ses_statusfilter");
+        Session.set('click_id_status', click_id_status); 
+
+        //$('#mergeorder').setAttribute("checked", "checked");
+
+        //$('.in #insertorder').attr('checked');
+        //$('#selectPosition select').val(5);
+
+        Meteor.call('method_uniquecountPosNA', function(err, data) {
+          console.log("method_uniquecountPosNA: " + data);
+          Session.set("ses_uniquecountPosNA", data);
+        });
+        Meteor.call('method_uniquecountPosSp1', function(err, data) {
+          console.log("method_uniquecountPosSp1: " + data);
+          Session.set("ses_uniquecountPosSp1", data);
+        });
+        Meteor.call('method_uniquecountPosSp2', function(err, data) {
+          console.log("method_uniquecountPosSp2: " + data);
+          Session.set("ses_uniquecountPosSp2", data);
+        });
+        Meteor.call('method_uniquecountPosMs1', function(err, data) {
+          console.log("method_uniquecountPosMs1: " + data);
+          Session.set("ses_uniquecountPosMs1", data);
+        });
+        Meteor.call('method_uniquecountPosCUT', function(err, data) {
+          console.log("method_uniquecountPosCUT: " + data);
+          Session.set("ses_uniquecountPosCUT", data);
+        });
+        Meteor.call('method_uniquecountPosF', function(err, data) {
+          console.log("method_uniquecountPosF: " + data);
+          Session.set("ses_uniquecountPosF", data);
+        });
 
         // Define rd_editorder
         var rd_editorder = ReactiveModal.initDialog(rm_EditOrder);
+
         // show rd_editorder
         rd_editorder.show();
       }
   });
 
   // Edit Order on click (in table) - Reactive Modal
-  var rm_EditOrder = {
-    //type: 'type-info',   //type-default, type-info, type-primary, 'type-success', 'type-warning' , 'type-danger' 
+    var rm_EditOrder = {
+    type: 'type-default',   //type-default, type-info, type-primary, 'type-success', 'type-warning' , 'type-danger' 
       //size: '',
       template: Template.tmp_EditOrder, 
       title: "Edit Order",
       //modalBody: "Helll0",
-      modalDialogClass: "modal-dialog", //optional
-      modalBodyClass: "modal-body", //optional
-      modalFooterClass: "modal-footer",//optional
-      closable: false,
+      //modalDialogClass: "modal-dialog", //optional
+      //modalBodyClass: "modal-body", //optional
+      //modalFooterClass: "modal-footer",//optional
+      removeOnHide: true,
+      closable: true,
       buttons: {
-        //"cancel": {
-        //  class: 'btn-danger',
-        //  label: 'Cancel'
-          //},
+          /*"cancel": {
+            class: 'btn-danger',
+            label: 'Cancel'
+          },*/
           "ok": {
             closeModalOnClick: true, // if this is false, dialog doesnt close automatically on click
             class: 'btn-info',
             label: 'Back'
           }
       }
-  };
+    };
+  
 
   // Reactive table helper (for update/edit orders)
   Template.tmp_EditOrder.helpers({
       editingDoc: function editingDocHelper() {
         return Order.findOne({_id: Session.get("selectedDocId")});
+        
       },
-      isAdmin: function() {
+      isUserAdmin: function() {
         //var loggedUserName = Session.get("loggedUserName");
         //console.log(loggedUserName);
 
@@ -540,7 +917,18 @@ if (Meteor.isClient) {
             return false;  
           }
         }
-       },
+      },
+      isUserGuest: function() {
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "guest") {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+      },
       isUserSp: function() {
         //var loggedUserName = Session.get("loggedUserName");
         //console.log(loggedUserName);
@@ -548,7 +936,7 @@ if (Meteor.isClient) {
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp21") || (User.username == "sp22")) {
+          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "ms1")) {
             return true;
           } else {
             return false;  
@@ -578,44 +966,234 @@ if (Meteor.isClient) {
           }
         }
       },
-      OrderInfo: function () {
+      /*OrderInfo: function () {
         var ses = Session.get("selectedDocId")
         //console.log("ses: " + ses);
-
         var order = Order.find({_id: ses}).fetch();
-        
-        //console.log("order: " + order);
-
         for (var i = 0; i < order.length; i++) {
           var No = order[i].No;
           var Komesa = order[i].Komesa;
-          
+          var Marker = order[i].Marker;
         }
-
-        var OrderInfo = "No: " + No + " ,Komesa: " + Komesa ;
+        var OrderInfo = "No: " + No + " ,Komesa: " + Komesa + " ,Marker: " + Marker ;
         return OrderInfo;
-
+      },*/
+      Order_No: function(){
+        var ses = Session.get("selectedDocId");
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var Order_No = order[i].No;
+        }
+        return Order_No;
       },
-      FabricInfo: function () {
+      Order_Komesa: function(){
+        var ses = Session.get("selectedDocId");
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var Order_Komesa = order[i].Komesa;
+        }
+        return Order_Komesa;
+      },
+      Order_Marker: function(){
+        var ses = Session.get("selectedDocId");
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var Order_Marker = order[i].Marker;
+        }
+        return Order_Marker;
+      },
+      CurrentPosition: function (){
         var ses = Session.get("selectedDocId")
         //console.log("ses: " + ses);
 
         var order = Order.find({_id: ses}).fetch();
-        
-        //console.log("order: " + order);
+        for (var i = 0; i < order.length; i++) {
+          var Pos = order[i].Position;       
+        }
+        var CurrentPosition = "Current Position: " + Pos;
+        return CurrentPosition;
+      },
+      CurrentStatus: function (){
+        var ses = Session.get("selectedDocId")
+        //console.log("ses: " + ses);
 
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var Stat = order[i].Status;       
+        }
+        var CurrentStatus = "Current Status: " + Stat;
+        return CurrentStatus;
+      },
+      /*FabricInfo: function () {
+        var ses = Session.get("selectedDocId")
+        //console.log("ses: " + ses);
+
+        var order = Order.find({_id: ses}).fetch();
         for (var i = 0; i < order.length; i++) {
           var Fabric = order[i].Fabric;
           var Bagno = order[i].Bagno;
           //var ColorCode = order[i].ColorCode;
           var ColorDesc = order[i].ColorDesc;
+        }
+        var FabricInfo = "Fabric: " + Fabric + " ,Bagno: " + Bagno + " ,Color Desc: " + ColorDesc;
+        return FabricInfo;
+      },*/
+      Order_Fabric: function () {
+        var ses = Session.get("selectedDocId")
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var Order_Fabric = order[i].Fabric;
+        }
+        return Order_Fabric;
+      },
+      Order_Bagno: function () {
+        var ses = Session.get("selectedDocId")
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var Order_Bagno = order[i].Bagno;
+        }
+        return Order_Bagno;
+      },
+      Order_ColorDesc: function () {
+        var ses = Session.get("selectedDocId")
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var Order_ColorDesc = order[i].ColorDesc;
+        }
+        return Order_ColorDesc;
+      },
+      Order_ActualLayers: function (){
+        var ses = Session.get("selectedDocId")
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var Order_ActualLayers = order[i].LayersActual;
+        }
+        return Order_ActualLayers;
+      },
+      isLoaded: function () {
+        var ses = Session.get("selectedDocId");
 
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var Loaded = order[i].Load;       
         }
 
-        var FabricInfo ="Fabric: " + Fabric + " ,Bagno: " + Bagno + " ,Color Desc: " + ColorDesc;
-        return FabricInfo;
+        //console.log("Loaded: " + Loaded);
+        if (Loaded) {
+          return false;
+        } else {
+          return true;
+        }
+      },
+      positionSelect: function  (){
+
+        Meteor.call('method_arrayofPosNA', function(err,data) {
+          var arrayofPosNA = data;
+          Session.set('ses_arrayofPosNA', arrayofPosNA);
+          //console.log("ses_arrayofPosNA: " + arrayofPosNA);
+        });
+        var uniqarrayofPosNA = $.makeArray($(Session.get('ses_arrayofPosNA')).filter(function(i,itm){ 
+          return i == $(Session.get('ses_arrayofPosNA')).index(itm);
+        }));
+        //Session.set('ses_uniqarrayofPosSp1', uniqarrayofPosSp1);
+        //console.log("uniqarrayofPosSp1: " + uniqarrayofPosSp1);
+        
+        Meteor.call('method_arrayofPosSp1', function(err,data) {
+          var arrayofPosSp1 = data;
+          Session.set('ses_arrayofPosSp1', arrayofPosSp1);
+          //console.log("ses_arrayofPosSp1: " + arrayofPosSp1);
+        });
+        var uniqarrayofPosSp1 = $.makeArray($(Session.get('ses_arrayofPosSp1')).filter(function(i,itm){ 
+          return i == $(Session.get('ses_arrayofPosSp1')).index(itm);
+        }));
+        //Session.set('ses_uniqarrayofPosSp1', uniqarrayofPosSp1);
+        //console.log("uniqarrayofPosSp1: " + uniqarrayofPosSp1);
+          
+        Meteor.call('method_arrayofPosSp2', function(err,data) {
+          var arrayofPosSp2 = data;
+          Session.set('ses_arrayofPosSp2', arrayofPosSp2);
+          //console.log("ses_arrayofPosSp2: " + arrayofPosSp2);
+        });
+        var uniqarrayofPosSp2 = $.makeArray($(Session.get('ses_arrayofPosSp2')).filter(function(i,itm){ 
+          return i == $(Session.get('ses_arrayofPosSp2')).index(itm);
+        }));
+        //Session.set('ses_uniqarrayofPosSp2', uniqarrayofPosSp2);
+        //console.log("uniqarrayofPosSp2: " + uniqarrayofPosSp2);
+
+        Meteor.call('method_arrayofPosMs1', function(err,data) {
+          var arrayofPosMs1 = data;
+          Session.set('ses_arrayofPosMs1', arrayofPosMs1);
+          //console.log("ses_arrayofPosSp2: " + arrayofPosSp2);
+        });
+        var uniqarrayofPosMs1 = $.makeArray($(Session.get('ses_arrayofPosMs1')).filter(function(i,itm){ 
+          return i == $(Session.get('ses_arrayofPosMs1')).index(itm);
+        }));
+        //Session.set('ses_uniqarrayofPosMs1', uniqarrayofPosMs1);
+        //console.log("uniqarrayofPosMs1: " + uniqarrayofPosMs1);
+        
+        var click_id_status = Session.get('click_id_status');
+
+        if (click_id_status == 'SP 1'){
+          return uniqarrayofPosSp1;
+        } else if (click_id_status == 'SP 2'){
+          return uniqarrayofPosSp2;
+        } else if (click_id_status == 'MS 1'){
+          return uniqarrayofPosMs1;
+        } else if (click_id_status == 'Not assigned'){
+          return uniqarrayofPosNA;
+        } else {
+          //Session.set("ses_arrayofPosSp", "None");
+          //var arrayofPosSp = "None";
+          return ['None'];
+        }
 
       },
+      statusSelect: function (){
+        
+        var click_id_status = Session.get('click_id_status');
+
+        Meteor.call('method_arrayofStatus', function(err,data) {
+          Session.set('ses_arrayofStatus', data); 
+          //console.log('ses_arrayofStatus: ' + data);
+          //arrayofStatus = data;
+          //return arrayofStatus;
+        });
+
+        var  arrayofStasus = Session.get('ses_arrayofStatus');
+        return arrayofStasus;
+
+        //$('.form-control #selectStatus').removeAttr('selected').filter('[value="SP 2"]').attr('selected', true)
+        //$('.form-control #selectStatus option').val('didi');
+        /*$("#selectStatus option").filter(function() {
+          return $(this).text() == click_id_status; 
+        }).prop('selected', true);*/
+
+      },
+      isSPfilter: function (){
+        var statusFilter = Session.get("ses_statusfilter");
+        if ((statusFilter == "SP 1") || (statusFilter == "SP 2") || (statusFilter == "MS 1") || (statusFilter == "Not assigned")) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+
+      /*isSpreaded: function () {
+        var ses = Session.get("selectedDocId")
+
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var Spreaded = order[i].Spread;
+          
+        }
+
+        console.log("Spreaded: " + Spreaded);
+        if (Spreaded) {
+          return false;
+        } else {
+          return true;
+        }
+      },*/
       /*Comment: function() {
         var editingDoc = Session.get("selectedDocId");
         if (editingDoc) {
@@ -642,6 +1220,7 @@ if (Meteor.isClient) {
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
       closable: true,
+      removeOnHide: true,
       buttons: {
         //"cancel": {
         //  class: 'btn-danger',
@@ -662,7 +1241,8 @@ if (Meteor.isClient) {
       //modalDialogClass: "modal-dialog", //optional
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
-      closable: false,
+      closable: true,
+      removeOnHide: true,
       buttons: {
         //"cancel": {
         //  class: 'btn-danger',
@@ -684,6 +1264,7 @@ if (Meteor.isClient) {
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
       closable: false,
+      removeOnHide: true,
       buttons: {
         //"cancel": {
         //  class: 'btn-danger',
@@ -697,10 +1278,11 @@ if (Meteor.isClient) {
       }
   };
 
+    
+/*
   // Import Order from MD Analytics on click (in nav button) - Reactive Modal
   var rm_ImportOrderAnalyitics = {
-      /*
-      template: Template.tmp_ImportOrderAnalytics, 
+      /*template: Template.tmp_ImportOrderAnalytics, 
       title: "Import orders from MD Analytics",
       //modalDialogClass: "modal-dialog", //optional
       //modalBodyClass: "modal-body", //optional
@@ -717,8 +1299,8 @@ if (Meteor.isClient) {
             label: 'Back'
           }
       }
-    */
   };
+*/
 
   // Import Order from Planned Markers file (in nav button) - Reactive Modal
   var rm_ImportPlannedMarkers = {
@@ -728,6 +1310,7 @@ if (Meteor.isClient) {
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
       closable: false,
+      removeOnHide: true,
       buttons: {
         //"cancel": {
         //  class: 'btn-danger',
@@ -748,6 +1331,7 @@ if (Meteor.isClient) {
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
       closable: false,
+      removeOnHide: true,
       buttons: {
         //"cancel": {
         //  class: 'btn-danger',
@@ -770,17 +1354,7 @@ if (Meteor.isClient) {
     allLayers: function(){
       //var allLayers = Order.distinct("Layers");
       var order = Order.find().fetch();
-      /*var allLayers = order.aggregate([
-          //{ $match : {} },
-          { $group : {
-              AssignSpreader: "$AssignSpreader",
-              total: {$sum: "LengthSum"}
-            }
-          },
-          //{ $sort: {AssignSpreader: "SP 1"}}
-      ]);
-      */
-
+     
       var sumLayers = 0;
       for (var i = 0; i < order.length; i++) {
         sumLayers += order[i].Layers;
@@ -799,7 +1373,7 @@ if (Meteor.isClient) {
         sumLengths += order[i].LengthSum;
       }
       sumLengths = Number(sumLengths);
-      sumLengths = sumLengths.toFixed(3);
+      sumLengths = sumLengths.toFixed(2);
       return sumLengths;
     },
     allS: function(){
@@ -830,11 +1404,15 @@ if (Meteor.isClient) {
       return sumL;
     },
     SP1noRolls: function (){
-      var order = Order.find({AssignSpreader: "SP 1"});
+      var order = Order.find({Status: "SP 1"});
       return order.count();
     },
     SP2noRolls: function (){
-      var order = Order.find({AssignSpreader: "SP 2"});
+      var order = Order.find({Status: "SP 2"});
+      return order.count();
+    },
+    MS1noRolls: function (){
+      var order = Order.find({Status: "MS 1"});
       return order.count();
     },
     SP1noLoadRollsShift1: function (){
@@ -853,8 +1431,12 @@ if (Meteor.isClient) {
       var order = Order.find({Load: "SP 2-2"});
       return order.count();
     },
+    MS1noLoadRollsShift: function (){
+      var order = Order.find({Load: "MS 1"});
+      return order.count();
+    },
     SP1noSpreadRollsShift1: function (){
-      
+      var order = Order.find({Spread: "SP 1-1"});
       return order.count();
     },
     SP1noSpreadRollsShift2: function (){
@@ -867,6 +1449,10 @@ if (Meteor.isClient) {
     },
     SP2noSpreadRollsShift2: function (){
       var order = Order.find({Spread: "SP 2-2"});
+      return order.count();
+    },
+    MS1noSpreadRollsShift: function (){
+      var order = Order.find({Spread: "MS 1"});
       return order.count();
     },
     CutnoRollsShift1: function  (){
@@ -884,7 +1470,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     SP1LoadMetShift2: function (){
@@ -894,7 +1480,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     SP2LoadMetShift1: function (){
@@ -904,7 +1490,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     SP2LoadMetShift2: function (){
@@ -914,7 +1500,17 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    MS1LoadMetShift: function (){
+      var order = Order.find({Load: "MS 1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
       return sum;
     },
     SP1SpreadMetShift1: function (){
@@ -924,7 +1520,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     SP1SpreadMetShift2: function (){
@@ -934,7 +1530,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     SP2SpreadMetShift1: function (){
@@ -944,7 +1540,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     SP2SpreadMetShift2: function (){
@@ -954,7 +1550,17 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    MS1SpreadMetShift: function (){
+      var order = Order.find({Spread: "MS 1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
       return sum;
     },
     CutMetShift1: function (){
@@ -964,7 +1570,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
     CutMetShift2: function (){
@@ -974,7 +1580,7 @@ if (Meteor.isClient) {
         sum += order[i].LengthSum;
       }
       sum = Number(sum);
-      sum = sum.toFixed(3);
+      sum = sum.toFixed(2);
       return sum;
     },
 
@@ -1005,13 +1611,13 @@ if (Meteor.isClient) {
 
   // Navigation events
   Template.nav.events({
-    'click #btnfilterOrderDate': function (e, t) {
+    /*'click #btnfilterOrderDate': function (e, t) {
 
       Session.set("ses_datefilter", "");
       Session.set("ses_DaysBefore", "");
       Session.set("ses_DaysAfter", "");
 
-      console.log("Delete - ses_datefilter,ses_DaysBefore,ses_DaysAfter");
+      //console.log("Delete - ses_datefilter,ses_DaysBefore,ses_DaysAfter");
 
       $('#filterOrderDate').val("");
       $('#filterOrderDateBefore').val("");
@@ -1028,19 +1634,20 @@ if (Meteor.isClient) {
       
       Session.set("ses_datefilter", datesel1);
       datesel1 = "";
-      console.log("Set-ses_datefilter: " + Session.get("ses_datefilter"));
+      //console.log("Set-ses_datefilter: " + Session.get("ses_datefilter"));
     },
-
+    */
+    /*
     'change #filterOrderDateBefore': function (e, t) {
       var datesel = $('#filterOrderDateBefore').val();
 
       var datesel1 = new Date(datesel);
       datesel1.setHours(1,0,0,0);
 
-      Session.set("ses_DaysBefore", datesel1);
-      Session.set("ses_datefilter", datesel1); //just to skip all
+      Session.set("ses_DaysBefore1", datesel1);
+      Session.set("ses_datefilter1", datesel1); //just to skip all
       datesel1 = "";
-      console.log("Set-ses_DaysBefore: " + Session.get("ses_DaysBefore"));
+      //console.log("Set-ses_DaysBefore: " + Session.get("ses_DaysBefore"));
     },
 
     'change #filterOrderDateAfter': function (e, t) {
@@ -1049,10 +1656,32 @@ if (Meteor.isClient) {
       var datesel1 = new Date(datesel);
       datesel1.setHours(3,0,0,0);
 
-      Session.set("ses_DaysAfter", datesel1);
-      Session.set("ses_datefilter", datesel1); //just to skip all
+      Session.set("ses_DaysAfter1", datesel1);
+      Session.set("ses_datefilter1", datesel1); //just to skip all
       datesel1 = "";
-      console.log("Set-ses_DaysAfter: " + Session.get("ses_DaysAfter"));
+      //console.log("Set-ses_DaysAfter: " + Session.get("ses_DaysAfter"));
+    },
+    */
+    'click #btnfilterOrderDateStart' : function (e, t) {
+
+      var dateselBefore = $('#filterOrderDateBefore').val();
+      var dateselBefore1 = new Date(dateselBefore);
+      dateselBefore1.setHours(1,0,0,0);
+      //console.log(dateselBefore1);
+
+      Session.set("ses_DaysBefore", dateselBefore1);
+      Session.set("ses_datefilter", dateselBefore1); //just to skip all
+      dateselBefore1 = "";
+
+      var dateselAfter = $('#filterOrderDateAfter').val();
+      var dateselAfter1 = new Date(dateselAfter);
+      dateselAfter1.setHours(3,0,0,0);
+      //console.log(dateselAfter1);
+
+      Session.set("ses_DaysAfter", dateselAfter1);
+      Session.set("ses_datefilter", dateselAfter1); //just to skip all
+      dateselAfter1 = "";
+
     },
 
     'click #new_order': function (e, t) {
@@ -1074,12 +1703,38 @@ if (Meteor.isClient) {
     },
 
     'click #import_from_planned_markers' : function () {
-      console.log('import from planned markers - click')
+      //console.log('import from planned markers - click')
+
+      Meteor.call('method_uniquecountPosNA', function(err, data) {
+        Session.set("ses_uniquecountPosNA", data);
+        console.log("method_uniquecountPosNA: " + data);
+      });
+      Meteor.call('method_uniquecountPosSp1', function(err, data) {
+        Session.set("ses_uniquecountPosSp1", data);
+        console.log("method_uniquecountPosSp1: " + data);
+      });
+      Meteor.call('method_uniquecountPosSp2', function(err, data) {
+        Session.set("ses_uniquecountPosSp2", data);
+        console.log("method_uniquecountPosSp2: " + data);
+      });
+      Meteor.call('method_uniquecountPosMs1', function(err, data) {
+        Session.set("ses_uniquecountPosMs1", data);
+        console.log("method_uniquecountPosMs1: " + data);
+      });
+      Meteor.call('method_uniquecountPosCUT', function(err, data) {
+        Session.set("ses_uniquecountPosCUT", data);
+        console.log("method_uniquecountPosCUT: " + data);
+      });
+      Meteor.call('method_uniquecountPosF', function(err, data) {
+        Session.set("ses_uniquecountPosF", data);
+        console.log("method_uniquecountPosF: " + data);
+      });
 
       // Define rd_addneworder
       var rd_importPlannedMarkers = ReactiveModal.initDialog(rm_ImportPlannedMarkers);
       // Show rd_addneworder
       rd_importPlannedMarkers.show();
+
     },
 
     'click #export_orders' : function () {
@@ -1130,7 +1785,7 @@ if (Meteor.isClient) {
         //LengthSum
         var sum = Number((length + (extra/100)) * LayersToCount);
         //console.log(sum);
-        var sumf =sum.toFixed(3);
+        var sumf =sum.toFixed(2);
         //console.log(sumf);
 
         if (sumf == "NaN") {
@@ -1153,18 +1808,25 @@ if (Meteor.isClient) {
         );
       }
       alert("LengthSum fields are refreshed! \n ______________________________ \n If LengthSum is 0, that's because some fields \n(Length, Extra or Layers) are missing!  ");
+
     },
 
     'click #statistics' : function (e, t) {
-      console.log('statistics - click')
+      //console.log('statistics - click')
 
       // Define rd_addneworder
       var rd_statistics = ReactiveModal.initDialog(rm_Statistics);
+
+      //FlashMessages.sendInfo("You can found <strong>Meteor</strong> <a href='http://meteor.com'>here</a>");
+      //FlashMessages.sendWarning("Message", { autoHide: false });
+      //FlashMessages.sendError("Message", { hideDelay: 2000 });
+      //FlashMessages.sendSuccess("Message", { autoHide: true, hideDelay: 8000 });
+
       // Show rd_addneworder
       rd_statistics.show();
     },
 
-    'change #orderWithoutDate': function (e, t) {
+    /*'change #orderWithoutDate': function (e, t) {
 
         if ($('#orderWithoutDate').prop('checked')){
           console.log("orderWithoutDate: checked");
@@ -1184,28 +1846,149 @@ if (Meteor.isClient) {
           console.log("orderWithoutJob: unchecked");
           Session.set("ses_jobnotexist", false);
         }
+    },*/
+    'change #allorder_date': function (e, t) {
+
+        if ($('#allorder_date').prop('checked')){
+          console.log("allorder_date: checked");
+          Session.set("ses_allorder_date", true);
+        } else {
+          console.log("allorder_date: unchecked");
+          Session.set("ses_allorder_date", false);
+        }
     },
+    'change #allorder_spreaddate': function (e, t) {
+
+        if ($('#allorder_spreaddate').prop('checked')){
+          console.log("allorder_spreaddate: checked");
+          Session.set("ses_allorder_spreaddate", true);
+        } else {
+          console.log("allorder_spreaddate: unchecked");
+          Session.set("ses_allorder_spreaddate", false);
+        }
+    },
+    'change #allorder_cutdate': function (e, t) {
+
+        if ($('#allorder_cutdate').prop('checked')){
+          console.log("allorder_cutdate: checked");
+          Session.set("ses_allorder_cutdate", true);
+        } else {
+          console.log("allorder_cutdate: unchecked");
+          Session.set("ses_allorder_cutdate", false);
+        }
+    },
+
+    'change #not_assigned': function  (e, t) {
+      Session.set("ses_statusfilter", "Not assigned");
+      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //$('#filterOrderDateBefore').val("");
+      //$('#filterOrderDateAfter').val("");
+      //ses_DaysBefore = Session.set("ses_DaysBefore", '');
+      //ses_DaysAfter = Session.set("ses_DaysAfter", '');
+
+    },
+    'change #sp1': function  (e, t) {
+      Session.set("ses_statusfilter", "SP 1");
+      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //$('#filterOrderDateBefore').val("");
+      //$('#filterOrderDateAfter').val("");
+      //ses_DaysBefore = Session.set("ses_DaysBefore", '01/01/2014');
+      //ses_DaysAfter = Session.set("ses_DaysAfter", '01/01/2020');
+    },
+    'change #sp2': function  (e, t) {
+      Session.set("ses_statusfilter", "SP 2");
+      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //$('#filterOrderDateBefore').val("");
+      //$('#filterOrderDateAfter').val("");
+      //ses_DaysBefore = Session.set("ses_DaysBefore", '');
+      //ses_DaysAfter = Session.set("ses_DaysAfter", '');
+    },
+    'change #ms1': function  (e, t) {
+      Session.set("ses_statusfilter", "MS 1");
+      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //$('#filterOrderDateBefore').val("");
+      //$('#filterOrderDateAfter').val("");
+      //ses_DaysBefore = Session.set("ses_DaysBefore", '');
+      //ses_DaysAfter = Session.set("ses_DaysAfter", '');
+    },
+    'change #cut': function  (e, t) {
+      Session.set("ses_statusfilter", "CUT");
+      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //$('#filterOrderDateBefore').val("");
+      //$('#filterOrderDateAfter').val("");
+      //ses_DaysBefore = Session.set("ses_DaysBefore", '');
+      //ses_DaysAfter = Session.set("ses_DaysAfter", '');
+    },
+    'change #finished': function  (e, t) {
+      Session.set("ses_statusfilter", "Finished");
+      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //$('#filterOrderDateBefore').val("");
+      //$('#filterOrderDateAfter').val("");
+      //ses_DaysBefore = Session.set("ses_DaysBefore", null);
+      //ses_DaysAfter = Session.set("ses_DaysAfter", null);
+    }
   });
+
   
   Template.tmp_EditOrder.events({
     'click #deleteOrder': function (e, t) {
       var orderToDelete = Session.get("selectedDocId");
       //console.log("orderToDelete" + orderToDelete);
+      var order = Order.find({_id: orderToDelete}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var actualPosition = order[i].Position;
+          var actualStatus = order[i].Status;
+          var actual_id = order[i]._id;
+        }
 
       if (confirm('Are you sure you want to DELETE this Order?')) {
-        // Save it!
-        Order.remove({_id: orderToDelete});
-        rm_EditOrder.hide();
+
+        var order = Order.find({Position: actualPosition, Status: actualStatus}).fetch();
+        var linked = order.length;
+        //console.log("is linked: " + linked);
+
+        if (linked > 1) {
+          Order.remove({_id: orderToDelete});
+
+        } else {
+          // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
+          Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
+          //console.log("method_smanjizajedan: " + data);
+          });  
+          Order.remove({_id: orderToDelete});
+        }
+
       } else {
         // Do nothing!
-        rm_EditOrder.hide();
       }
 
+      // message
+      var time = new Date();
+      if (actualStatus == 'SP 1') {
+        var message = time + ": Order deleted from SP 1 !";
+        Session.set('ses_SP1message', message);
+      } else if (actualStatus == 'SP 2') {  
+        var message = time + ": Order deleted from SP 2 !";
+        Session.set('ses_SP2message', message);
+      } else if (actualStatus == 'MS 1') {  
+        var message = time + ": Order deleted from MS 1!";
+        Session.set('ses_MS1message', message);
+      }
+
+      rm_EditOrder.hide();
     },
     'click #loadOrder': function (){
       //console.log("click load Order");
       var orderToEdit = Session.get("selectedDocId");
       //console.log("orderToEdit: " + orderToEdit);
+
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var actualPosition = order[i].Position;
+          var actualStatus = order[i].Status;
+          var actual_id = order[i]._id;
+      }
+
       var userEdit = Session.get("ses_loggedUserName");
       //console.log("userEdit: " + userEdit);
       var userEditLoad;
@@ -1218,84 +2001,351 @@ if (Meteor.isClient) {
         userEditLoad = "SP 2-1";
       } else if (userEdit == "sp22") {
         userEditLoad = "SP 2-2";
+      } else if (userEdit == "ms1") {
+        userEditLoad = "MS 1";
       }
 
-      //console.log("userEditLoad: " + userEditLoad);
       //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
       //console.log(orderToEdit[0]._id);
 
-      Order.update({_id: orderToEdit},{$set: {Load: userEditLoad}});
+      //Order.update({_id: orderToEdit},{$set: {Load: userEditLoad}});
+
+      // Dodaj load order u znavisnosti od korisnika 
+      Meteor.call('method_loadOrder', actualPosition, actualStatus, userEditLoad, function(err, data) {
+        //console.log("method_stavipozna0: " + data);
+      }); 
+      //console.log('kraj method_stavipozna0')
+
       rm_EditOrder.hide();
     },
     'click #spreadOrder': function (){
+      //var input_actuallaysers = Session.get("ses_change_al");
+      //var input_actuallaysers = $('#input_actuallaysers').val();
+      //input_actuallaysers = Number(input_actuallaysers);
+      //console.log("input_actuallaysers form ses: " + input_actuallaysers); // Problem!!!
+
       //console.log("click spread Order");
       var orderToEdit = Session.get("selectedDocId");
       //console.log("orderToEdit: " + orderToEdit);
-      var userEdit = Session.get("ses_loggedUserName");
-      //console.log("userEdit: " + userEdit);
-      var userEditSpread;
-
-      if (userEdit == "sp11"){
-        userEditSpread = "SP 1-1";
-      } else if (userEdit == "sp12") {
-        userEditSpread = "SP 1-2";
-      } else if (userEdit == "sp21") {
-        userEditSpread = "SP 2-1";
-      } else if (userEdit == "sp22") {
-        userEditSpread = "SP 2-2";
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          /*
+          var SonLayer = order[i].SonLayer;
+          var MonLayer = order[i].MonLayer;
+          var LonLayer = order[i].LonLayer;
+          var layers = order[i].Layers;
+          var layersactual = order[i].LayersActual;
+          */
+          var actualPosition = order[i].Position;
+          var actualStatus = order[i].Status;
+          var actual_id = order[i]._id;
       }
 
-      //console.log("userEditSpread: " + userEditSpread);
-      //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
-      //console.log(orderToEdit[0]._id);
+      var userEdit = Session.get("ses_loggedUserName");
+      //console.log("userEdit: " + userEdit);
+      
+      if (userEdit == "sp11"){
+        var userEditSpread = "SP 1-1";
+      } else if (userEdit == "sp12") {
+        var userEditSpread = "SP 1-2";
+      } else if (userEdit == "sp21") {
+        var userEditSpread = "SP 2-1";
+      } else if (userEdit == "sp22") {
+        var userEditSpread = "SP 2-2";
+      } else if (userEdit == "ms1") {
+        var userEditSpread = "MS 1";
+      }
 
       var spreadDate = new Date();
 
-      Order.update({_id: orderToEdit},{$set: {Spread: userEditSpread, SpreadDate: spreadDate}});
+      //Order.update({_id: orderToEdit},{$set: {Position: 999,Spread: userEditSpread, SpreadDate: spreadDate, Status: "CUT" ,LayersActual: input_actuallaysers, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut}});
+
+      // Izbrisi aktuelnu pozicuju, tj stavi poziciju na 0
+      Meteor.call('method_stavipozna0', actualPosition, actualStatus, function(err, data) {
+        //console.log("method_stavipozna0: " + data);
+      }); 
+      
+      // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
+      Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
+        //console.log("method_smanjizajedan: " + data);
+      });   
+
+      var actualPosition = 0;
+      var selectedStatus = "CUT";
+      //var uniquecountSelectedPosition = 500;
+
+      var uniquecountSelected = Session.get("ses_uniquecountPosCUT");
+      var uniquecountSelectedPosition = uniquecountSelected + 1;
+
+      Meteor.call('method_spreadOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, /*layersactual, S_Cut, M_Cut, L_Cut,*/ function(err, data) {
+        //console.log("method_spreadOrder: " + data);
+      });
+      
+      //delete input_actuallaysers;
       rm_EditOrder.hide();
     },
     'click #cutOrder': function (){
-      //console.log("click spread Order");
+
       var orderToEdit = Session.get("selectedDocId");
       //console.log("orderToEdit: " + orderToEdit);
+
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          
+          var actualPosition = order[i].Position;
+          var actualStatus = order[i].Status;
+          var actual_id = order[i]._id;
+      }
+
       var userEdit = Session.get("ses_loggedUserName");
       //console.log("userEdit: " + userEdit);
-      var userEditCut;
-
       if (userEdit == "cut1"){
-        userEditCut = "CUT 1";
+        var userEditCut = "CUT 1";
       } else if (userEdit == "cut2") {
-        userEditCut = "CUT 2";
+        var userEditCut = "CUT 2";
       } 
-
-      //console.log("userEditSpread: " + userEditSpread);
-      //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
-      //console.log(orderToEdit[0]._id);
 
       var cutDate = new Date();
 
-      Order.update({_id: orderToEdit},{$set: {Cut: userEditCut, CutDate: cutDate}});
+      //Order.update({_id: orderToEdit},{$set: {Cut: userEditCut, CutDate: cutDate, Status: "Finished" }});
+      
+      // Izbrisi aktuelnu pozicuju, tj stavi poziciju na 0
+      Meteor.call('method_stavipozna0', actualPosition, actualStatus, function(err, data) {
+        //console.log("method_stavipozna0: " + data);
+      }); 
+
+      // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
+      Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
+        //console.log("method_smanjizajedan: " + data);
+      }); 
+
+      var actualPosition = 0;
+      var selectedStatus = "Finished";
+      var uniquecountSelected = Session.get("ses_uniquecountPosF");
+      var uniquecountSelectedPosition = uniquecountSelected + 1;
+
+      Meteor.call('method_cutOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditCut, cutDate, /*layersactual, S_Cut, M_Cut, L_Cut,*/ function(err, data) {
+        //console.log("method_spreadOrder: " + data);
+      });
+
       rm_EditOrder.hide();
-    }
-    /*
-    'click #saveCommentOrder': function (){
-      console.log("click save Comment");
-      var orderToEdit = Session.get("selectedDocId");
-
-      var newComment = $('#commentOrder').val();
-      console.log("newComment: " + newComment);
-
-      Order.update({_id: orderToEdit},{$set: {Comment: newComment}});
-      newComment = ""
-      //alert("Comment saved");
-      //rm_EditOrder.hide();
     },
-    'keyup #commentOrder': function(e, v){
-        //console.log("e: " + e);
-        //console.log("v: " + v);
-        var newComment = $('#commentOrder').val();
-        console.log("newComment: " + newComment);
-    }*/
+    'click #insertposition': function(e){
+      //console.log("saveposition clicked");
+
+      var orderToEdit = Session.get("selectedDocId");
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var actualPosition = order[i].Position;
+          var actualStatus = order[i].Status;
+          var actual_Id = order[i]._Id;
+      }
+      //console.log("actualPosition: " + actualPosition);
+      //console.log("actualStatus: " + actualStatus);
+      //console.log("actual_Id: " + actual_Id);
+
+      //var countPosSp1 = Session.get("ses_countPosSp1");
+      //console.log("ses_countPosSp1: " + countPosSp1);
+      //Session.set("ses_countPosSp1", '');
+
+      //var countPosSp2 = Session.get("ses_countPosSp2");
+      //console.log("ses_countPosSp2: " + countPosSp2);
+      //Session.set("ses_countPosSp2", '');
+
+      var selectedPosition = $('.in #selectPosition').find(":selected").val();
+      var selectedPositionN = Number(selectedPosition);
+      //console.log("selectedPositionN: " + selectedPositionN);
+
+      //var selectedPositionChange = $( "#insertorder option:selected" ).text();
+      //console.log("selectedPositionChange: " +selectedPositionChange )
+      
+      if (actualPosition == selectedPosition) {
+        alert("No way!!! \nActual position and Selected position are the same! \n \n:P ");
+      } else {
+
+      // Izbrisi aktuelnu pozicuju, tj stavi poziciju na 0
+      Meteor.call('method_stavipozna0', actualPosition, actualStatus, function(err, data) {
+        //console.log("method_stavipozna0: " + data);
+      }); 
+      //console.log('kraj method_stavipozna0')
+
+      // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
+      Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
+        //console.log("method_smanjizajedan: " + data);
+      });   
+
+      // Povecaj za jednu poziciju od selektovane pozicije ispod tj pomeri za jednu poziciju dole sve ispod selektovane
+      Meteor.call('method_povecajzajedan', selectedPositionN, actualStatus, function(err, data) {
+        //console.log("method_povecajzajedan: " + data);
+      });
+      
+      // Stavi zeljnu pozicuju
+      Meteor.call('method_ubacinapoz', actualPosition, actualStatus, selectedPositionN, function(err, data) {
+        //console.log("method_ubacinapoz: " + data);
+      });
+    }
+
+    rm_EditOrder.hide();
+
+    },
+    'click #linkposition': function(e){
+
+      var orderToEdit = Session.get("selectedDocId");
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var actualPosition = order[i].Position; 
+          var actualStatus = order[i].Status;
+          var actual_Id = order[i]._Id;
+      }
+
+      //Order.update({_id: actual_Id}, {$set: {OrderLink: true}});
+
+      var selectedPosition = $('.in #selectPosition').find(":selected").val();
+      var selectedPositionN = Number(selectedPosition);
+      //console.log("selectedPositionN: " + selectedPositionN);
+
+      //var selectedPositionChange = $( "#insertorder option:selected" ).text();
+      //console.log("selectedPositionChange: " +selectedPositionChange )
+
+      if (actualPosition == selectedPosition) {
+        alert("No way!!! \nActual position and Selected position are the same! \n \n:P ");
+      } else {
+
+      if (actualPosition < selectedPositionN) {
+        selectedPositionN = selectedPositionN - 1;
+      }
+
+      // Izbrisi aktuelnu pozicuju, tj stavi poziciju na 0
+      Meteor.call('method_stavipozna0', actualPosition, actualStatus, function(err, data) {
+        //console.log("method_stavipozna0: " + data);
+      }); 
+      //console.log('kraj method_stavipozna0')
+
+      // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
+      Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
+        //console.log("method_smanjizajedan: " + data);
+      });   
+      /*
+      // Povecaj za jednu poziciju od selektovane pozicije ispod tj pomeri za jednu poziciju dole sve ispod selektovane
+      Meteor.call('method_povecajzajedan', selectedPositionN, actualStatus, function(err, data) {
+        console.log("method_povecajzajedan: " + data);
+      });
+      */
+      // Stavi zeljnu pozicuju
+      Meteor.call('method_ubacinapoz', actualPosition, actualStatus, selectedPositionN, function(err, data) {
+        //console.log("method_ubacinapoz: " + data);
+      });       
+
+      Meteor.call('method_linkpoz', actualStatus, selectedPositionN, function(err, data) {
+        console.log("method_linkpoz: " + data);
+      }); 
+      
+      }
+
+      rm_EditOrder.hide();
+    },
+    'click #unlinkposition' : function(e){
+      var orderToEdit = Session.get("selectedDocId");
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var actualPosition = order[i].Position;
+          var actualStatus = order[i].Status;
+          var actual_id = order[i]._id;
+        }
+
+      //Order.update({ _id: actual_Id}, {$set: {OrderLink: false}});
+
+      if (actualStatus == "SP 1"){
+        var uniquecountPosSp1 = Session.get("ses_uniquecountPosSp1");
+        var uniquecountSelected = uniquecountPosSp1;
+      } else if (actualStatus == "SP 2"){
+        var uniquecountPosSp2 = Session.get("ses_uniquecountPosSp2");
+        var uniquecountSelected = uniquecountPosSp2;
+      } else if (actualStatus == "MS 1"){
+        var uniquecountPosMs1 = Session.get("ses_uniquecountPosMs1");
+        var uniquecountSelected = uniquecountPosMs1;
+      } else if (actualStatus == "Not assigned"){
+        var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
+        var uniquecountSelected = uniquecountPosNA;
+        //var uniquecountSelected = 0;
+      } else {
+        var uniquecountSelected = '';
+      }
+      //console.log("uniquecountSelected" + uniquecountSelected);
+
+      Meteor.call('method_unlinkpoz', actualStatus, actualPosition, function(err, data) {
+        console.log("method_unlinkpoz: " + data);
+      }); 
+
+      var uniquecountSelectedPosition = uniquecountSelected + 1;
+      //console.log("uniquecountSelectedPosition: " + uniquecountSelectedPosition);
+
+      // Proveri da li postoji linkovana pozicija i vrati broj
+      var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      var linked = order.length;
+  
+      if (linked > 1 ){
+        Order.update({_id: actual_id}, {$set: {Position: uniquecountSelectedPosition}});  
+      } else {
+        alert("No way!!! \nThis position have only one order! \n:P")
+      }
+
+      rm_EditOrder.hide();      
+    },
+    'click #changestatus': function(e){
+
+      var orderToEdit = Session.get("selectedDocId");
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var actualPosition = order[i].Position;
+          var actualStatus = order[i].Status;
+          var actual_id = order[i]._id;
+        }
+
+      var selectedStatus = $('.in #selectStatus').find(":selected").text();
+      console.log("selectedStatus: " + selectedStatus); 
+
+      if (selectedStatus == "SP 1"){
+        var uniquecountPosSp1 = Session.get("ses_uniquecountPosSp1");
+        var uniquecountSelected = uniquecountPosSp1;
+      } else if (selectedStatus == "SP 2"){
+        var uniquecountPosSp2 = Session.get("ses_uniquecountPosSp2");
+        var uniquecountSelected = uniquecountPosSp2;
+      } else if (selectedStatus == "MS 1"){
+        var uniquecountPosMs1 = Session.get("ses_uniquecountPosMs1");
+        var uniquecountSelected = uniquecountPosMs1;
+      } else if (selectedStatus == "Not assigned"){
+        var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
+        var uniquecountSelected = uniquecountPosNA;
+      } else if (selectedStatus == "CUT"){
+        var uniquecountPosCUT = Session.get("ses_uniquecountPosCUT");
+        var uniquecountSelected = uniquecountPosCUT;
+      } else {
+        var uniquecountSelected;
+      }
+      //console.log("uniquecountSelected" + uniquecountSelected);
+
+      var uniquecountSelectedPosition = uniquecountSelected + 1;
+      //console.log("uniquecountSelectedPosition: " + uniquecountSelectedPosition);
+
+      if (actualStatus == selectedStatus) {
+        alert("Actual status and Selected status are the same, \nselected order will be at last position \n:P")
+      }
+
+      // 
+      Meteor.call('method_changeStatus', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, function(err, data) {
+        //console.log("method_changeStatus: " + data);
+      }); 
+
+      // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
+      Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
+        //console.log("method_smanjizajedan: " + data);
+      });  
+      
+      rm_EditOrder.hide();
+    },
+
+    
   });
 
   Template.tmp_ImportOrderAnalytics.events({
@@ -1376,6 +2426,7 @@ if (Meteor.isClient) {
             var colordesc = all[i]['Color Description'];
             var bagno = all[i]['Bagno'];
             var layers = Number(all[i]['Layers']);
+            var actuallayers = 0;
             var lengthS = all[i]['Marker Length [mt]'];
             //console.log(lengthS);
             //var lengthR = lengthS.replace(",", ".");
@@ -1384,7 +2435,7 @@ if (Meteor.isClient) {
             //console.log(length);
             var extra = Number(all[i]['Length All. [cm]']);
             var lengthsumX = Number((length + (extra/100)) * layers);
-            var lengthsum = Number(lengthsumX).toFixed(3);
+            var lengthsum = Number(lengthsumX).toFixed(2);
             var width = Number(all[i]['Marker Width [cm]']);
             var s = Number(all[i]['tot S']);
             var sonlayer = Number(all[i]['S']);
@@ -1392,20 +2443,62 @@ if (Meteor.isClient) {
             var monlayer = Number(all[i]['M']);
             var l = Number(all[i]['tot L']);
             var lonlayer = Number(all[i]['L']);
-            var spreader = Number(all[i]['SPREADER']);
-            if (spreader == 1 ){
-              spreader = 'SP 1';
-            } else if (spreader == 2 ){
-              spreader = 'SP 2';
-            } 
+
+            var status = Number(all[i]['SPREADER']);
+            
+            var orderd = all[i]['DATE'];
+            //console.log("all[i]['DATE']: " + orderd);
             var orderdate = new Date(all[i]['DATE']);
             orderdate.setHours(2,0,0,0);
-            //console.log("orderdate: " + orderdate);
+              
+            if (status == "1" ){
+              status = 'SP 1';
+              var uniquecountPosSp1 = Session.get("ses_uniquecountPosSp1");
+              var uniquecountPosSp1 = uniquecountPosSp1 + 1;
+              Session.set("ses_uniquecountPosSp1", uniquecountPosSp1);
+              setPos = uniquecountPosSp1;
+            } else if (status == "2" ){
+              status = 'SP 2';
+              var uniquecountPosSp2 = Session.get("ses_uniquecountPosSp2");
+              var uniquecountPosSp2 = uniquecountPosSp2 + 1;
+              Session.set("ses_uniquecountPosSp2", uniquecountPosSp2);
+              setPos = uniquecountPosSp2;     
+            } else if (status == "3" ){
+              status = 'MS 1';
+              var uniquecountPosMs1 = Session.get("ses_uniquecountPosMs1");
+              var uniquecountPosMs1 = uniquecountPosMs1 + 1;
+              Session.set("ses_uniquecountPosMs1", uniquecountPosMs1);
+              setPos = uniquecountPosMs1;    
+            } else {
+              var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
+              var uniquecountPosNA = uniquecountPosNA + 1;
+              Session.set("ses_uniquecountPosNA", uniquecountPosNA); 
+              setPos = uniquecountPosNA;                             
+              status = 'Not assigned';                            
+              //setPos = 999;
+            }
 
-            //One by One
-            //Order.insert({SEQ: seq, FILE: all[i]['FILE'], CUT_FILE: all[i]['CUT FILE'], MODEL: all[i]['MODEL'], SPREAD_TYPE: all[i]['SPREAD TYPE'], BAGNO: all[i]['BAGNO'], PLY: ply});    
-            //Order.insert({orderName: all[i]['FILE'], orderFileName: all[i]['CUT FILE'], orderModel: all[i]['MODEL'], orderFabric: all[i]['SPREAD TYPE'], orderBagno: all[i]['BAGNO'], orderLayers: ply});
-            Order.insert({No: no, Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, AssignSpreader: spreader});    
+            // STATUS = ['Not assigned','SP 1','SP 2','CUT','Finish']
+
+           //One by One
+            if ((orderd != 0) || (orderd)) { 
+              Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, Status: status});    
+              setPos = 0;
+              countSP2set = 0;
+              countSP1set = 0; 
+            } else {
+              Order.insert({No: no, Position: setPos, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, Status: status});    
+              setPos = 0;
+              countSP2set = 0;
+              countSP1set = 0;
+            }
+
+            //var a = WriteResult.nInserted
+            //alert(Orde.hasWriteError());
+            //var b = BulkWriteResult.hasWriteError()
+            //var c = BulkWriteResult.writeConcernError.errmsg
+            //console.log(a +b +c);
+
           }
       }
       reader.readAsText(file_a);
@@ -1435,13 +2528,27 @@ if (Meteor.isClient) {
             separator:';',
         });
 
-          //console.log("all: "+all);
-
           for (var i = 0; i < all.length; i++) {
             //console.log(all[i]);
 
+            /*_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;
+            Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink*/
+
             var id = all[i]['_id'];
             var no  = Number(all[i]['No']);
+            var position = Number(all[i]['Position']);
+            var status = all[i]['Status'];
+            var orderDate = all[i]['Date'];
+            if (orderDate) {
+              var orderDate2 = new Date(orderDate);  
+              //var orderDateP = Date.parse(orderDate);
+              //var orderDateM = moment(all[i]['Date']).format("DD-MM-YYYY");
+              //var orderDateM2 = new Date(orderDateM);
+            } else {
+              orderDate2 = "";
+            }
+            var orderCreated = all[i]['Created'];
+            var orderCreated2 = new Date(orderCreated);
             var komesa = all[i]['Komesa'];
             var marker = all[i]['Marker'];
             var style = all[i]['Style'];
@@ -1458,45 +2565,49 @@ if (Meteor.isClient) {
             //var lengthsum = lengthsumX.toFixed(3);
             var lengthsum = Number(all[i]['LengthSum']);
             var width = Number(all[i]['Width']);
+
             var s = Number(all[i]['S']);
             var sonlayer = Number(all[i]['SonLayer']);
+            var s_cut = Number(all[i]['S_Cut']);
             var m = Number(all[i]['M']);
             var monlayer = Number(all[i]['MonLayer']);
+            var m_cut = Number(all[i]['M_Cut']);
             var l = Number(all[i]['L']);
             var lonlayer = Number(all[i]['LonLayer']);
-            var assignespreader = all[i]['AssignSpreader'];
+            var l_cut = Number(all[i]['L_Cut']);
+            
             var priority = all[i]['Priority'];
-            var load = all[i]['Load'];
-            var spread = all[i]['Spread'];
-            var comment = all[i]['Comment'];
-
             var priority = Number(all[i]['Priority']);
 
-            var orderDate = all[i]['Date'];
-            if (orderDate) {
-              var orderDate2 = new Date(orderDate);  
+            var load = all[i]['Load'];
+            var spread = all[i]['Spread'];
+            var spreaddate = all[i]['SpreadDate'];
+            if (spreaddate) {
+              var spreaddate2 = new Date(spreaddate);  
               //var orderDateP = Date.parse(orderDate);
               //var orderDateM = moment(all[i]['Date']).format("DD-MM-YYYY");
               //var orderDateM2 = new Date(orderDateM);
             } else {
-              orderDate2 = "";
+              spreaddate2 = "";
+            }
+            var cut = all[i]['Cut'];
+            var cutdate = all[i]['CutDate'];
+            if (cutdate) {
+              var cutdate2 = new Date(cutdate);  
+              //var orderDateP = Date.parse(orderDate);
+              //var orderDateM = moment(all[i]['Date']).format("DD-MM-YYYY");
+              //var orderDateM2 = new Date(orderDateM);
+            } else {
+              cutdate2 = "";
             }
 
-            //console.log('direct: ' + all[i]['Date'] + " : " + all[i]['Date'].typeof);
-            //console.log('orderDate: ' + orderDate + " : " + orderDate.typeof);
-            //console.log('orderDate2: ' + orderDate2 + " : " + orderDate2.typeof);
-            //console.log('orderDateP: ' + orderDateP + " : " + orderDateP.typeof);
-            //console.log('orderDateM: ' + orderDateM + " : " + orderDateM.typeof);
-            //console.log('orderDateM2: ' + orderDateM2 + " : " + orderDateM2.typeof);
-
-            var orderCreated = all[i]['Created'];
-            var orderCreated2 = new Date(orderCreated);
-            //console.log('orderCreated: ' + orderCreated + " : " + orderCreated.typeof);
-            //console.log('orderCreated2: ' + orderCreated2 + " : " + orderCreated2.typeof);
+            var comment = all[i]['Comment'];
+            var orderlink = all[i]['OrderLink'];
 
             //One by One
-            //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,AssignSpreader: all[i]['AssignSpreader'], Priority: priority});    
-            Order.insert({No: no, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, AssignSpreader: assignespreader, Load: load, Spread: spread, Comment: comment }); 
+            //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,Status: all[i]['Status'], Priority: priority});    
+            /*_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink*/
+            Order.insert({No: no, Position: position, Status: status, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, S_Cut: s_cut, M: m, MonLayer: monlayer, M_Cut: m_cut, L: l, LonLayer: lonlayer, L_Cut: l_cut,Load: load, Spread: spread, SpreadDate: spreaddate2, Cut: cut, CutDate: cutdate2, Comment: comment, OrderLink: orderlink}); 
             // Can not insert order created and _id , this values is automaticali created
             //Created: orderCreated2  
             //_id: id
@@ -1606,83 +2717,422 @@ if (Meteor.isClient) {
 
 // Meteor Server side
 if (Meteor.isServer) {
+
+  Meteor.methods({ 
+  method_countPosSp1: function() {
+    return Order.find({Status: 'SP 1'}).count();
+  },
+  method_countPosSp2: function() {
+    return Order.find({Status: 'SP 2'}).count();
+  },
+  method_countPosMs1: function() {
+    return Order.find({Status: 'MS 1'}).count();
+  },
+  method_uniquecountPosNA: function() {
+    var order = Order.find({Status: 'Not assigned'}).fetch();
+    var posarray = [];
+    for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+    }
+    if (isNaN(posarray[0])) {
+      return 0;
+    } else {
+      var largest1 = Math.max.apply(null, posarray);
+      return largest1;
+    }
+  },
+  method_uniquecountPosSp1: function() {
+    var order = Order.find({Status: 'SP 1'}).fetch();
+    var posarray = [];
+    for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+    }
+    if (isNaN(posarray[0])) {
+      return 0;
+    } else {
+      var largest1 = Math.max.apply(null, posarray);
+      return largest1;
+    }
+  },
+  method_uniquecountPosSp2: function() {
+    var order = Order.find({Status: 'SP 2'}).fetch();
+    var posarray = [];
+    for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+    }
+    if (isNaN(posarray[0])) {
+      return 0;
+    } else {
+      var largest2 = Math.max.apply(null, posarray);
+      return largest2;
+    }
+  },
+  method_uniquecountPosMs1: function() {
+    var order = Order.find({Status: 'MS 1'}).fetch();
+    var posarray = [];
+    for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+    }
+    if (isNaN(posarray[0])) {
+      return 0;
+    } else {
+      var largest2 = Math.max.apply(null, posarray);
+      return largest2;
+    }
+  },
+  method_uniquecountPosCUT: function() {
+    var order = Order.find({Status: 'CUT'}).fetch();
+    var posarray = [];
+    for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+    }
+    if (isNaN(posarray[0])) {
+      return 0;
+    } else {
+      var largest2 = Math.max.apply(null, posarray);
+      return largest2;
+    }
+  },
+  method_uniquecountPosF: function() {
+    var order = Order.find({Status: 'Finished'}).fetch();
+    var posarray = [];
+    for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+    }
+    if (isNaN(posarray[0])) {
+      return 0;
+    } else {
+      var largest2 = Math.max.apply(null, posarray);
+      return largest2;
+    }
+  },
+  method_arrayofPosNA: function() {
+    var order = Order.find({Status: 'Not assigned'}).fetch();
+      var posarray = [];
+
+      for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+      }
+    posarray.sort(function(a, b){return a-b});
+    return posarray;
+  },
+  method_arrayofPosSp1: function() {
+    var order = Order.find({Status: 'SP 1'}).fetch();
+      var posarray = [];
+
+      for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+      }
+    posarray.sort(function(a, b){return a-b});
+    return posarray;
+  },
+  method_arrayofPosSp2: function() {
+    var order = Order.find({Status: 'SP 2'}).fetch();
+      var posarray = [];
+
+      for (var i = 0; i < order.length; i++) {
+        id = order[i]._Id;
+        pos = order[i].Position;
+        posarray.push(pos);
+      }
+    posarray.sort(function(a, b){return a-b});
+    return posarray;
+  },
+  method_arrayofPosMs1: function() {
+    var order = Order.find({Status: 'MS 1'}).fetch();
+      var posarray = [];
+
+      for (var i = 0; i < order.length; i++) {
+        id = order[i]._Id;
+        pos = order[i].Position;
+        posarray.push(pos);
+      }
+    posarray.sort(function(a, b){return a-b});
+    return posarray;
+  },
+  method_arrayofStatus: function() {
+
+    statusarray = ["Not assigned","SP 1","SP 2","MS 1"/*,"CUT"*/];
+    return statusarray;
+  },
+  method_smanjizajedan: function(Position, Status){
+    var order = Order.find({Position: {$gt: Position}, Status: Status }).fetch();
+    for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$inc: {Position: -1}}, 
+          {multi: true}
+        );
+    }
+    return "Done";
+  },
+  method_stavipozna0: function (actualPosition, actualStatus){
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$set: {Position: 0}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+      }
+    return "Not found method_stavipozna0";
+  },
+  method_povecajzajedan: function(Position, Status){
+    var order = Order.find({Position: {$gte: Position}, Status: Status }).fetch();
+    for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$inc: {Position: 1}}, 
+          {multi: true}
+        );
+    }  
+    return "Not found method_povecajzajedan";
+  },
+  method_ubacinapoz: function (actualPosition, actualStatus, selectedPosition){
+    var order = Order.find({Position: 0, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$set: {Position: selectedPosition}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+      }
+    return "Not found method_ubacinapoz";
+  },
+  method_linkpoz: function (actualStatus, selectedPosition){
+    var order = Order.find({Position: selectedPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$set: {OrderLink: true}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+      }
+    return "Not found method_linkpoz";
+  },
+  method_unlinkpoz: function (actualStatus, selectedPosition){
+    var order = Order.find({Position: selectedPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$set: {OrderLink: false}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+      }
+    return "Not found method_unlinkpoz";
+  },
+  method_ubacinapozVise: function (actualPosition, actualStatus, selectedPosition){
+    var order = Order.find({Position: 0, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$set: {Position: selectedPosition}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        );
+        //return order.No;
+      }
+    return "Not found method_ubacinapozVise";
+  },
+  method_changeStatus: function(actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition){
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$set: {Status: selectedStatus, Position: uniquecountSelectedPosition}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+      }
+    return "Not found method_changeStatus";
+  },
+  method_loadOrder: function (actualPosition, actualStatus, userEditLoad){
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        var layers = order[i].Layers; // set layers to actual layers
+
+        Order.update({ _id: order[i]._id},
+          {$set: {Load: userEditLoad, LayersActual: layers}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+      }
+    return "Not found method_loadOrder";
+  }, 
+  method_spreadOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate) {
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        var oreder_id = order[i]._id;
+        var layers = order[i].Layers;
+        var layersactual = order[i].LayersActual;
+
+        if (layersactual) {
+          var LayersToCount = layersactual;
+        } else {
+          var LayersToCount = layers;
+        }
+
+        var SonLayer = order[i].SonLayer;
+        var MonLayer = order[i].MonLayer;
+        var LonLayer = order[i].LonLayer;
+        var S = LayersToCount * SonLayer;
+        var M = LayersToCount * MonLayer;
+        var L = LayersToCount * LonLayer;
+        var S_Cut = S;
+        var M_Cut = M;
+        var L_Cut = L;
+
+        Order.update({ _id: order[i]._id},
+          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Spread: userEditSpread, SpreadDate: spreadDate, S: S, M: M, L: L, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+      }
+    return "Not found method_spreadOrder";
+  },
+  method_cutOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditCut, cutDate) {
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        var oreder_id = order[i]._id;
+        var layers = order[i].Layers;
+        var layersactual = order[i].LayersActual;
+      
+        Order.update({ _id: order[i]._id},
+          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Cut: userEditCut, CutDate: cutDate}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+      }
+    return "Not found method_cutOrder";
+  },
+  
+});
  
-  Meteor.publish("orderAll", function(){
+  Meteor.publish("filter_orderAll", function(){
     return Order.find();
   });
 
-  Meteor.publish("orderWithDate", function(dateFilter){
+  Meteor.publish("filter_orderWithDate", function(dateFilter){
     return Order.find({ Date: dateFilter});
   });
 
-  Meteor.publish("orderWithDateRange", function(Daysbefore , Daysafter) {
+  Meteor.publish("filter_orderWithDateRange", function(Daysbefore , Daysafter) {
     //return Order.find({ Date: {$gte: ISODate(Daysbefore), $lt: ISODate(Daysafter)} });
     return Order.find({ Date: {$gte: Daysbefore, $lt: Daysafter} });
   });
 
-  Meteor.publish("orderWithoutDate", function(){
+  Meteor.publish("filter_orderWithoutDate", function(){
     return Order.find({ Date: { $exists: false }});
   });
 
-  Meteor.publish("orderWithoutJob", function(){
-    return Order.find({ AssignSpreader: "none"});
+  Meteor.publish("filter_orderWithoutJob", function(){
+    return Order.find({ Status: "Not assigned"});
   });
 
-  Meteor.publish("spreader1", function(dateFilter){
-    //return Order.find({AssignSpreader: "SP 1", Date: dateFilter});
-    //return Order.find({AssignSpreader: "SP 1"}); { $and:
-    //return Order.find({ $and: [{AssignSpreader: "SP 1"}, {Spread: ""}] });
-    
-    return Order.find({
+  Meteor.publish("filter_spreader1", function(){
+    return Order.find({ Status: "SP 1"});
+    /*return Order.find({
     $and : [
-        { AssignSpreader: "SP 1"},
-        { $or : [ { Spread : "" }, { Spread : { $exists: false }} ] }
+        { Status: "SP 1"},
+        //{ $or : [ { Spread : "" }, { Spread : { $exists: false }} ] }
     ]
-    })
+    })*/
   });
 
-  Meteor.publish("spreader2", function(dateFilter){
-    //return Order.find({AssignSpreader: "SP 2", Date: dateFilter});
-    //return Order.find({AssignSpreader: "SP 2"});
-    return Order.find({
+  Meteor.publish("filter_spreader2", function(){
+    return Order.find({ Status: "SP 2"});
+    /*return Order.find({
     $and : [
-        { AssignSpreader: "SP 2"},
-        { $or : [ { Spread : "" }, { Spread : { $exists: false }} ] }
+        { Status: "SP 2"},
+        //{ $or : [ { Spread : "" }, { Spread : { $exists: false }} ] }
     ]
-    })
+    })*/
   });
 
-  Meteor.publish("cutter", function(dateFilter){
-    //return Order.find({AssignSpreader: "SP 2", Date: dateFilter});
-    //return Order.find({AssignSpreader: "SP 2"});
-    return Order.find({
+  Meteor.publish("filter_spreaderm1", function(){
+    return Order.find({ Status: "MS 1"});
+    /*return Order.find({
+    $and : [
+        { Status: "SP 2"},
+        //{ $or : [ { Spread : "" }, { Spread : { $exists: false }} ] }
+    ]
+    })*/
+  });
+
+  Meteor.publish("filter_cutter", function(){
+    return Order.find({ Status: "CUT"});
+    /*return Order.find({
     $and: [
        { $or: [
-          { Spread: "SP 1-1" },
-          { Spread: "SP 1-2" },
-          { Spread: "SP 2-1" },
-          { Spread: "SP 2-2" }
-          ]},
+          { Status: "CUT" }
+        ]},
 
-       { $or: [ 
+       /*{ $or: [ 
           { Cut : "" },
           { Cut : { $exists: false }}
           ]},
-      ] 
+      ]
+    })*/
+  });
+
+  Meteor.publish("filter_statusfilter", function(status){
+    return Order.find({ 
+      $and: [
+      {Status: status},
+      
+      ]
     })
   });
+  Meteor.publish("filter_statusfilterwithDate", function(status, Daysbefore , Daysafter){
+    return Order.find({ 
+      $and: [
+      {Status: status},
+      {CutDate: {$gte: Daysbefore, $lt: Daysafter}}
+      ]
+    })
+  });
+  Meteor.publish("filter_allOrderswithDate", function(Daysbefore , Daysafter){
+    return Order.find({Date: {$gte: Daysbefore, $lt: Daysafter}})
+    
+  });
+  Meteor.publish("filter_allOrderswithSpreadDate", function(Daysbefore , Daysafter){
+    return Order.find({SpreadDate: {$gte: Daysbefore, $lt: Daysafter}})
+    
+  });
+  Meteor.publish("filter_allOrderswithCutDate", function(Daysbefore , Daysafter){
+    return Order.find({CutDate: {$gte: Daysbefore, $lt: Daysafter}})
+    
+  });
+
 }
 
 var admin = ""; //123123
+var guest = ""; // 111111
 var sp11 = "";  // 111111
 var sp12 = "";  // 121212
 var sp21 = "";  // 212121
 var sp22 = "";  // 222222
 var cut1 = "";  // c1c1c1
 var cut2 = "";  // c2c2c2
+var ms1 = "";   // 111111
 
 // kill -9 `ps ax | grep node | grep meteor | awk '{print $1}'`
 // export MONGO_URL=mongodb://localhost:27017/spread
+
+
+// STATUS = ['Not assigned','SP 1','SP 2','CUT','Finished']
 
 // meteor add accounts-base
 // meteor add accounts-password
@@ -1709,3 +3159,8 @@ var cut2 = "";  // c2c2c2
 // meteor add pahans:reactive-modal
 
 // meteor add mrt:jquery-csv 
+// meteor add settinghead:auto-nprogress
+
+//meteor add naxio:flash
+// meteor add mrt:flash-messages-plus
+// meteor add mrt:flash-messages

@@ -8,11 +8,39 @@ Order = new Meteor.Collection("order", {
         decimal: false, 
         min: 0
     },
+    'Position': {
+        type: Number,
+        label: "Position",
+        optional: false,
+        decimal: false, 
+        //defaultValue: 99,
+        //allowedValues: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 99],
+        //max: 100
+        /*allowedValues: function() {
+            var order = Order.find({Status: 'SP 2'}).fetch();
+
+            var pos;
+
+            for (var i = 0; i < order.length; i++) {
+                pos = order[i].Position;
+                pos += pos
+            }
+            console.log("pos: " + pos);
+            return pos;
+        }*/
+    },
+    'Status': {
+        type: String,
+        label: "Status",
+        optional: true,
+        defaultValue: "Not assigned",
+        allowedValues: ["Not assigned", "SP 1", "SP 2", "MS 1", "CUT","Finished"]
+    },
     'Date': {
         //blackbox: true, 
         type: Date,
         label: "Date",
-        optional: true,
+        optional: true
     },
     'Created': {
         type: Date,
@@ -118,59 +146,73 @@ Order = new Meteor.Collection("order", {
     },
     'S': {
         type: Number,
-        label: "S",
+        label: "S Marker",
         optional: true,
         decimal: true, 
         min: 0
     },
     'SonLayer': {
         type: Number,
-        label: "SonLayer",
+        label: "S per Layer",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'S_Cut': {
+        type: Number,
+        label: "S Cut",
         optional: true,
         decimal: true, 
         min: 0
     },
     'M': {
         type: Number,
-        label: "M",
+        label: "M Marker",
         optional: true,
         decimal: true, 
         min: 0
     },
     'MonLayer': {
         type: Number,
-        label: "MonLayer",
+        label: "M per Layer",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'M_Cut': {
+        type: Number,
+        label: "M Cut",
         optional: true,
         decimal: true, 
         min: 0
     },
     'L': {
         type: Number,
-        label: "L",
+        label: "L Marker",
         optional: true,
         decimal: true, 
         min: 0
     },
     'LonLayer': {
         type: Number,
-        label: "LonLayer",
+        label: "L per Layer",
         optional: true,
         decimal: true, 
         min: 0
     },
-    'AssignSpreader': {
-        type: String,
-        label: "AssignSpreader",
+    'L_Cut': {
+        type: Number,
+        label: "L Cut",
         optional: true,
-        defaultValue: "none",
-        allowedValues: ["none", "SP 1", "SP 2"]
+        decimal: true, 
+        min: 0
     },
     'Priority': {
         type: Number,
         label: "Priority",
         optional: false,
-        defaultValue: 3,
-        allowedValues: [5, 4, 3, 2, 1],
+        defaultValue: 1,
+        allowedValues: [1, 2, 3],
         max: 10
     },
     'Load': {
@@ -178,14 +220,14 @@ Order = new Meteor.Collection("order", {
         label: "Load",
         optional: true,
         defaultValue: "",
-        allowedValues: ["", "SP 1-1", "SP 1-2", "SP 2-1", "SP 2-2"]
+        allowedValues: ["", "SP 1-1", "SP 1-2", "SP 2-1", "SP 2-2", "MS 1"]
     },
     'Spread': {
         type: String, 
         label: "Spread",
         optional: true,
         defaultValue: "",
-        allowedValues: ["", "SP 1-1", "SP 1-2", "SP 2-1", "SP 2-2"]
+        allowedValues: ["", "SP 1-1", "SP 1-2", "SP 2-1", "SP 2-2", "MS 1"]
     },
     'SpreadDate': {
         type: Date,
@@ -211,54 +253,11 @@ Order = new Meteor.Collection("order", {
     },
     'OrderLink' : {
         type: Boolean,
-        label: "Order Link (OrderDate + Marker + Komesa)",
+        label: "Order Linked",
+        optional: true,
         defaultValue: false,
     },
-    /*
-    'OrderLink': {
-        type: String,
-        label: "OrderLink", 
-        optional: false,
-        autoValue: function (){
-            
-            var val = this.siblingField("Komesa").value;
-            var val2 = "test";
-            if (this.siblingField("Link").value == true) {
-                return val.value.split(' ')[0];
-                //return val;
-            } else {
-                this.unset();
-                //return val2;
-            }
-        },      
-
-        /*
-        autoform: {
-            options: [
-            {label: "One", value: "One"},
-            {label: "Two", value: "Two"},
-            {label: "Three", value: "Three"}
-            ],
-            noselect: true,
-            template: "tmp_EditOrder"
-        }
-        */
-        /*
-        allowed: function () {
-            var val;
-            val = this("Marker");
-            return val;
-        }
-
-        allowedValues: [" ", allowed],
-        */
-        /*autoValue:function(){
-                var result = (this.siblingField("orderLength").value + this.siblingField("orderExtra").value) * this.siblingField("orderLayers").value;
-                //console.log(result);
-                return result;
-        }*/
-    //},
-
+    
   }
 });
 
@@ -288,11 +287,14 @@ LengthSum
 Width
 S
 SonLayer
+S_Cut
 M
 MonLayer
+M_Cut
 L
 LonLayer
-AssignSpreader
+L_Cut
+Status
 Priority
 Load
 Spread
@@ -300,5 +302,58 @@ SpreadDate
 Cut
 CutDate
 Comment
-OrderLink
+OrderLink 
 */
+
+Message = new Meteor.Collection("message",  {
+schema: {
+    'No': {
+        type: Number,
+        unique: true,
+        label: "No",
+        optional: false,
+        decimal: false, 
+        min: 0
+    },
+    'Text': {
+        type: String,
+        label: "Text",
+        optional: true,
+        defaultValue: "" 
+    }, 
+    'Type': {
+        type: String,
+        label: "Type",
+        optional: true,
+        defaultValue: "",
+        allowedValues: ["", "Warning", "Normal"]
+    },
+    'Status': {
+        type: String,
+        label: "Status",
+        optional: true,
+        defaultValue: "Not assigned",
+        allowedValues: ["Not assigned", "SP 1", "SP 2","CUT","Finished"]
+    },
+    'Created': {
+        type: Date,
+        label: "Created",
+         autoValue: function() {
+            if (this.isInsert) {
+                return new Date;
+            } else if (this.isUpsert) {
+                return {$setOnInsert: new Date};
+            } else {
+                this.unset();
+            }
+        }
+    },
+    'Active': {
+        type: Boolean,
+        label: "Active",
+        defaultValue: true,
+
+    }
+
+  }
+});
