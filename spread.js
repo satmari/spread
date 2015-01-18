@@ -67,8 +67,9 @@ if (Meteor.isClient) {
         //console.log("Startup: UserId: " + User._id);
         //console.log("Startup: UserName: " + User.username);
     }
-    Session.set("ses_SP1message", "");
-    Session.set("ses_SP2message", "");
+
+    //Session.set("ses_SP1message", "");
+    //Session.set("ses_SP2message", "");
 
   })
 
@@ -105,13 +106,13 @@ if (Meteor.isClient) {
 
     if ((ses_loggedUserName == "cut1") || (ses_loggedUserName == "cut2")){
       Meteor.subscribe('filter_cutter');
-    } else if ((ses_loggedUserName == "sp11") || (ses_loggedUserName == "sp12")){
+    } else if ((ses_loggedUserName == "sp11") || (ses_loggedUserName == "sp12") || (ses_loggedUserName == "sp13")){
       //Meteor.subscribe('spreader1', Session.get("ses_datefilter"));
       Meteor.subscribe('filter_spreader1');
-    } else if ((ses_loggedUserName == "sp21") || (ses_loggedUserName == "sp22")){
+    } else if ((ses_loggedUserName == "sp21") || (ses_loggedUserName == "sp22") || (ses_loggedUserName == "sp23")){
       //Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
       Meteor.subscribe('filter_spreader2');
-    } else if (ses_loggedUserName == "ms1"){
+    } else if ((ses_loggedUserName == "ms1") || (ses_loggedUserName == "ms11") || (ses_loggedUserName == "ms12")){
       Meteor.subscribe('filter_spreaderm1');
     
     } else if (ses_allorder_date) {
@@ -161,11 +162,12 @@ if (Meteor.isClient) {
     
 
       /* Messages */
-      var ses_SP1message = Session.get("ses_SP1message");
+      //var ses_SP1message = Session.get("ses_SP1message");
       //console.log("ses_SP1message: " + ses_SP1message);
-      var ses_SP2message = Session.get("ses_SP2message");
+      //var ses_SP2message = Session.get("ses_SP2message");
       //console.log("ses_SP2message: " + ses_SP2message);
 
+      /*
       if ((ses_SP1message == "") || (typeof ses_SP1message === 'undefined')) {
       } else {
         alert(ses_SP1message);
@@ -179,14 +181,16 @@ if (Meteor.isClient) {
         console.log("ses_SP2message: " + ses_SP2message);
         Session.set("ses_SP2message", "");
       }
-
+      */
   });
   
-  /*FlashMessages.configure({
+  /*
+  FlashMessages.configure({
     autoHide: true,
     hideDelay: 5000,
     autoScroll: true
-  });*/
+  });
+  */
 
   Template.nav.helpers ({
     isAdminOrGuest: function() {
@@ -250,7 +254,7 @@ if (Meteor.isClient) {
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "ms1")) {
+          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "ms1") || (User.username == "ms11") || (User.username == "ms12")){
             return true;
           } else {
             return false;  
@@ -442,9 +446,6 @@ if (Meteor.isClient) {
             } else {
 
             }
-
-            
-
 
           },
       };
@@ -715,7 +716,7 @@ if (Meteor.isClient) {
           showNavigation: 'auto',
           fields: [
             //{ key: '_id', label: '_ID' },
-            /*{ key: 'No', label: 'No', sort: 'descending' },*/
+            { key: 'No', label: 'No'},
             { key: 'Position', label: 'Pos'},
             /*{ key: 'Date', label: 'Date',
               fn: function (value) {
@@ -936,7 +937,7 @@ if (Meteor.isClient) {
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "ms1")) {
+          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "ms1") || (User.username == "ms11") || (User.username == "ms12")){
             return true;
           } else {
             return false;  
@@ -1184,8 +1185,8 @@ if (Meteor.isClient) {
         var order = Order.find({_id: ses}).fetch();
         for (var i = 0; i < order.length; i++) {
           var Spreaded = order[i].Spread;
-          
-        }
+        
+       }
 
         console.log("Spreaded: " + Spreaded);
         if (Spreaded) {
@@ -1423,6 +1424,10 @@ if (Meteor.isClient) {
       var order = Order.find({Load: "SP 1-2"});
       return order.count();
     },
+    SP1noLoadRollsShift3: function (){
+      var order = Order.find({Load: "SP 1-3"});
+      return order.count();
+    },
     SP2noLoadRollsShift1: function (){
       var order = Order.find({Load: "SP 2-1"});
       return order.count();
@@ -1431,16 +1436,34 @@ if (Meteor.isClient) {
       var order = Order.find({Load: "SP 2-2"});
       return order.count();
     },
+    SP2noLoadRollsShift3: function (){
+      var order = Order.find({Load: "SP 2-3"});
+      return order.count();
+    },
     MS1noLoadRollsShift: function (){
       var order = Order.find({Load: "MS 1"});
       return order.count();
     },
+    /*
+    MS1noLoadRollsShift1: function (){
+      var order = Order.find({Load: "MS 1-1"});
+      return order.count();
+    },
+    MS1noLoadRollsShift2: function (){
+      var order = Order.find({Load: "MS 1-2"});
+      return order.count();
+    },
+    */
     SP1noSpreadRollsShift1: function (){
       var order = Order.find({Spread: "SP 1-1"});
       return order.count();
     },
     SP1noSpreadRollsShift2: function (){
       var order = Order.find({Spread: "SP 1-2"});
+      return order.count();
+    },
+    SP1noSpreadRollsShift3: function (){
+      var order = Order.find({Spread: "SP 1-3"});
       return order.count();
     },
     SP2noSpreadRollsShift1: function (){
@@ -1451,10 +1474,24 @@ if (Meteor.isClient) {
       var order = Order.find({Spread: "SP 2-2"});
       return order.count();
     },
+    SP2noSpreadRollsShift3: function (){
+      var order = Order.find({Spread: "SP 2-3"});
+      return order.count();
+    },
     MS1noSpreadRollsShift: function (){
       var order = Order.find({Spread: "MS 1"});
       return order.count();
     },
+    /*
+    MS1noSpreadRollsShift1: function (){
+      var order = Order.find({Spread: "MS 1-1"});
+      return order.count();
+    },
+    MS1noSpreadRollsShift2: function (){
+      var order = Order.find({Spread: "MS 1-2"});
+      return order.count();
+    },
+    */
     CutnoRollsShift1: function  (){
       var order = Order.find({Cut: "CUT 1"});
       return order.count();
@@ -1483,6 +1520,16 @@ if (Meteor.isClient) {
       sum = sum.toFixed(2);
       return sum;
     },
+    SP1LoadMetShift3: function (){
+      var order = Order.find({Load: "SP 1-3"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
     SP2LoadMetShift1: function (){
       var order = Order.find({Load: "SP 2-1"}).fetch();
       var sum = 0;
@@ -1503,6 +1550,16 @@ if (Meteor.isClient) {
       sum = sum.toFixed(2);
       return sum;
     },
+    SP2LoadMetShift3: function (){
+      var order = Order.find({Load: "SP 2-3"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
     MS1LoadMetShift: function (){
       var order = Order.find({Load: "MS 1"}).fetch();
       var sum = 0;
@@ -1513,6 +1570,28 @@ if (Meteor.isClient) {
       sum = sum.toFixed(2);
       return sum;
     },
+    /*
+    MS1LoadMetShift1: function (){
+      var order = Order.find({Load: "MS 1-1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    MS1LoadMetShift2: function (){
+      var order = Order.find({Load: "MS 1-2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    */
     SP1SpreadMetShift1: function (){
       var order = Order.find({Spread: "SP 1-1"}).fetch();
       var sum = 0;
@@ -1525,6 +1604,16 @@ if (Meteor.isClient) {
     },
     SP1SpreadMetShift2: function (){
       var order = Order.find({Spread: "SP 1-2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    SP1SpreadMetShift3: function (){
+      var order = Order.find({Spread: "SP 1-3"}).fetch();
       var sum = 0;
       for (var i = 0; i < order.length; i++) {
         sum += order[i].LengthSum;
@@ -1553,6 +1642,16 @@ if (Meteor.isClient) {
       sum = sum.toFixed(2);
       return sum;
     },
+    SP2SpreadMetShift3: function (){
+      var order = Order.find({Spread: "SP 2-3"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
     MS1SpreadMetShift: function (){
       var order = Order.find({Spread: "MS 1"}).fetch();
       var sum = 0;
@@ -1563,6 +1662,28 @@ if (Meteor.isClient) {
       sum = sum.toFixed(2);
       return sum;
     },
+    /*
+    MS1SpreadMetShift1: function (){
+      var order = Order.find({Spread: "MS 1-1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    MS1SpreadMetShift2: function (){
+      var order = Order.find({Spread: "MS 1-2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    */
     CutMetShift1: function (){
       var order = Order.find({Cut: "CUT 1"}).fetch();
       var sum = 0;
@@ -1594,8 +1715,10 @@ if (Meteor.isClient) {
 
   // Formating Dates (moment)
   var DateFormats = {
-       short: "DD MMMM YYYY",
-       long:  "DD-MM-YYYY HH:mm"
+       //short: "DD MMMM YYYY",
+       //long:  "DD-MM-YYYY HH:mm"
+       short: "DD.MM.YYYY",
+       long:  "DD.MM.YYYY HH:mm"
   };
   // Use UI.registerHelper..
   UI.registerHelper("formatDate", function(datetime, format) {
@@ -1606,6 +1729,16 @@ if (Meteor.isClient) {
       else {
         return datetime;
       }
+  });
+
+  // Formating Numbers
+  UI.registerHelper("formatNumber", function(number) {
+    var a = Number(number);
+    //a = a.toFixed(3);
+    //a = a.toString();
+    //a = a.replace(".", ",")
+    a = a.toFixed(3).toString().replace(".", ",")
+    return a;
   });
 
 
@@ -1997,12 +2130,20 @@ if (Meteor.isClient) {
         userEditLoad = "SP 1-1";
       } else if (userEdit == "sp12") {
         userEditLoad = "SP 1-2";
+      } else if (userEdit == "sp13") {
+        userEditLoad = "SP 1-3";
       } else if (userEdit == "sp21") {
         userEditLoad = "SP 2-1";
       } else if (userEdit == "sp22") {
         userEditLoad = "SP 2-2";
+      } else if (userEdit == "sp23") {
+        userEditLoad = "SP 2-3";
       } else if (userEdit == "ms1") {
         userEditLoad = "MS 1";
+      } else if (userEdit == "ms11") {
+        userEditLoad = "MS 1-1";
+      } else if (userEdit == "ms12") {
+        userEditLoad = "MS 1-2";
       }
 
       //var orderToEdit = Order.find({_id: Session.get("selectedDocId")}).fetch();
@@ -2048,12 +2189,20 @@ if (Meteor.isClient) {
         var userEditSpread = "SP 1-1";
       } else if (userEdit == "sp12") {
         var userEditSpread = "SP 1-2";
+      } else if (userEdit == "sp13") {
+        var userEditSpread = "SP 1-3";
       } else if (userEdit == "sp21") {
         var userEditSpread = "SP 2-1";
       } else if (userEdit == "sp22") {
         var userEditSpread = "SP 2-2";
+      } else if (userEdit == "sp23") {
+        var userEditSpread = "SP 2-3";
       } else if (userEdit == "ms1") {
         var userEditSpread = "MS 1";
+      } else if (userEdit == "ms11") {
+        var userEditSpread = "MS 1-1";
+      } else if (userEdit == "ms12") {
+        var userEditSpread = "MS 1-2";
       }
 
       var spreadDate = new Date();
@@ -2631,7 +2780,7 @@ if (Meteor.isClient) {
         //var listo  = $("#listo").val();
         var textarea_json  = $("#textarea_json").val();
           //console.log(listo);
-        window.open("data:text/csv;charset=utf-8," + escape(textarea_json))
+        window.open("data:text/csv;charset=utf-8," + escape(textarea_json));
         rm_ExportOrder.hide();
 
       },
@@ -3119,18 +3268,23 @@ if (Meteor.isServer) {
 }
 
 var admin = ""; //123123
-var guest = ""; // 111111
+var guest = ""; // 123123 
 var sp11 = "";  // 111111
 var sp12 = "";  // 121212
+var sp13 = "";  // 131313
 var sp21 = "";  // 212121
 var sp22 = "";  // 222222
+var sp23 = "";  // 232323
 var cut1 = "";  // c1c1c1
 var cut2 = "";  // c2c2c2
 var ms1 = "";   // 111111
+var ms11 = "";   // 111111
+var ms12 = "";   // 121212
+
 
 // kill -9 `ps ax | grep node | grep meteor | awk '{print $1}'`
+// export MONGO_URL=mongodb://172.27.161.216:27017/spread  
 // export MONGO_URL=mongodb://localhost:27017/spread
-
 
 // STATUS = ['Not assigned','SP 1','SP 2','CUT','Finished']
 

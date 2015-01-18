@@ -675,8 +675,12 @@
       <p>Copy CSV code (Order list): </p>
       <textarea id="textarea_json" class="text" style="width:100%; height:200px;">
 _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink
-{{#each order}}{{_id}};{{No}};{{Position}};{{Status}};{{Date}};{{Created}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{Length}};{{Extra}};{{LengthSum}};{{Width}};{{S}};{{SonLayer}};{{S_Cut}};{{M}};{{MonLayer}};{{M_Cut}};{{L}};{{LonLayer}};{{L_Cut}};{{Priority}};{{Load}};{{Spread}};{{SpreadDate}};{{Cut}};{{CutDate}};{{Comment}};{{OrderLink}}
+{{#each order}}{{_id}};{{No}};{{Position}};{{Status}};{{formatDate Date "short"}};{{formatDate Created "long"}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{formatNumber Length}};{{Extra}};{{formatNumber LengthSum}};{{Width}};{{S}};{{SonLayer}};{{S_Cut}};{{M}};{{MonLayer}};{{M_Cut}};{{L}};{{LonLayer}};{{L_Cut}};{{Priority}};{{Load}};{{Spread}};{{formatDate SpreadDate "long"}};{{Cut}};{{formatDate CutDate "long"}};{{Comment}};{{OrderLink}}
 {{/each}}</textarea>
+      <!--<textarea id="textarea_json" class="text" style="width:100%; height:200px;">
+_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink
+{{#each order}}'{{_id}}';'{{No}}';'{{Position}}';'{{Status}}';'{{Date}}';'{{Created}}';'{{Komesa}}';'{{Marker}}';'{{Style}}';'{{Fabric}}';'{{ColorCode}}';'{{ColorDesc}}';'{{Bagno}}';'{{Layers}}';'{{LayersActual}}';'{{Length}}';'{{Extra}}';'{{LengthSum}}';'{{Width}}';'{{S}}';'{{SonLayer}}';'{{S_Cut}}';'{{M}}';'{{MonLayer}}';'{{M_Cut}}';'{{L}}';'{{LonLayer}}';'{{L_Cut}}';'{{Priority}}';'{{Load}}';'{{Spread}}';'{{SpreadDate}}';'{{Cut}}';'{{CutDate}}';'{{Comment}}';'{{OrderLink}}'
+{{/each}}</textarea>-->
           <!--<br />
           <input id="quote" type="checkbox" checked="true" /> Wrap values in double quotes
           <br />
