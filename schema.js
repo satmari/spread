@@ -34,7 +34,7 @@ Order = new Meteor.Collection("order", {
         label: "Status",
         optional: true,
         defaultValue: "Not assigned",
-        allowedValues: ["Not assigned", "SP 1", "SP 2", "MS 1", "CUT","Finished"]
+        allowedValues: ["Not assigned", "SP 1", "SP 2", "MS 1", "CUT", "Finished"]
     },
     'Date': {
         //blackbox: true, 
@@ -220,14 +220,16 @@ Order = new Meteor.Collection("order", {
         label: "Load",
         optional: true,
         defaultValue: "",
-        allowedValues: ["", "SP 1-1", "SP 1-2", "SP 2-1", "SP 2-2", "MS 1"]
+        //allowedValues: ["", "SP 1-1", "SP 1-2", "SP 2-1", "SP 2-2", "MS 1"]
+        allowedValues: ["", "SP 1-1", "SP 1-2", "SP 1-3", "SP 2-1", "SP 2-2", "SP 2-3", "MS 1", "MS 1-1", "MS 1-2"]
     },
     'Spread': {
         type: String, 
         label: "Spread",
         optional: true,
         defaultValue: "",
-        allowedValues: ["", "SP 1-1", "SP 1-2", "SP 2-1", "SP 2-2", "MS 1"]
+        //allowedValues: ["", "SP 1-1", "SP 1-2", "SP 2-1", "SP 2-2", "MS 1"]
+        allowedValues: ["", "SP 1-1", "SP 1-2", "SP 1-3", "SP 2-1", "SP 2-2", "SP 2-3", "MS 1", "MS 1-1", "MS 1-2"]
     },
     'SpreadDate': {
         type: Date,
