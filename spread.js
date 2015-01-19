@@ -1444,7 +1444,6 @@ if (Meteor.isClient) {
       var order = Order.find({Load: "MS 1"});
       return order.count();
     },
-    /*
     MS1noLoadRollsShift1: function (){
       var order = Order.find({Load: "MS 1-1"});
       return order.count();
@@ -1453,7 +1452,6 @@ if (Meteor.isClient) {
       var order = Order.find({Load: "MS 1-2"});
       return order.count();
     },
-    */
     SP1noSpreadRollsShift1: function (){
       var order = Order.find({Spread: "SP 1-1"});
       return order.count();
@@ -1482,7 +1480,6 @@ if (Meteor.isClient) {
       var order = Order.find({Spread: "MS 1"});
       return order.count();
     },
-    /*
     MS1noSpreadRollsShift1: function (){
       var order = Order.find({Spread: "MS 1-1"});
       return order.count();
@@ -1491,7 +1488,6 @@ if (Meteor.isClient) {
       var order = Order.find({Spread: "MS 1-2"});
       return order.count();
     },
-    */
     CutnoRollsShift1: function  (){
       var order = Order.find({Cut: "CUT 1"});
       return order.count();
@@ -1570,7 +1566,6 @@ if (Meteor.isClient) {
       sum = sum.toFixed(2);
       return sum;
     },
-    /*
     MS1LoadMetShift1: function (){
       var order = Order.find({Load: "MS 1-1"}).fetch();
       var sum = 0;
@@ -1591,7 +1586,6 @@ if (Meteor.isClient) {
       sum = sum.toFixed(2);
       return sum;
     },
-    */
     SP1SpreadMetShift1: function (){
       var order = Order.find({Spread: "SP 1-1"}).fetch();
       var sum = 0;
@@ -1662,7 +1656,6 @@ if (Meteor.isClient) {
       sum = sum.toFixed(2);
       return sum;
     },
-    /*
     MS1SpreadMetShift1: function (){
       var order = Order.find({Spread: "MS 1-1"}).fetch();
       var sum = 0;
@@ -1683,7 +1676,6 @@ if (Meteor.isClient) {
       sum = sum.toFixed(2);
       return sum;
     },
-    */
     CutMetShift1: function (){
       var order = Order.find({Cut: "CUT 1"}).fetch();
       var sum = 0;
@@ -3268,7 +3260,7 @@ if (Meteor.isServer) {
 }
 
 var admin = ""; //123123
-var guest = ""; // 123123 
+var guest = ""; // 111111 
 var sp11 = "";  // 111111
 var sp12 = "";  // 121212
 var sp13 = "";  // 131313
