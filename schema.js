@@ -34,7 +34,7 @@ Order = new Meteor.Collection("order", {
         label: "Status",
         optional: true,
         defaultValue: "Not assigned",
-        allowedValues: ["Not assigned", "SP 1", "SP 2", "MS 1", "CUT", "Finished"]
+        allowedValues: ["Not assigned", "SP 1", "SP 2", "MS 1", "CUT", "Finished", "TRASH"]
     },
     'Date': {
         //blackbox: true, 
