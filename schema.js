@@ -34,7 +34,7 @@ Order = new Meteor.Collection("order", {
         label: "Status",
         optional: true,
         defaultValue: "Not assigned",
-        allowedValues: ["Not assigned", "SP 1", "SP 2", "MS 1", "CUT", "Finished"]
+        allowedValues: ["Not assigned", "SP 1", "SP 2", "MS 1", "CUT", "Finished", "TRASH"]
     },
     'Date': {
         //blackbox: true, 
@@ -203,6 +203,48 @@ Order = new Meteor.Collection("order", {
     'L_Cut': {
         type: Number,
         label: "L Cut",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'XL': {
+        type: Number,
+        label: "XL Marker",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'XLonLayer': {
+        type: Number,
+        label: "XL per Layer",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'XL_Cut': {
+        type: Number,
+        label: "XL Cut",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'XXL': {
+        type: Number,
+        label: "XXL Marker",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'XXLonLayer': {
+        type: Number,
+        label: "XXL per Layer",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'XXL_Cut': {
+        type: Number,
+        label: "XXL Cut",
         optional: true,
         decimal: true, 
         min: 0

@@ -1,9 +1,9 @@
 
 <head>
-  <title>Gordon Cutting Orders - Web application </title>
+  <title>Gordon Cutting Orders - Web application</title>
   <!--<link rel="icon" type="image/x-icon" href="/public/logo.png">-->
   <!--<link rel="shortcut icon" type="image/png" href="public/logo.png">-->
-  <link rel="icon" sizes="16x16 32x32" href="/logo.png?v=2">
+  <link rel="icon" size="16x16" href="/logo.png">
 </head>
 
 <body>
@@ -25,8 +25,11 @@
 
 <template name="nav">
   <div class="navbar navbar-default" role="navigation">
+
   <div class="navbar-header">
-    <a class="navbar-brand" href="#">Cutting orders</a>
+    <!--<span class="glyphicon glyphicon-scissors"></span> -->
+    <a class="navbar-brand" href="#">Cutting orders 
+    </a>  
     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
       <span class="sr-only"></span>
       <span class="icon-bar"></span>
@@ -56,7 +59,7 @@
         <button id="import_from_planned_markers" class="btn btn-default">Import from Planned Markers</button>
         <button id="export_orders" class="btn btn-info">Export order</button> 
         <button id="import_orders" class="btn btn-info">Import order</button>
-        <button id="refresh_sum" class="btn btn-success">Refresh Data</button>
+        <!--<button id="refresh_sum" class="btn btn-success">Refresh Data</button>-->
         <button id="statistics" class="btn btn-warning">Statistics</button>
       </div></li>
     </ul>
@@ -84,7 +87,8 @@
         </div>
       </div>
     </ul>
-    
+
+       
     <!--
     <ul class="nav navbar-nav">
       <li><a href="#">|</a></li>
@@ -98,26 +102,53 @@
       <div class="navbar-form">
         
         {{#if isAdminOrGuest}}
-        
+
         <div class="btn-group" data-toggle="buttons" style="border: 1px solid #000; border-radius: 5px;">
+          <button type="button" class="btn btn-default" id="trash_orders">
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+          </button>
+
           <label class="btn btn-primary">
             <input type="radio" name="options" id="not_assigned"> Not Assigned
           </label>
+          <!--<button type="radio" class="btn btn-primary" id="sp1"> Not Assigned 
+            <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
+          </button>-->
+
           <label class="btn btn-default">
             <input type="radio" name="options" id="sp1"> SP 1 
           </label>
+          <!--<button type="radio" class="btn btn-default" id="sp1">SP 1 
+            <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
+          </button>-->
+
           <label class="btn btn-default ">
             <input type="radio" name="options" id="sp2"> SP 2 
           </label>
+          <!--<button type="radio" class="btn btn-default" id="sp1">SP 2 
+            <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
+          </button>-->
+
           <label class="btn btn-default ">
             <input type="radio" name="options" id="ms1"> MS 1 
           </label>
-          <label class="btn btn-info">
-            <input type="radio" name="options" id="cut"> toCUT
+          <!--<button type="radio" class="btn btn-default" id="sp1"> MS 1 
+            <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
+          </button>-->
+
+          <label class="btn btn-info input-group">
+            <input type="radio" name="options" id="cut"> to CUT
           </label>
+          <!--<button type="radio" class="btn btn-info" id="sp1"> to CUT 
+            <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
+          </button>-->
+
           <label class="btn btn-success">
             <input type="radio" name="options" id="finished"> Finished
           </label>
+          <!--<button type="radio" class="btn btn-success" id="sp1"> Finished
+            <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
+          </button>-->
         </div>
 
         <div class="form-group" style="border: 1px solid #000; border-radius: 5px;">
@@ -126,7 +157,9 @@
           <span style="color: white">Filter Order Range (Finished): </span>
           <input type="date" id="filterOrderDateBefore" class="form-control" placeholder="Filter Order Date Before"/> <span style="color: white"> - </span>
           <input type="date" id="filterOrderDateAfter" class="form-control" placeholder="Filter Order Date After"/>
-          <button id="btnfilterOrderDateStart" class="btn btn-default">Start Filter</button>
+          <button id="btnfilterOrderDateStart" class="btn btn-default">
+            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+          </button>
           <!--<button id="btnfilterOrderDate" class="btn btn-default">Clear Filter</button> -->
           <!--<ul class="nav navbar-nav">
           <li><a href="#"></a></li>
@@ -152,12 +185,13 @@
   </div>
 </template>
 
+<!--
 <template name="orderForm">
-  <!--<div class="input-group">-->
+  <div class="input-group">
   <div class="input-group-sm">
     <h1>orderForm</h1>
-    <!--<input type="text" id="orderDate" placeholder="Date"/> -->
-    <input type="text" id="orderDate" placeholder="OrderDate" > <!--class="form-control" -->
+    <input type="text" id="orderDate" placeholder="Date"/>
+    <input type="text" id="orderDate" placeholder="OrderDate" >
     <input type="text" id="orderName" placeholder="OdrerName">
     <input type="text" id="orderFileName" placeholder="FileName">
     <input type="text" id="orderModel" placeholder="Model">
@@ -166,14 +200,15 @@
     <input type="text" id="orderLayers" placeholder="Layers">
     <input type="text" id="orderLength" placeholder="Length">
     <input type="text" id="orderExtra" placeholder="Extra">
-    <!--<input type="text" id="orderLengthSum" placeholder="LengthSum">-->
+    <input type="text" id="orderLengthSum" placeholder="LengthSum">
     <input type="text" id="orderPriority" placeholder="Priority">
     <input type="checkbox" id="orderLoad" {{showLoadChecked}}>
     <input type="checkbox" id="orderSpread" {{showSpreadChecked}}>
-    <button id="addOrder"> Add </button> <!-- class="btn btn-default" -->
+    <button id="addOrder"> Add </button>
   </div>
 </template>
-
+-->
+<!--
 <template name="orderQuickForm">
   <div class="container">
     <div class="row">
@@ -186,22 +221,11 @@
     </div>
   </div>
 </template>
+-->
 
 <template name="reactiveTebleList">
   <div>
-  <!--{{#if isUser}}
-    {{#if isAdmin}}
-      <h3>Order table</h3>
-      {{> reactiveTable collection=orders settings=settingsAdmin}} 
-    {{else}}
-      {{> reactiveTable collection=orders settings=settingsUser}} 
-    {{/if}}
-
-  {{else}}
-      <h3>Please login</h3>
-  {{/if}}
-  -->
-  {{#if isAdmin}}
+   {{#if isAdmin}}
     <h3>Order table - <span style="color: red; font-size: 20px">{{filter}}</span></h3>
     {{> reactiveTable collection=orders settings=settingsAdmin}}
   {{/if}}
@@ -221,118 +245,6 @@
     {{> reactiveTable collection=orders settings=settingsUserCut}}
   {{/if}}
 
-
-
-  </div>
-</template>
-
-<template name="orderAutoForm">
-  <div class="container">
-    <div class="row">
-      <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-      <legend>AutoForm Order</legend>
-        {{#autoForm collection="Order" id="insertOrderForm" type='insert' buttonContent="Add Order"}}
-
-          <!-- Quick field in autoform
-          {{>afQuickField name="orderDate" type="date" }} -->
-
-          <!-- autoform -->
-                <div class="form-group {{#if afFieldIsInvalid name='orderDate'}}has-error{{/if}}">
-                  {{> afFieldLabel name='orderDate'}}*
-                <!--<span class="help-block">*Requered</span>-->
-                  {{> afFieldInput novalidate="novalidate" name='orderDate' type="date"}}
-                  <!-- Problem with type="date"-->
-                  {{#if afFieldIsInvalid name='orderDate'}}
-                <span class="help-block">{{{afFieldMessage name='orderDate'}}}</span>
-                  {{/if}}
-                </div>
-
-                <!--<input type="text" id="orderPickerDate" class="form-control" placeholder="Filter Order Date"/>-->
-                <div class="form-group {{#if afFieldIsInvalid name='orderName'}}has-error{{/if}}">
-                  {{> afFieldLabel name='orderName'}}*
-                <!--<span class="help-block">*Requered</span>-->
-                  {{> afFieldInput name='orderName'}}
-                  {{#if afFieldIsInvalid name='orderName'}}
-                <span class="help-block">{{{afFieldMessage name='orderName'}}}</span>
-                  {{/if}}
-                </div>
-                <div class="form-group {{#if afFieldIsInvalid name='orderFileName'}}has-error{{/if}}">
-                  {{> afFieldLabel name='orderFileName'}}
-                  {{> afFieldInput name='orderFileName'}}
-                  {{#if afFieldIsInvalid name='orderFileName'}}
-                <span class="help-block">{{{afFieldMessage name='orderFileName'}}}</span>
-                  {{/if}}
-                </div>
-                <div class="form-group {{#if afFieldIsInvalid name='orderModel'}}has-error{{/if}}">
-                  {{> afFieldLabel name='orderModel'}}
-                  {{> afFieldInput name='orderModel'}}
-                  {{#if afFieldIsInvalid name='orderModel'}}
-                <span class="help-block">{{{afFieldMessage name='orderModel'}}}</span>
-                  {{/if}}
-                </div>
-                <div class="form-group {{#if afFieldIsInvalid name='orderFabric'}}has-error{{/if}}">
-                  {{> afFieldLabel name='orderFabric'}}
-                  {{> afFieldInput name='orderFabric'}}
-                  {{#if afFieldIsInvalid name='orderFabric'}}
-                <span class="help-block">{{{afFieldMessage name='orderFabric'}}}</span>
-                  {{/if}}
-                </div>
-                <div class="form-group {{#if afFieldIsInvalid name='orderBagno'}}has-error{{/if}}">
-                  {{> afFieldLabel name='orderBagno'}}
-                  {{> afFieldInput name='orderBagno'}}
-                  {{#if afFieldIsInvalid name='orderBagno'}}
-                <span class="help-block">{{{afFieldMessage name='orderBagno'}}}</span>
-                  {{/if}}
-                </div>
-                <div class="form-group {{#if afFieldIsInvalid name='orderLayers'}}has-error{{/if}}">
-                  {{> afFieldLabel name='orderLayers'}}*
-                <!--<span class="help-block">*Requered</span>-->
-                  {{> afFieldInput name='orderLayers'}}
-                  {{#if afFieldIsInvalid name='orderLayers'}}
-                <span class="help-block">{{{afFieldMessage name='orderLayers'}}}</span>
-                  {{/if}}
-                </div>
-                <div class="form-group {{#if afFieldIsInvalid name='orderLength'}}has-error{{/if}}">
-                  {{> afFieldLabel name='orderLength'}}*
-                <!--<span class="help-block">*Requered</span>-->
-                  {{> afFieldInput name='orderLength'}}
-                  {{#if afFieldIsInvalid name='orderLength'}}
-                <span class="help-block">{{{afFieldMessage name='orderLength'}}}</span>
-                  {{/if}}
-                </div>
-                <div class="form-group {{#if afFieldIsInvalid name='orderExtra'}}has-error{{/if}}">
-                  {{> afFieldLabel name='orderExtra'}}*
-                <!--<span class="help-block">*Requered</span>-->
-                  {{> afFieldInput name='orderExtra'}}
-                  {{#if afFieldIsInvalid name='orderExtra'}}
-                <span class="help-block">{{{afFieldMessage name='orderExtra'}}}</span>
-                  {{/if}}
-                </div>
-                <div class="form-group {{#if afFieldIsInvalid name='orderPriority'}}has-error{{/if}}">
-                  {{> afFieldLabel name='orderPriority'}}
-                  {{> afFieldInput name='orderPriority' options="allowed" capitalize="true"}}
-                  {{#if afFieldIsInvalid name='orderPriority'}}
-                <span class="help-block">{{{afFieldMessage name='orderPriority'}}}</span>
-                  {{/if}}
-                </div>
-                <div class="form-group {{#if afFieldIsInvalid name='orderLoad'}}has-error{{/if}}">
-                  <!--{{> afFieldLabel name='orderLoad'}}-->
-                  {{> afFieldInput name='orderLoad'}}
-                  {{#if afFieldIsInvalid name='orderLoad'}}
-                <span class="help-block">{{{afFieldMessage name='orderLoad'}}}</span>
-                  {{/if}}
-                </div>
-                <div class="form-group {{#if afFieldIsInvalid name='orderSpread'}}has-error{{/if}}">
-                  <!--{{> afFieldLabel name='orderSpread'}}-->
-                  {{> afFieldInput name='orderSpread'}}
-                  {{#if afFieldIsInvalid name='orderSpread'}}
-                <span class="help-block">{{{afFieldMessage name='orderSpread'}}}</span>
-                  {{/if}}
-                </div>
-                <button type="submit" class="btn btn-primary">Add Order</button>
-        {{/autoForm}}
-      </div>
-    </div>
   </div>
 </template>
 
@@ -406,28 +318,7 @@
           <div>
             {{#if isUserAdmin}}
 
-              <!--
-              {{#autoForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc }}
-                      <fieldset>
-                        <legend>Actual Layers</legend>
-                        {{> afQuickField name='No' type='Number' }}
-                        {{> afQuickField name='Position' type='Number'  }}
-                        {{> afQuickField name='Status' options='allowed' }}
-                        
-                        {{#if afFieldValueIs name='Status' value="SP 1"}}
-                          {{> afQuickField name='Position'}}
-                        {{/if}}
-                        
-                        {{#each afFieldNames}}
-                            {{> afQuickField name='Status' options="auto"}}
-                        {{/each}}
-                       
-                      </fieldset>
-                      <button type="submit" class="btn btn-primary">Save</button>
-                       
-              {{/autoForm}}
-              -->   
-                      {{#if isSPfilter}}
+                    {{#if isSPfilter}}
                       <big><b>Change Position</b></big><br />
                       <big>{{CurrentPosition}}</big>
                       
@@ -437,14 +328,7 @@
                         {{/each}}
                       </select>
                       <br />
-                      <!--
-                      <div class="radio">
-                        <label><input type="radio" name="optradio" id="insertorder"/> Insert Order</label>
-                      </div>
-                      <div class="radio">
-                        <label><input type="radio" name="optradio" id="mergeorder"/> Merge Orders</label>
-                      </div>
-                      -->
+                      
                       <div>
                         <button type="submit" id="insertposition" class="btn btn-primary btn-sm">Insert in Position</button>
                         <button type="submit" id="linkposition" class="btn btn-warning btn-sm">Link to Position</button>
@@ -452,18 +336,9 @@
                       </div>
                       <br />
                       <hr />
-                    {{/if}}
-                        <!--<li style="padding-left: 30%;list-style-type: none;">
-                        <input type="radio" name="optradio" id="insertorder"/>Insert Order-->
-                        <!--</li>
-                        <li style="padding-left: 30%;list-style-type: none;">
-                        <input type="radio" name="optradio" id="mergeorder"/>Merge Orders-->
-                        <!--</li>
-                        </div>-->
-                        <!--{{#each position}} 
-                           <button type="submit" id="{{this}}" class="btn btn-primary">{{this}}</button>
-                        {{/each}}-->
                     
+                    {{/if}}
+                                            
                       <big><b>Change Status</b></big><br />
                       <big>{{CurrentStatus}}</big>
 
@@ -479,7 +354,7 @@
                       </div>
               <hr />
               <big><b>Order Information</b></big><br />
-              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,SpreadDate,CutDate,Status,Position"}}
+              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,XL,XXL,SpreadDate,CutDate,Status,Position"}}
 
               <div class="">
                 <br />
@@ -491,8 +366,6 @@
                 <table class="table" style="width:550px">
                   <tbody>
                     <p>User:  <big>{{User}}</big></p>
-                    <!--<p>Order Info:  <big>{{OrderInfo}}</big></p>
-                    <p>Fabric Info:  <big>{{FabricInfo}}</big></p>-->
                     <p>Oredr Info: <big>No: <b>{{Order_No}}</b>, Komesa: <b>{{Order_Komesa}}</b>, Marker: <b>{{Order_Marker}}</b></big></p>
                     <p>Fabric Info: <big>Fabric: <b>{{Order_Fabric}}</b>, Bagno: <b>{{Order_Bagno}}</b>, Color Desc: <b>{{Order_ColorDesc}}</b></big></p>
                     <hr />
@@ -514,11 +387,6 @@
                     </tr>
                     {{else}}
                                         
-                    <!--
-                    <tr>
-                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,SonLayer,CutS,M,MonLayer,CutM,L,LonLayer,CutL,Status,Priority,LengthSum,Created,Load,Spread,SpreadDate,Cut,CutDate,OrderLink,Position"}}
-                    </tr>
-                   -->
                       {{#autoForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc }}
                       <fieldset>
                         <!--<legend>Actual Layers</legend>-->
@@ -544,21 +412,19 @@
               <table class="table" style="width:550px"> 
                   <tbody>
                     <p>User:  <big>{{User}}</big></p>
-                    <!--<p>Order Info:  <big>{{OrderInfo}}</big></p>
-                    <p>Fabric Info:  <big>{{FabricInfo}}</big></p>-->
                     <p>Oredr Info: <big>No: <b>{{Order_No}}</b>, Komesa: <b>{{Order_Komesa}}</b>, Marker: <b>{{Order_Marker}}</b></big></p>
                     <p>Fabric Info: <big>Fabric: <b>{{Order_Fabric}}</b>, Bagno: <b>{{Order_Bagno}}</b>, Color Desc: <b>{{Order_ColorDesc}}</b></big></p>
                     <p>Actual Layers: <big><b>{{Order_ActualLayers}}</b></big></p>
+                    
                     <hr />
-                    <!--
-                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,LayersActual,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,Status,Priority,LengthSum,Created,Load,Spread,SpreadDate,Cut,CutDate,OrderLink,Position"}}
-                    -->
-                     {{#autoForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc }}
+                    {{#autoForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc }}
                       <fieldset>
                         <!--<legend>Actual Layers</legend>-->
                         {{> afQuickField name='S_Cut'}}
                         {{> afQuickField name='M_Cut'}}
                         {{> afQuickField name='L_Cut'}}
+                        {{> afQuickField name='XL_Cut'}}
+                        {{> afQuickField name='XXL_Cut'}}
                         {{> afQuickField name='Comment'}}
                       </fieldset>
                       <button type="submit" class="btn btn-danger">Save</button>
@@ -576,47 +442,23 @@
             {{/if}}
 
             {{#if isUserGuest}}
-              Sorry, you can not edit orders!
+              Sorry, guest can not edit orders!
             {{/if}}
         </div>
       </div>
     </div>
 </template>
 
+<!--
 <template name="tmp_AddNewOrderFull">
 </template>
 
 <template name="tmp_EditOrderFull">
 </template>
-
-<template name="tmp_ImportOrderAnalytics">
-  <!--<div>
-    <p id="heading">Import Orders from MD Analytics</p>
-    <hr />
-  </div>-->
-  <div>
-    <p>Insert from CSV file <b>(MD Analytics file)</b>:</p> 
-    <input type="file" id="files_analytics" name="files[]" enctype="multipart/form-data" />
-    <br />
-    <!--<button id="insert_csv_file">Insert form CSV file</button>-->
-    <br />
-    <hr />
-  </div>
-  <div>
-    <p>Paste Your CSV code <b>(MD Analytics file)</b>:</p> 
-      <textarea id="csv3" class="text" style="width:100%; height:200px;"></textarea>
-      <br />
-      <button id="insert_csv_text">Import from CSV code</button>
-      <br />
-  </div>
-</template>
+-->
 
 <template name="tmp_ImportPlannedMarkers">
-  <!--<div>
-    <p id="heading">Import Orders from MD Analytics</p>
-    <hr />
-  </div>-->
-  <div>
+    <div>
     <p>Insert from CSV file <b>(Planned Markers file)</b>:</p> 
     <input type="file" id="files_planned_markers" name="files[]" enctype="multipart/form-data" />
     <br />
@@ -634,10 +476,6 @@
 </template>
 
 <template name="tmp_ImportOrder">
-  <!--<div>
-    <p id="heading">CSV to JSON Converter</p>
-    <hr />
-  </div>-->
   <div>
     <p>Import orders from CSV file:</p> 
     <input type="file" id="files" name="files[]" enctype="multipart/form-data" />
@@ -660,10 +498,6 @@
 </template>
 
 <template name="tmp_ExportOrder">
-    <!--<div>
-    <p id="heading">Export Orders from list</p>
-    <hr />
-    </div>-->
     <div>
       <p>Download CSV file (Order list): </p>
         <button id="download_from_textarea">Download CSV file</button>
@@ -674,8 +508,8 @@
     <div>
       <p>Copy CSV code (Order list): </p>
       <textarea id="textarea_json" class="text" style="width:100%; height:200px;">
-_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink
-{{#each order}}{{_id}};{{No}};{{Position}};{{Status}};{{formatDate Date "short"}};{{formatDate Created "long"}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{formatNumber Length}};{{Extra}};{{formatNumber LengthSum}};{{Width}};{{S}};{{SonLayer}};{{S_Cut}};{{M}};{{MonLayer}};{{M_Cut}};{{L}};{{LonLayer}};{{L_Cut}};{{Priority}};{{Load}};{{Spread}};{{formatDate SpreadDate "long"}};{{Cut}};{{formatDate CutDate "long"}};{{Comment}};{{OrderLink}}
+_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;XL;XLonLayer;XL_Cut;XXL;XXLonLayer;XXL_Cut;Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink
+{{#each order}}{{_id}};{{No}};{{Position}};{{Status}};{{formatDate Date "short"}};{{formatDate Created "long"}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{formaColorDesc ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{formatNumber Length}};{{Extra}};{{formatNumber LengthSum}};{{Width}};{{S}};{{SonLayer}};{{S_Cut}};{{M}};{{MonLayer}};{{M_Cut}};{{L}};{{LonLayer}};{{L_Cut}};{{XL}};{{XLonLayer}};{{XL_Cut}};{{XXL}};{{XXLonLayer}};{{XXL_Cut}};{{Priority}};{{Load}};{{Spread}};{{formatDate SpreadDate "short"}};{{Cut}};{{formatDate CutDate "short"}};{{Comment}};{{OrderLink}}
 {{/each}}</textarea>
       <!--<textarea id="textarea_json" class="text" style="width:100%; height:200px;">
 _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink
@@ -718,6 +552,8 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
             <th>S</th>
             <th>M</th>
             <th>L</th>
+            <th>XL</th>
+            <th>XXL</th>
           </tr>
         </thead>
         <tbody>
@@ -728,6 +564,8 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
             <td>{{allS}}</td>
             <td>{{allM}}</td>
             <td>{{allL}}</td>
+            <td>{{allXL}}</td>
+            <td>{{allXXL}}</td>
           </tr>
         </tbody>
       </table>
@@ -761,6 +599,13 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
               <td>{{SP1noSpreadRollsShift2}}</td>
               <td>{{SP1SpreadMetShift2}}</td>
             </tr>
+            <tr>
+              <td>Shift 3</td>
+              <td>{{SP1noLoadRollsShift3}}</td>
+              <td>{{SP1LoadMetShift3}}</td>
+              <td>{{SP1noSpreadRollsShift3}}</td>
+              <td>{{SP1SpreadMetShift3}}</td>
+            </tr>
           </tbody>
       </table>
       <hr />
@@ -773,7 +618,7 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
             <th></th>
             <th>Load orders</th>
             <th>Load meters</th>
-            <th>Spread oredrs</th>
+            <th>Spread orders</th>
             <th>Spread meters</th>
           </tr>
         </thead>
@@ -792,6 +637,13 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
             <td>{{SP2noSpreadRollsShift2}}</td>
             <td>{{SP2SpreadMetShift2}}</td>
           </tr>
+          <tr>
+            <td>Shift 3</td>
+            <td>{{SP2noLoadRollsShift3}}</td>
+            <td>{{SP2LoadMetShift3}}</td>
+            <td>{{SP2noSpreadRollsShift3}}</td>
+            <td>{{SP2SpreadMetShift3}}</td>
+          </tr>
         </tbody>
       </table>
       <hr />
@@ -804,17 +656,24 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
             <th></th>
             <th>Load orders</th>
             <th>Load meters</th>
-            <th>Spread oredrs</th>
+            <th>Spread orders</th>
             <th>Spread meters</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Shift</td>
-            <td>{{MS1noLoadRollsShift}}</td>
-            <td>{{MS1LoadMetShift}}</td>
-            <td>{{MS1noSpreadRollsShift}}</td>
-            <td>{{MS1SpreadMetShift}}</td>
+            <td>Shift 1</td>
+            <td>{{MS1noLoadRollsShift1}}</td>
+            <td>{{MS1LoadMetShift1}}</td>
+            <td>{{MS1noSpreadRollsShift1}}</td>
+            <td>{{MS1SpreadMetShift1}}</td>
+          </tr>
+          <tr>
+            <td>Shift 2</td>
+            <td>{{MS1noLoadRollsShift2}}</td>
+            <td>{{MS1LoadMetShift2}}</td>
+            <td>{{MS1noSpreadRollsShift2}}</td>
+            <td>{{MS1SpreadMetShift2}}</td>
           </tr>
         </tbody>
       </table>
@@ -834,13 +693,11 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
             <td>Shift 1</td>
             <td>{{CutnoRollsShift1}}</td>
             <td>{{CutMetShift1}}</td>
-            
           </tr>
           <tr>
             <td>Shift 2</td>
             <td>{{CutnoRollsShift2}}</td>
             <td>{{CutMetShift2}}</td>
-            
           </tr>
         </tbody>
       </table>
