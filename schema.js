@@ -401,3 +401,43 @@ schema: {
 
   }
 });
+
+
+Operatos = new Meteor.Collection("operators",  {
+schema: {
+    'OP_Code': {
+        type: Number,
+        unique: true,
+        label: "No",
+        optional: false,
+        decimal: false, 
+        min: 0
+    },
+    'OP_Name': {
+        type: String,
+        label: "Text",
+        optional: true,
+        defaultValue: "" 
+    },
+    'Status': {
+        type: String,
+        label: "Status",
+        optional: true,
+        defaultValue: "Not assigned",
+        allowedValues: ["Not assigned", "SP 1", "SP 2","CUT","Finished"]
+    },
+    'Created': {
+        type: Date,
+        label: "Created",
+         autoValue: function() {
+            if (this.isInsert) {
+                return new Date;
+            } else if (this.isUpsert) {
+                return {$setOnInsert: new Date};
+            } else {
+                this.unset();
+            }
+        }
+    }
+  }
+});
