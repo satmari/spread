@@ -207,6 +207,48 @@ Order = new Meteor.Collection("order", {
         decimal: true, 
         min: 0
     },
+    'XL': {
+        type: Number,
+        label: "XL Marker",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'XLonLayer': {
+        type: Number,
+        label: "XL per Layer",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'XL_Cut': {
+        type: Number,
+        label: "XL Cut",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'XXL': {
+        type: Number,
+        label: "XXL Marker",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'XXLonLayer': {
+        type: Number,
+        label: "XXL per Layer",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'XXL_Cut': {
+        type: Number,
+        label: "XXL Cut",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
     'Priority': {
         type: Number,
         label: "Priority",
