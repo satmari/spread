@@ -1356,7 +1356,9 @@ if (Meteor.isClient) {
 
       var sumXL = 0;
       for (var i = 0; i < order.length; i++) {
-        sumXL += order[i].XL;
+        if (order[i].XL){
+          sumXL += order[i].XL;
+        }
       }
       return sumXL;
     },
@@ -1365,7 +1367,9 @@ if (Meteor.isClient) {
 
       var sumXXL = 0;
       for (var i = 0; i < order.length; i++) {
-        sumXXL += order[i].XXL;
+        if (order[i].XXL){
+          sumXXL += order[i].XXL;
+        }
       }
       return sumXXL;
     },
@@ -2967,7 +2971,7 @@ if (Meteor.isServer) {
           var SonLayer = order[i].SonLayer;
         } else {
           var SonLayer = 0;
-          Order.insert({ _id: order[i]._id}, 
+          Order.update({ _id: order[i]._id, No: order[i].No}, 
             {$set: {SonLayer: 0}}
           );
         }
@@ -2975,7 +2979,7 @@ if (Meteor.isServer) {
           var MonLayer = order[i].MonLayer;
         } else {
           var MonLayer = 0;
-          Order.insert({ _id: order[i]._id}, 
+          Order.update({ _id: order[i]._id, No: order[i].No}, 
             {$set: {MonLayer: 0}}
           );
         }
@@ -2983,7 +2987,7 @@ if (Meteor.isServer) {
           var LonLayer = order[i].LonLayer;  
         } else  {
           var LonLayer = 0;
-          Order.insert({ _id: order[i]._id}, 
+          Order.update({ _id: order[i]._id, No: order[i].No}, 
             {$set: {LonLayer: 0}}
           );
         }
@@ -2991,15 +2995,15 @@ if (Meteor.isServer) {
           var XLonLayer = order[i].XLonLayer;  
         } else {
           var XLonLayer = 0;
-          Order.insert({ _id: order[i]._id}, 
+          Order.update({ _id: order[i]._id, No: order[i].No}, 
             {$set: {XLonLayer: 0}}
           );
         }
-        if (orde[i].XXLonLayer) {
+        if (order[i].XXLonLayer) {
           var XXLonLayer = order[i].XXLonLayer;  
         } else {
           var XXLonLayer = 0;
-          Order.insert({ _id: order[i]._id}, 
+          Order.update({ _id: order[i]._id, No: order[i].No}, 
             {$set: {XXLonLayer: 0}}
           );
         }
