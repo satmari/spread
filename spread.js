@@ -256,11 +256,11 @@ if (Meteor.isClient) {
       }
     }, 
     operatorSelect: function  (){
-      var operators = Operators.find().fetch();
+      var operators = Operators.find({Status: "Active"}).fetch();
       var posarray = [];
 
       for (var i = 0; i < operators.length; i++) {
-        id = operators[i]._Id;
+        //id = operators[i]._Id;
         pos = operators[i].OP_Name;
         posarray.push(pos);
       }
@@ -2041,43 +2041,45 @@ if (Meteor.isClient) {
     'change #sp2': function  (e, t) {
       Session.set("ses_statusfilter", "SP 2");
       console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-
     },
+
     'change #ms1': function  (e, t) {
       Session.set("ses_statusfilter", "MS 1");
       console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-
     },
+
     'change #cut': function  (e, t) {
       Session.set("ses_statusfilter", "CUT");
       console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-
     },
+
     'change #finished': function  (e, t) {
       Session.set("ses_statusfilter", "Finished");
       console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-
     },
+
     'click #trash_orders': function  (e, t) {
       Session.set("ses_statusfilter", "TRASH");
       console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
 
       $( ".btn-group label" ).removeClass( "active" );
     },
+
     'change #selectOperator': function (e, t) {
       var selectOperator = $('#selectOperator').find(":selected").text();
       //console.log("selectOperator: " + selectOperator); 
       Session.set("ses_selectOperator", selectOperator);
       $('.select_operator').hide();
       $('#changeOperator').show();
-       
     },
+
     'click #changeOperator' : function (e, t) {
       Session.set("ses_selectOperator", "");
       $('.select_operator').show();
       $('#selectOperator').val($('#selectOperator option:first').val());
       $('#changeOperator').hide();
     },
+
     'click #login-buttons-logout': function (e, t) {
       Session.set("ses_selectOperator", "");
     }
@@ -2134,6 +2136,7 @@ if (Meteor.isClient) {
 
       rm_EditOrder.hide();
     },
+
     'click #loadOrder': function (){
       //console.log("click load Order");
       var orderToEdit = Session.get("selectedDocId");
@@ -2177,6 +2180,7 @@ if (Meteor.isClient) {
       
       rm_EditOrder.hide();
     },
+
     'click #spreadOrder': function (){
       //console.log("click spread Order");
       var orderToEdit = Session.get("selectedDocId");
@@ -2248,6 +2252,7 @@ if (Meteor.isClient) {
       //delete input_actuallaysers;
       rm_EditOrder.hide();
     },
+
     'click #cutOrder': function (){
 
       var orderToEdit = Session.get("selectedDocId");
@@ -2294,6 +2299,7 @@ if (Meteor.isClient) {
 
       rm_EditOrder.hide();
     },
+
     'click #insertposition': function(e){
       //console.log("saveposition clicked");
 
@@ -2333,11 +2339,11 @@ if (Meteor.isClient) {
       Meteor.call('method_ubacinapoz', actualPosition, actualStatus, selectedPositionN, function(err, data) {
         //console.log("method_ubacinapoz: " + data);
       });
-    }
+      }
 
-    rm_EditOrder.hide();
-
+      rm_EditOrder.hide();
     },
+
     'click #linkposition': function(e){
 
       var orderToEdit = Session.get("selectedDocId");
@@ -2394,6 +2400,7 @@ if (Meteor.isClient) {
 
       rm_EditOrder.hide();
     },
+
     'click #unlinkposition' : function(e){
       var orderToEdit = Session.get("selectedDocId");
       var order = Order.find({_id: orderToEdit}).fetch();
@@ -2442,6 +2449,7 @@ if (Meteor.isClient) {
 
       rm_EditOrder.hide();      
     },
+
     'click #changestatus': function(e){
 
       var orderToEdit = Session.get("selectedDocId");
@@ -2497,6 +2505,7 @@ if (Meteor.isClient) {
       
       rm_EditOrder.hide();
     },
+
   });
 
   Template.tmp_ImportPlannedMarkers.events({
@@ -2739,7 +2748,6 @@ if (Meteor.isClient) {
       var rd_newoperators = ReactiveModal.initDialog(rm_NewOperators);
       rd_newoperators.show();
     }
-
   });
 
   Template.tmp_ExportOrder.events({
@@ -3249,10 +3257,10 @@ if (Meteor.isServer) {
     return Order.find({ 
       $and: [
       {Status: status},
-      
       ]
     })
   });
+
   Meteor.publish("filter_statusfilterwithDate", function(status, Daysbefore , Daysafter){
     return Order.find({ 
       $and: [
@@ -3261,17 +3269,17 @@ if (Meteor.isServer) {
       ]
     })
   });
+
   Meteor.publish("filter_allOrderswithDate", function(Daysbefore , Daysafter){
     return Order.find({Date: {$gte: Daysbefore, $lt: Daysafter}})
-    
   });
+
   Meteor.publish("filter_allOrderswithSpreadDate", function(Daysbefore , Daysafter){
-    return Order.find({SpreadDate: {$gte: Daysbefore, $lt: Daysafter}})
-    
+    return Order.find({SpreadDate: {$gte: Daysbefore, $lt: Daysafter}})  
   });
+
   Meteor.publish("filter_allOrderswithCutDate", function(Daysbefore , Daysafter){
     return Order.find({CutDate: {$gte: Daysbefore, $lt: Daysafter}})
-    
   });
 
   Meteor.publish("method_allOperators", function(){
