@@ -9,6 +9,21 @@
 */
 /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
 
+.operator {
+  position: absolute;
+  color: white;
+  font-size: 20px;
+  top: 0px;
+  right: 300px
+}
+.machine {
+  position: absolute;
+  color: white;
+  font-size: 20px;
+  top: 0px;
+  right: 20px
+}
+
 tbody .S_Cut,tbody .M_Cut,tbody .L_Cut, tbody .XL_Cut, tbody .XXL_Cut, tbody .Komesa {
   border-left: 1px solid #fff !important;
   border-right: 1px solid #fff !important;

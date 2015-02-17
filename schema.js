@@ -278,6 +278,13 @@ Order = new Meteor.Collection("order", {
         label: "Spread Date",
         optional: true,
     },
+    'SpreadOperator': {
+        type: String,
+        label: "Spread Operator",
+        optional: true,
+        defaultValue: "",
+        max: 50
+    },
     'Cut': {
         type: String, 
         label: "Cut",
@@ -343,6 +350,7 @@ Priority
 Load
 Spread
 SpreadDate
+SpreadOperator
 Cut
 CutDate
 Comment
@@ -399,5 +407,52 @@ schema: {
 
     }
 
+  }
+});
+
+
+Operators = new Meteor.Collection("operators",  {
+schema: {
+    'OP_Code': {
+        type: Number,
+        unique: true,
+        label: "Operator Code",
+        optional: false,
+        decimal: false, 
+        min: 0
+    },
+    'OP_Name': {
+        type: String,
+        label: "Operator Name",
+        optional: false,
+        defaultValue: "" 
+    },
+    'Machine': {
+        type: String,
+        label: "Machine Type",
+        optional: true,
+        defaultValue: "",
+        allowedValues: ["Spreader", "Manual Spreader", "Cutter"]
+    },
+    'Status': {
+        type: String,
+        label: "Status",
+        optional: true,
+        defaultValue: "Active",
+        allowedValues: ["Active", "Not active"]
+    },
+    'Created': {
+        type: Date,
+        label: "Created",
+         autoValue: function() {
+            if (this.isInsert) {
+                return new Date;
+            } else if (this.isUpsert) {
+                return {$setOnInsert: new Date};
+            } else {
+                this.unset();
+            }
+        }
+    }
   }
 });
