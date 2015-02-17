@@ -62,11 +62,23 @@ if (Meteor.isClient) {
         var User = Meteor.users.findOne({_id: userId});
 
         Session.set("loggedUserId", User._id);
-        Session.set("loggedUserName", User.username);
+        Session.set("loggedUserName", User.username); 
         //console.log("Startup: UserId: " + User._id);
         //console.log("Startup: UserName: " + User.username);
     }
 
+    Session.set("ses_selectOperator", "");
+    var selectOperator = Session.get("ses_selectOperator");
+    //console.log("operator is(startup): " + selectOperator);
+
+    if (selectOperator) {
+      $('.select_operator').hide();
+      $('#changeOperator').show();
+    } else {
+      $('.select_operator').show();
+      $('#selectOperator').val($('#selectOperator option:first').val());
+      $('#changeOperator').hide();
+    }
     //Session.set("ses_SP1message", "");
     //Session.set("ses_SP2message", "");
 
@@ -132,6 +144,23 @@ if (Meteor.isClient) {
     } else {
       Meteor.subscribe('filter_orderWithDate', ses_datefilter);
     }
+
+    // Operators
+    Meteor.subscribe('method_allOperators');
+
+    var selectOperator = Session.get("ses_selectOperator");
+    //console.log("operator is (autosubscribe): " + selectOperator);
+
+    if (selectOperator) {
+      $('.select_operator').hide();
+      $('#changeOperator').show();
+    } else {
+      $('.select_operator').show();
+      $('#selectOperator').val($('#selectOperator option:first').val());
+      $('#changeOperator').hide();
+    }
+      
+      
 
       Meteor.call('method_uniquecountPosNA', function(err, data) {
         //console.log("method_uniquecountPosNA: " + data);
@@ -208,6 +237,17 @@ if (Meteor.isClient) {
         }
       }
     },
+    isSp: function() {
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23")) {
+          return true;
+        } else {
+          return false;  
+        }
+      }
+    },
     User: function(){
       var userId = Meteor.userId();
       if (userId) {
@@ -215,9 +255,25 @@ if (Meteor.isClient) {
         return User;
       }
     }, 
+    operatorSelect: function  (){
+      var operators = Operators.find().fetch();
+      var posarray = [];
+
+      for (var i = 0; i < operators.length; i++) {
+        id = operators[i]._Id;
+        pos = operators[i].OP_Name;
+        posarray.push(pos);
+      }
+      posarray.sort(function(a, b){return a-b});
+      return posarray;
+    }, 
+    OperatorSelected: function () {
+      var operator = Session.get("ses_selectOperator");
+      return operator;
+    }
   });
     
-  // Reactive-table
+   // Reactive-table
   Template.reactiveTebleList.orders = function () {
       return Order.find();
   }
@@ -416,6 +472,7 @@ if (Meteor.isClient) {
               }
             }
           },
+          { key: 'SpreadOperator', label: 'Spread Operator'},
           { key: 'Cut', label: 'Cut' },
           { key: 'CutDate', label: 'Cut Date',
              fn: function (value) {
@@ -602,6 +659,7 @@ if (Meteor.isClient) {
               }
             }
           },
+          { key: 'SpreadOperator', label: 'Spread Operator'},
           { key: 'Cut', label: 'Cut' },
           { key: 'CutDate', label: 'Cut Date',
              fn: function (value) {
@@ -903,7 +961,7 @@ if (Meteor.isClient) {
 
   // Edit Order on click (in table) - Reactive Modal
     var rm_EditOrder = {
-    type: 'type-default',   //type-default, type-info, type-primary, 'type-success', 'type-warning' , 'type-danger' 
+      type: 'type-default',   //type-default, type-info, type-primary, 'type-success', 'type-warning' , 'type-danger' 
       //size: '',
       template: Template.tmp_EditOrder, 
       title: "Edit Order",
@@ -1063,7 +1121,7 @@ if (Meteor.isClient) {
         }
         return Order_ActualLayers;
       },
-      isLoaded: function () {
+      isNotLoaded: function () {
         var ses = Session.get("selectedDocId");
 
         var order = Order.find({_id: ses}).fetch();
@@ -1078,58 +1136,64 @@ if (Meteor.isClient) {
           return true;
         }
       },
-      positionSelect: function  (){
+      positionSelect: function (){
 
-        Meteor.call('method_arrayofPosNA', function(err,data) {
-          var arrayofPosNA = data;
-          Session.set('ses_arrayofPosNA', arrayofPosNA);
-          //console.log("ses_arrayofPosNA: " + arrayofPosNA);
-        });
-        var uniqarrayofPosNA = $.makeArray($(Session.get('ses_arrayofPosNA')).filter(function(i,itm){ 
-          return i == $(Session.get('ses_arrayofPosNA')).index(itm);
-        }));
-        
-        Meteor.call('method_arrayofPosSp1', function(err,data) {
-          var arrayofPosSp1 = data;
-          Session.set('ses_arrayofPosSp1', arrayofPosSp1);
-          //console.log("ses_arrayofPosSp1: " + arrayofPosSp1);
-        });
-        var uniqarrayofPosSp1 = $.makeArray($(Session.get('ses_arrayofPosSp1')).filter(function(i,itm){ 
-          return i == $(Session.get('ses_arrayofPosSp1')).index(itm);
-        }));
-          
-        Meteor.call('method_arrayofPosSp2', function(err,data) {
-          var arrayofPosSp2 = data;
-          Session.set('ses_arrayofPosSp2', arrayofPosSp2);
-          //console.log("ses_arrayofPosSp2: " + arrayofPosSp2);
-        });
-        var uniqarrayofPosSp2 = $.makeArray($(Session.get('ses_arrayofPosSp2')).filter(function(i,itm){ 
-          return i == $(Session.get('ses_arrayofPosSp2')).index(itm);
-        }));
-
-        Meteor.call('method_arrayofPosMs1', function(err,data) {
-          var arrayofPosMs1 = data;
-          Session.set('ses_arrayofPosMs1', arrayofPosMs1);
-          //console.log("ses_arrayofPosSp2: " + arrayofPosSp2);
-        });
-        var uniqarrayofPosMs1 = $.makeArray($(Session.get('ses_arrayofPosMs1')).filter(function(i,itm){ 
-          return i == $(Session.get('ses_arrayofPosMs1')).index(itm);
-        }));
-        
         var click_id_status = Session.get('click_id_status');
 
         if (click_id_status == 'SP 1'){
+          
+          Meteor.call('method_arrayofPosSp1', function(err,data) {
+            var arrayofPosSp1 = data;
+            Session.set('ses_arrayofPosSp1', arrayofPosSp1);
+            //console.log("ses_arrayofPosSp1: " + arrayofPosSp1);
+          });
+          var uniqarrayofPosSp1 = $.makeArray($(Session.get('ses_arrayofPosSp1')).filter(function(i,itm){ 
+            return i == $(Session.get('ses_arrayofPosSp1')).index(itm);
+          }));
           return uniqarrayofPosSp1;
+        
         } else if (click_id_status == 'SP 2'){
+          
+          Meteor.call('method_arrayofPosSp2', function(err,data) {
+            var arrayofPosSp2 = data;
+            Session.set('ses_arrayofPosSp2', arrayofPosSp2);
+            //console.log("ses_arrayofPosSp2: " + arrayofPosSp2);
+          });
+          var uniqarrayofPosSp2 = $.makeArray($(Session.get('ses_arrayofPosSp2')).filter(function(i,itm){ 
+            return i == $(Session.get('ses_arrayofPosSp2')).index(itm);
+          }));
+
           return uniqarrayofPosSp2;
+
         } else if (click_id_status == 'MS 1'){
+
+          Meteor.call('method_arrayofPosMs1', function(err,data) {
+            var arrayofPosMs1 = data;
+            Session.set('ses_arrayofPosMs1', arrayofPosMs1);
+            //console.log("ses_arrayofPosSp2: " + arrayofPosSp2);
+          });
+          var uniqarrayofPosMs1 = $.makeArray($(Session.get('ses_arrayofPosMs1')).filter(function(i,itm){ 
+            return i == $(Session.get('ses_arrayofPosMs1')).index(itm);
+          }));
+
           return uniqarrayofPosMs1;
+
         } else if (click_id_status == 'Not assigned'){
+          
+          Meteor.call('method_arrayofPosNA', function(err,data) {
+            var arrayofPosNA = data;
+            Session.set('ses_arrayofPosNA', arrayofPosNA);
+            //console.log("ses_arrayofPosNA: " + arrayofPosNA);
+          });
+          var uniqarrayofPosNA = $.makeArray($(Session.get('ses_arrayofPosNA')).filter(function(i,itm){ 
+            return i == $(Session.get('ses_arrayofPosNA')).index(itm);
+          }));
+
           return uniqarrayofPosNA;
+
         } else {
           return ['None'];
         }
-
       },
       statusSelect: function (){      
         var click_id_status = Session.get('click_id_status');
@@ -1139,8 +1203,7 @@ if (Meteor.isClient) {
 
         var  arrayofStasus = Session.get('ses_arrayofStatus');
         return arrayofStasus;
-
-       },
+      },
       isSPfilter: function (){
         var statusFilter = Session.get("ses_statusfilter");
         if ((statusFilter == "SP 1") || (statusFilter == "SP 2") || (statusFilter == "MS 1") || (statusFilter == "Not assigned")) {
@@ -1149,6 +1212,15 @@ if (Meteor.isClient) {
           return false;
         }
       },
+      isOperatorNotSlected: function (){
+        var operatorSelected = Session.get("ses_selectOperator");
+
+        if (operatorSelected || (operatorSelected != "")) {
+          return false;
+        } else {
+          return true;
+        }
+      }
 
       /*isSpreaded: function () {
         var ses = Session.get("selectedDocId")
@@ -1275,6 +1347,48 @@ if (Meteor.isClient) {
   var rm_Statistics = {
      template: Template.tmp_Statistics, 
       title: "Statistic for actual order table",
+      //modalDialogClass: "modal-dialog", //optional
+      //modalBodyClass: "modal-body", //optional
+      //modalFooterClass: "modal-footer",//optional
+      closable: false,
+      removeOnHide: true,
+      buttons: {
+        //"cancel": {
+        //  class: 'btn-danger',
+        //  label: 'Cancel'
+          //},
+          "ok": {
+            closeModalOnClick: true, // if this is false, dialog doesnt close automatically on click
+            class: 'btn-info',
+            label: 'Back'
+          }
+      } 
+  };
+
+  var rm_Operators = {
+     template: Template.tmp_Operators, 
+      title: "Operators table",
+      //modalDialogClass: "modal-dialog", //optional
+      //modalBodyClass: "modal-body", //optional
+      //modalFooterClass: "modal-footer",//optional
+      closable: false,
+      removeOnHide: true,
+      buttons: {
+        //"cancel": {
+        //  class: 'btn-danger',
+        //  label: 'Cancel'
+          //},
+          "ok": {
+            closeModalOnClick: true, // if this is false, dialog doesnt close automatically on click
+            class: 'btn-info',
+            label: 'Back'
+          }
+      } 
+  };
+
+  var rm_NewOperators = {
+     template: Template.tmp_NewOperators, 
+      title: "Add New Operator",
       //modalDialogClass: "modal-dialog", //optional
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
@@ -1757,7 +1871,6 @@ if (Meteor.isClient) {
       Session.set("ses_DaysAfter", dateselAfter1);
       Session.set("ses_datefilter", dateselAfter1); //just to skip all
       dateselAfter1 = "";
-
     },
 
     /*'click #new_order': function (e, t) {
@@ -1803,11 +1916,10 @@ if (Meteor.isClient) {
       var rd_importPlannedMarkers = ReactiveModal.initDialog(rm_ImportPlannedMarkers);
       // Show rd_addneworder
       rd_importPlannedMarkers.show();
-
     },
 
     'click #export_orders' : function () {
-      console.log('export orders - click')
+      //console.log('export orders - click')
 
       // Define rd_addneworder
       var rd_exportOrder = ReactiveModal.initDialog(rm_ExportOrder);
@@ -1816,7 +1928,7 @@ if (Meteor.isClient) {
     },
 
     'click #import_orders' : function () {
-      console.log('import orders - click')
+      //console.log('import orders - click')
 
       // Define rd_addneworder
       var rd_importOrder = ReactiveModal.initDialog(rm_ImportOrder);
@@ -1878,6 +1990,11 @@ if (Meteor.isClient) {
       rd_statistics.show();
     },
 
+    'click #operators' : function (e, t) {
+      var rd_operators = ReactiveModal.initDialog(rm_Operators);
+      rd_operators.show();
+    },
+
     'change #allorder_date': function (e, t) {
 
         if ($('#allorder_date').prop('checked')){
@@ -1888,6 +2005,7 @@ if (Meteor.isClient) {
           Session.set("ses_allorder_date", false);
         }
     },
+
     'change #allorder_spreaddate': function (e, t) {
 
         if ($('#allorder_spreaddate').prop('checked')){
@@ -1898,6 +2016,7 @@ if (Meteor.isClient) {
           Session.set("ses_allorder_spreaddate", false);
         }
     },
+
     'change #allorder_cutdate': function (e, t) {
 
         if ($('#allorder_cutdate').prop('checked')){
@@ -1912,13 +2031,13 @@ if (Meteor.isClient) {
     'change #not_assigned': function  (e, t) {
       Session.set("ses_statusfilter", "Not assigned");
       console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
- 
     },
+
     'change #sp1': function  (e, t) {
       Session.set("ses_statusfilter", "SP 1");
       console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-
     },
+
     'change #sp2': function  (e, t) {
       Session.set("ses_statusfilter", "SP 2");
       console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
@@ -1944,10 +2063,28 @@ if (Meteor.isClient) {
       console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
 
       $( ".btn-group label" ).removeClass( "active" );
+    },
+    'change #selectOperator': function (e, t) {
+      var selectOperator = $('#selectOperator').find(":selected").text();
+      //console.log("selectOperator: " + selectOperator); 
+      Session.set("ses_selectOperator", selectOperator);
+      $('.select_operator').hide();
+      $('#changeOperator').show();
+       
+    },
+    'click #changeOperator' : function (e, t) {
+      Session.set("ses_selectOperator", "");
+      $('.select_operator').show();
+      $('#selectOperator').val($('#selectOperator option:first').val());
+      $('#changeOperator').hide();
+    },
+    'click #login-buttons-logout': function (e, t) {
+      Session.set("ses_selectOperator", "");
     }
+
   });
 
-  
+
   Template.tmp_EditOrder.events({
     'click #deleteOrder': function (e, t) {
       var orderToDelete = Session.get("selectedDocId");
@@ -2039,7 +2176,6 @@ if (Meteor.isClient) {
       }); 
       
       rm_EditOrder.hide();
-
     },
     'click #spreadOrder': function (){
       //console.log("click spread Order");
@@ -2102,7 +2238,10 @@ if (Meteor.isClient) {
       var uniquecountSelected = Session.get("ses_uniquecountPosCUT");
       var uniquecountSelectedPosition = uniquecountSelected + 1;
 
-      Meteor.call('method_spreadOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, function(err, data) {
+      var selectedOperator = Session.get("ses_selectOperator");
+      console.log("selectedOperator: " + selectedOperator);
+
+      Meteor.call('method_spreadOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperator, function(err, data) {
         //console.log("method_spreadOrder: " + data);
       });
       
@@ -2150,7 +2289,7 @@ if (Meteor.isClient) {
       var uniquecountSelectedPosition = uniquecountSelected + 1;
 
       Meteor.call('method_cutOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditCut, cutDate, function(err, data) {
-        //console.log("method_spreadOrder: " + data);
+        //console.log("method_cutOrder: " + data);
       });
 
       rm_EditOrder.hide();
@@ -2358,10 +2497,7 @@ if (Meteor.isClient) {
       
       rm_EditOrder.hide();
     },
-
-    
   });
-
 
   Template.tmp_ImportPlannedMarkers.events({
     'change #files_planned_markers': function (e) {
@@ -2591,8 +2727,20 @@ if (Meteor.isClient) {
   });
 
   Template.tmp_ExportOrder.order = function() {
-    return Order.find();
+    return Order.find(); // orders form subscribe
   }
+
+  Template.tmp_Operators.operators = function() {
+    return Operators.find(); // operators form subscribe                                       
+  }
+
+  Template.tmp_Operators.events({
+    'click #newoperators' : function (e, t) {
+      var rd_newoperators = ReactiveModal.initDialog(rm_NewOperators);
+      rd_newoperators.show();
+    }
+
+  });
 
   Template.tmp_ExportOrder.events({
       'click #download_from_textarea' : function (e, t) {
@@ -2954,7 +3102,7 @@ if (Meteor.isServer) {
       }
     return "Not found method_loadOrder";
   }, 
-  method_spreadOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate) {
+  method_spreadOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperator) {
     var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
       for (var i = 0; i < order.length; i++) {
         var oreder_id = order[i]._id;
@@ -3007,6 +3155,7 @@ if (Meteor.isServer) {
             {$set: {XXLonLayer: 0}}
           );
         }
+
        
         var S = LayersToCount * SonLayer;
         var M = LayersToCount * MonLayer;
@@ -3020,7 +3169,7 @@ if (Meteor.isServer) {
         var XXL_Cut = XXL;
 
         Order.update({ _id: order[i]._id},
-          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Spread: userEditSpread, SpreadDate: spreadDate, S: S, M: M, L: L, XL: XL, XXL: XXL, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut, XL_Cut: XL_Cut, XXL_Cut: XXL_Cut}},
+          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Spread: userEditSpread, SpreadDate: spreadDate, S: S, M: M, L: L, XL: XL, XXL: XXL, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut, XL_Cut: XL_Cut, XXL_Cut: XXL_Cut, SpreadOperator: selectedOperator}},
           //{$inc: {Position: -1}}, 
           {multi: true}
         ); 
@@ -3125,6 +3274,11 @@ if (Meteor.isServer) {
     
   });
 
+  Meteor.publish("method_allOperators", function(){
+    return Operators.find();
+  });
+
+
 }
 
 var admin = ""; //123123
@@ -3178,3 +3332,4 @@ var ms12 = "";   // 121212
 //meteor add naxio:flash
 // meteor add mrt:flash-messages-plus
 // meteor add mrt:flash-messages
+//meteor add aldeed:delete-button

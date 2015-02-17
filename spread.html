@@ -42,13 +42,14 @@
     <ul class="nav navbar-nav" style="margin: 8px;">
       <div class="navbar-form">
         <div class="form-group">
-          {{> loginButtons }}
+          <!--{{> loginButtons }}-->
+          {{> loginButtons}}
         </div>
       </div>
     </ul>
 
     <!--ONLY IF IS ADMIN -->  
-    {{#if isAdminOrGuest}}
+  {{#if isAdminOrGuest}}
     <ul class="nav navbar-nav">
       <li><a href="#">|</a></li>
     </ul>
@@ -64,12 +65,15 @@
         <button id="statistics" class="btn btn-warning">Statistics</button>
       </div></li>
     </ul>
-    <!--
-    <ul class="nav navbar-nav">
-      <li><a href="#">|</a></li>
-    </ul>
-    -->
     
+    <ul class="nav navbar-nav"><li class="active">
+       <div class="navbar-form">
+        <button type="button" class="btn btn-default" id="operators">
+            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+        </button>
+      </div></li>
+    </ul>
+
     <ul class="nav navbar-nav">
       <div class="navbar-form">
         <div class="form-group">
@@ -77,33 +81,20 @@
           <!--<li><span style="color: white">Orders without Status SP.. : </span></li>-->
           <li><span style="color: white">All orders (+date range (Date)): </span></li>
           <li><span style="color: white">All orders (+date range (Spread Date)): </span></li>
-          <li><span style="color: white">All orders (+date range (Cut Date)): </span></li>
+          <!--<li><span style="color: white">All orders (+date range (Cut Date)): </span></li>-->
         </div>
         <div class="form-group">
           <!--<li style="padding-left: 50%;"><input type="checkbox" id="orderWithoutDate"/></li>-->
           <!--<li style="padding-left: 50%;"><input type="checkbox" id="orderWithoutJob"/></li>-->
           <li style="padding-left: 50%;"><input type="checkbox" id="allorder_date"/></li>
           <li style="padding-left: 50%;"><input type="checkbox" id="allorder_spreaddate"/></li>
-          <li style="padding-left: 50%;"><input type="checkbox" id="allorder_cutdate"/></li>
+          <!--<li style="padding-left: 50%;"><input type="checkbox" id="allorder_cutdate"/></li>-->
         </div>
       </div>
     </ul>
 
-       
-    <!--
-    <ul class="nav navbar-nav">
-      <li><a href="#">|</a></li>
-    </ul>
-    -->
-    {{/if}}
-    <!--ONLY IF IS ADMIN -->  
-
-
     <ul class="nav navbar-nav">
       <div class="navbar-form">
-        
-        {{#if isAdminOrGuest}}
-
         <div class="btn-group" data-toggle="buttons" style="border: 1px solid #000; border-radius: 5px;">
           <button type="button" class="btn btn-default" id="trash_orders">
             <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
@@ -137,7 +128,7 @@
             <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
           </button>-->
 
-          <label class="btn btn-info input-group">
+          <label class="btn btn-info ">
             <input type="radio" name="options" id="cut"> to CUT
           </label>
           <!--<button type="radio" class="btn btn-info" id="sp1"> to CUT 
@@ -166,22 +157,74 @@
           <li><a href="#"></a></li>
           </ul>-->
         </div>
-
-        {{/if}}
-        <!-- class="navbar-form navbar"  type="submit"-->
+       <!-- class="navbar-form navbar"  type="submit"-->
       </div>  
     </ul>
     
+  {{/if}}
     <!--<ul class="nav navbar-nav">
       <div class="navbar-form">
         <input type="text" id="filterName" class="form-control" placeholder="Filter Order Name"/>
       </div>
     </ul>-->
-    {{#if User.username}}
-      <ul class="nav navbar-nav navbar-right">
-      <h3 style="color:white"> <small> Hello,  </small>{{User.username}} </h3>
+  {{#if isSp}}
+    <!--
+    <ul class="nav navbar-nav">
+        <div class="navbar-form">
+          <div class="dropdown">
+          <a data-toggle="dropdown" href="#" class="btn btn-info">Select your name</a>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+            <li role="presentation"><a tabindex="-1" role="menuitem" href="#">Action</a></li>
+            <li role="presentation"><a tabindex="-1" role="menuitem" href="#">Another action</a></li>
+            <li role="presentation"><a tabindex="-1" role="menuitem" href="#">Something else here</a></li>
+            <li class="divider" role="presentation"></li>
+            <li role="presentation"><a tabindex="-1" role="menuitem" href="#">Separated link</a></li>  
+          </ul>
+        </div>
+      </div>
     </ul>
+    -->
+
+    <ul class="nav navbar-nav">
+       <div class="navbar-form select_operator"><span style="color:#b4bcc2;font-size:16px">Select operator: </span>
+          <select class="form-control selectpicker" id="selectOperator" title="Select operator">
+                <option></option>
+             {{#each operatorSelect}}
+                <option>{{this}}</option>
+             {{/each}}
+          </select>
+      </div>
+    </ul>
+    <ul class="nav navbar-nav">
+      <div class="navbar-form">
+        <button id="changeOperator" class="btn btn-default">Change operator</button>
+      </div>
+    </ul>
+
     {{/if}}
+
+
+
+    {{#if isAdminOrGuest}}
+      <ul class="nav navbar-nav navbar-right">
+        <h3 style="color:white; font-size: 20px;"> <small> User:  </small>{{User.username}} </h3>
+      </ul>
+    
+    {{else}}
+    
+    {{#if OperatorSelected}}
+      <ul class="nav navbar-nav operator">
+        <h3 style="color:white; font-size: 20px;" > <small> Operator: </small>{{OperatorSelected}} </h3>
+      </ul>
+    {{/if}}
+    {{#if User.username}}
+      <ul class="nav navbar-nav machine">
+        <h3 style="color:white; font-size: 20px;"> <small> Machine and shift: </small>{{User.username}} </h3>
+      </ul>
+    {{/if}}
+ 
+    {{/if}}
+    
   </div>
   </div>
 </template>
@@ -355,7 +398,7 @@
                       </div>
               <hr />
               <big><b>Order Information</b></big><br />
-              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,XL,XXL,SpreadDate,CutDate,Status,Position"}}
+              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,XL,XXL,SpreadDate,SpreadOperator,CutDate,Status,Position"}}
 
               <div class="">
                 <br />
@@ -366,12 +409,17 @@
             {{#if isUserSp}}  
                 <table class="table" style="width:550px">
                   <tbody>
-                    <p>User:  <big>{{User}}</big></p>
+                    <p>Machine and shift:  <big>{{User}}</big></p>
                     <p>Oredr Info: <big>No: <b>{{Order_No}}</b>, Komesa: <b>{{Order_Komesa}}</b>, Marker: <b>{{Order_Marker}}</b></big></p>
                     <p>Fabric Info: <big>Fabric: <b>{{Order_Fabric}}</b>, Bagno: <b>{{Order_Bagno}}</b>, Color Desc: <b>{{Order_ColorDesc}}</b></big></p>
                     <hr />
+                {{#if isOperatorNotSlected}}
 
-                    {{#if isLoaded}}
+                  <legend style="color:red;">Please select operator</legend>
+
+                {{else}}
+
+                    {{#if isNotLoaded}}
                     
                     {{#autoForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc }}
                       <fieldset>
@@ -405,6 +453,7 @@
                       </tr>
 
                     {{/if}}
+                {{/if}}
                   </tbody>
                 </table>
             {{/if}}
@@ -509,8 +558,8 @@
     <div>
       <p>Copy CSV code (Order list): </p>
       <textarea id="textarea_json" class="text" style="width:100%; height:200px;">
-_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;XL;XLonLayer;XL_Cut;XXL;XXLonLayer;XXL_Cut;Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink
-{{#each order}}{{_id}};{{No}};{{Position}};{{Status}};{{formatDate Date "short"}};{{formatDate Created "long"}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{formaColorDesc ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{formatNumber Length}};{{Extra}};{{formatNumber LengthSum}};{{Width}};{{S}};{{SonLayer}};{{S_Cut}};{{M}};{{MonLayer}};{{M_Cut}};{{L}};{{LonLayer}};{{L_Cut}};{{XL}};{{XLonLayer}};{{XL_Cut}};{{XXL}};{{XXLonLayer}};{{XXL_Cut}};{{Priority}};{{Load}};{{Spread}};{{formatDate SpreadDate "short"}};{{Cut}};{{formatDate CutDate "short"}};{{Comment}};{{OrderLink}}
+_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;XL;XLonLayer;XL_Cut;XXL;XXLonLayer;XXL_Cut;Priority;Load;Spread;SpreadDate;SpreadOperator;Cut;CutDate;Comment;OrderLink
+{{#each order}}{{_id}};{{No}};{{Position}};{{Status}};{{formatDate Date "short"}};{{formatDate Created "long"}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{formaColorDesc ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{formatNumber Length}};{{Extra}};{{formatNumber LengthSum}};{{Width}};{{S}};{{SonLayer}};{{S_Cut}};{{M}};{{MonLayer}};{{M_Cut}};{{L}};{{LonLayer}};{{L_Cut}};{{XL}};{{XLonLayer}};{{XL_Cut}};{{XXL}};{{XXLonLayer}};{{XXL_Cut}};{{Priority}};{{Load}};{{Spread}};{{formatDate SpreadDate "short"}};{{SpreadOperator}};{{Cut}};{{formatDate CutDate "short"}};{{Comment}};{{OrderLink}}
 {{/each}}</textarea>
       <!--<textarea id="textarea_json" class="text" style="width:100%; height:200px;">
 _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink
@@ -703,6 +752,41 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
         </tbody>
       </table>
   </div>
+</template>
+
+<template name="tmp_Operators">
+  <div>
+    <table class="table table-hover">
+      <thead>
+          <tr>
+            <th>Op Code</th>
+            <th>Operator Name</th>
+            <th>Machine type</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{#each operators}}
+          <tr>
+            <td>{{OP_Code}}</td>
+            <td>{{OP_Name}}</td>
+            <td>{{Machine}}</td>
+            <td>{{Status}}</td>
+          </tr>
+        {{/each}}
+        </tbody>
+      </table>
+  </div>
+  <div>
+  <a href="#" id="newoperators" class="btn btn-info btn">Add new Operator</a>
+    
+  
+
+  </div>
+</template>
+
+<template name="tmp_NewOperators">
+  {{> quickForm collection="Operators" id="insertOperatorsForm" type="insert" buttonContent="Add Operator" omitFields="Created"}}
 </template>
 
 <template name="tmp_alert">
