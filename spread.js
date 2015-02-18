@@ -241,7 +241,7 @@ if (Meteor.isClient) {
       var userId = Meteor.userId();
       if (userId) {
         var User = Meteor.users.findOne({_id: userId});
-        if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23")) {
+        if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "ms11") || (User.username == "ms12")) {
           return true;
         } else {
           return false;  
@@ -256,8 +256,19 @@ if (Meteor.isClient) {
       }
     }, 
     operatorSelect: function  (){
-      var operators = Operators.find({Status: "Active"}).fetch();
+      var userId = Meteor.userId();
       var posarray = [];
+
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23")) {
+          var operators = Operators.find({Status: "Active", Machine: "Spreader"}).fetch();
+
+        } else if ((User.username == "ms11") || (User.username == "ms12")) { 
+          var operators = Operators.find({Status: "Active", Machine: "Manual Spreader"}).fetch();
+
+        }
+      }
 
       for (var i = 0; i < operators.length; i++) {
         //id = operators[i]._Id;
@@ -353,7 +364,7 @@ if (Meteor.isClient) {
               };
             }
           },
-          { key: 'Date', label: 'Date',
+          /*{ key: 'Date', label: 'Date',
             fn: function (value) {
               if (value){
                 return moment(value).format("YYYY-MM-DD");
@@ -362,11 +373,11 @@ if (Meteor.isClient) {
               }
               //return moment(value).format("DD-MM-YYYY");
             }//, sort: 'descending' // ascending
-          },
+          },*/
           //{ key: 'Created', label: 'Created' },
           { key: 'Komesa', label: 'Komesa' },
           { key: 'Marker', label: 'Marker' },
-          { key: 'Style', label: 'Style' },
+          //{ key: 'Style', label: 'Style' },
           { key: 'Fabric', label: 'Fabric' },
           { key: 'ColorCode', label: 'Color Code' },
           { key: 'ColorDesc', label: 'Color Desc' },
@@ -388,21 +399,21 @@ if (Meteor.isClient) {
               } 
           },
           { key: 'Extra', label: 'Extra (cm)' },
-          { key: 'LengthSum', label: 'Tot Meters Required (m)',
+          { key: 'LengthSum', label: 'Tot Meters Req. (m)',
               fn: function  (value){
                 var v = Number(value);
                 return v.toFixed(2);
               }
             },
-          { key: 'Width', label: 'Width (cm)' },
+          //{ key: 'Width', label: 'Width (cm)' },
           { key: 'SonLayer', label: 'S per Layer'},
-          { key: 'S', label: 'S Marker' },
+          { key: 'S', label: 'S Tot' },
           { key: 'S_Cut', label: 'S Cut'},
           { key: 'MonLayer', label: 'M per Layer'},
-          { key: 'M', label: 'M Marker' },
+          { key: 'M', label: 'M Tot' },
           { key: 'M_Cut', label: 'M Cut'},
           { key: 'LonLayer', label: 'L per Layer'},
-          { key: 'L', label: 'L Marker' },
+          { key: 'L', label: 'L Tot' },
           { key: 'L_Cut', label: 'L Cut'},
           { key: 'XLonLayer', label: 'XL per Layer'},
           { key: 'XL', label: 'XL Marker' },
@@ -540,7 +551,7 @@ if (Meteor.isClient) {
               };
             }
           },
-          { key: 'Date', label: 'Date',
+          /*{ key: 'Date', label: 'Date',
             fn: function (value) {
               if (value){
                 return moment(value).format("YYYY-MM-DD");
@@ -549,11 +560,11 @@ if (Meteor.isClient) {
               }
               //return moment(value).format("DD-MM-YYYY");
             }//, sort: 'descending' // ascending
-          },
+          },*/
           //{ key: 'Created', label: 'Created' },
           { key: 'Komesa', label: 'Komesa' },
           { key: 'Marker', label: 'Marker' },
-          { key: 'Style', label: 'Style' },
+          //{ key: 'Style', label: 'Style' },
           { key: 'Fabric', label: 'Fabric' },
           { key: 'ColorCode', label: 'Color Code' },
           { key: 'ColorDesc', label: 'Color Desc' },
@@ -575,21 +586,21 @@ if (Meteor.isClient) {
               } 
           },
           { key: 'Extra', label: 'Extra (cm)' },
-          { key: 'LengthSum', label: 'Tot Meters Required (m)',
+          { key: 'LengthSum', label: 'Tot Meters Req. (m)',
               fn: function  (value){
                 var v = Number(value);
                 return v.toFixed(2);
               }
             },
-          { key: 'Width', label: 'Width (cm)' },
+          //{ key: 'Width', label: 'Width (cm)' },
           { key: 'SonLayer', label: 'S per Layer'},
-          { key: 'S', label: 'S Marker' },
+          { key: 'S', label: 'S Tot' },
           { key: 'S_Cut', label: 'S Cut'},
           { key: 'MonLayer', label: 'M per Layer'},
-          { key: 'M', label: 'M Marker' },
+          { key: 'M', label: 'M Tot' },
           { key: 'M_Cut', label: 'M Cut'},
           { key: 'LonLayer', label: 'L per Layer'},
-          { key: 'L', label: 'L Marker' },
+          { key: 'L', label: 'L Tot' },
           { key: 'L_Cut', label: 'L Cut'},
           { key: 'XLonLayer', label: 'XL per Layer'},
           { key: 'XL', label: 'XL Marker' },
