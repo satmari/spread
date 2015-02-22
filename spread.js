@@ -146,7 +146,7 @@ if (Meteor.isClient) {
     }
 
     // Operators
-    Meteor.subscribe('method_allOperators');
+    Meteor.subscribe('filter_allOperators');
 
     var selectOperator = Session.get("ses_selectOperator");
     //console.log("operator is (autosubscribe): " + selectOperator);
@@ -3011,7 +3011,6 @@ if (Meteor.isServer) {
     return posarray;
   },
   method_arrayofStatus: function() {
-
     statusarray = ["Not assigned","SP 1","SP 2","MS 1"/*,"CUT"*/, "TRASH"];
     return statusarray;
   },
@@ -3030,10 +3029,10 @@ if (Meteor.isServer) {
       for (var i = 0; i < order.length; i++) {
         Order.update({ _id: order[i]._id},
           {$set: {Position: 0}},
-          //{$inc: {Position: -1}}, 
+          
           {multi: true}
         ); 
-        //return order[i].No;
+        
       }
     return "Not found method_stavipozna0";
   },
@@ -3052,10 +3051,10 @@ if (Meteor.isServer) {
       for (var i = 0; i < order.length; i++) {
         Order.update({ _id: order[i]._id},
           {$set: {Position: selectedPosition}},
-          //{$inc: {Position: -1}}, 
+        
           {multi: true}
         ); 
-        //return order[i].No;
+        
       }
     return "Not found method_ubacinapoz";
   },
@@ -3064,10 +3063,10 @@ if (Meteor.isServer) {
       for (var i = 0; i < order.length; i++) {
         Order.update({ _id: order[i]._id},
           {$set: {OrderLink: true}},
-          //{$inc: {Position: -1}}, 
+        
           {multi: true}
         ); 
-        //return order[i].No;
+        
       }
     return "Not found method_linkpoz";
   },
@@ -3076,10 +3075,10 @@ if (Meteor.isServer) {
       for (var i = 0; i < order.length; i++) {
         Order.update({ _id: order[i]._id},
           {$set: {OrderLink: false}},
-          //{$inc: {Position: -1}}, 
+          
           {multi: true}
         ); 
-        //return order[i].No;
+        
       }
     return "Not found method_unlinkpoz";
   },
@@ -3088,10 +3087,10 @@ if (Meteor.isServer) {
       for (var i = 0; i < order.length; i++) {
         Order.update({ _id: order[i]._id},
           {$set: {Position: selectedPosition}},
-          //{$inc: {Position: -1}}, 
+        
           {multi: true}
         );
-        //return order.No;
+        
       }
     return "Not found method_ubacinapozVise";
   },
@@ -3100,10 +3099,10 @@ if (Meteor.isServer) {
       for (var i = 0; i < order.length; i++) {
         Order.update({ _id: order[i]._id},
           {$set: {Status: selectedStatus, Position: uniquecountSelectedPosition}},
-          //{$inc: {Position: -1}}, 
+          
           {multi: true}
         ); 
-        //return order[i].No;
+        
       }
     return "Not found method_changeStatus";
   },
@@ -3114,10 +3113,10 @@ if (Meteor.isServer) {
 
         Order.update({ _id: order[i]._id},
           {$set: {Load: userEditLoad, LayersActual: layers}},
-          //{$inc: {Position: -1}}, 
+           
           {multi: true}
         ); 
-        //return order[i].No;
+        
       }
     return "Not found method_loadOrder";
   }, 
@@ -3175,7 +3174,6 @@ if (Meteor.isServer) {
           );
         }
 
-       
         var S = LayersToCount * SonLayer;
         var M = LayersToCount * MonLayer;
         var L = LayersToCount * LonLayer;
@@ -3293,7 +3291,7 @@ if (Meteor.isServer) {
     return Order.find({CutDate: {$gte: Daysbefore, $lt: Daysafter}})
   });
 
-  Meteor.publish("method_allOperators", function(){
+  Meteor.publish("filter_allOperators", function(){
     return Operators.find();
   });
 
