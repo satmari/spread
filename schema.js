@@ -95,7 +95,7 @@ Order = new Meteor.Collection("order", {
         type: String,
         label: "Bagno",
         optional: true,
-        max: 10
+        max: 100
     },
     'Layers': {
         type: Number,

@@ -1947,9 +1947,13 @@ if (Meteor.isClient) {
       rd_importOrder.show();
     },
 
-    /*'click #refresh_sum' : function () {
+    'click #refresh_sum' : function () {
       console.log('refresh_sum - click')
 
+      Meteor.call('method_refreshSum',function(err, data) {
+        console.log("method_refreshSum: " + data);
+      });
+      /*
       var order_all = Order.find().fetch();
 
       for (var i = 0; i < order_all.length; i++) {
@@ -1993,8 +1997,9 @@ if (Meteor.isClient) {
           }
         );
       }
-      alert("LengthSum fields are refreshed! \n ______________________________ \n If LengthSum is 0, that's because some fields \n(Length, Extra or Layers) are missing!  ");
-    },*/
+      alert("LengthSum fields are refreshed!");
+      */
+    },
 
     'click #statistics' : function (e, t) {
       var rd_statistics = ReactiveModal.initDialog(rm_Statistics);
@@ -3210,6 +3215,54 @@ if (Meteor.isServer) {
       }
     return "Not found method_cutOrder";
   },
+  method_refreshSum: function (){
+    var order_all = Order.find().fetch();
+
+      for (var i = 0; i < order_all.length; i++) {
+        
+        var length = Number(order_all[i].Length);
+        var extra = Number(order_all[i].Extra);
+        var layers = Number(order_all[i].Layers);
+        var layersactual = Number(order_all[i].LayersActual);
+        var sonlayer = Number(order_all[i].SonLayer);
+        var monlayer = Number(order_all[i].MonLayer);
+        var lonlayer = Number(order_all[i].LonLayer);
+        var xlonlayer = Number(order_all[i].XLonLayer);
+        var xxlonlayer = Number(order_all[i].XXLonLayer);
+
+        if (layersactual || (layersactual != 0)) {
+          LayersToCount = layersactual;
+        } else {
+          LayersToCount = layers;
+        }
+
+        var sum = Number((length + (extra/100)) * LayersToCount);
+        var sumf =sum.toFixed(2);
+       
+        if (sumf == "NaN") {
+          sumf = 0;
+        }
+
+        //S M L XL XXL
+        var Snew = Number(sonlayer * LayersToCount);
+        var Mnew = Number(monlayer * LayersToCount);
+        var Lnew = Number(lonlayer * LayersToCount);
+        var XLnew = Number(xlonlayer * LayersToCount);
+        var XXLnew = Number(xxlonlayer * LayersToCount);
+
+        Order.update({_id: order_all[i]._id},
+          {
+            $set: { LengthSum: sumf /*, S: Snew, M: Mnew, L: Lnew, XL: XLnew, XXL: XXLnew */},
+          }, 
+          {
+            multi: true,
+          }
+        );
+      }
+      
+      return "LengthSum fields are refreshed!";
+   },
+  
   
 });
  
