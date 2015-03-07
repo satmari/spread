@@ -284,12 +284,15 @@ if (Meteor.isClient) {
     }
   });
     
-   // Reactive-table
-  Template.reactiveTebleList.orders = function () {
+   // Reactive-table /*DEPRECATED*/
+  /*Template.reactiveTebleList.orders = function () {
       return Order.find();
-  }
+  }*/
 
   Template.reactiveTebleList.helpers({
+    orders: function () {
+      return Order.find();
+    },
     isAdmin: function() {
         //var loggedUserName = Session.get("loggedUserName");
         //console.log(loggedUserName);
@@ -982,18 +985,23 @@ if (Meteor.isClient) {
       //modalFooterClass: "modal-footer",//optional
       removeOnHide: true,
       closable: true,
-      buttons: {
-          /*"cancel": {
+      /*buttons: {
+          "cancel": {
             class: 'btn-danger',
             label: 'Cancel'
-          },*/
+          },
           "ok": {
             closeModalOnClick: true, // if this is false, dialog doesnt close automatically on click
             class: 'btn-info',
-            label: 'Back'
+            label: 'Back',
           }
-      }
+      }*/
     };
+
+    /*rd_editorder.buttons.ok.on('click', function(button){
+      // rd_editorder is not defined
+        rd_editorder.show();
+    });*/
 
   // Reactive table helper (for update/edit orders)
   Template.tmp_EditOrder.helpers({
@@ -1276,7 +1284,7 @@ if (Meteor.isClient) {
       //modalFooterClass: "modal-footer",//optional
       closable: true,
       removeOnHide: true,
-      buttons: {
+      /*buttons: {
         //"cancel": {
         //  class: 'btn-danger',
         //  label: 'Cancel'
@@ -1286,7 +1294,7 @@ if (Meteor.isClient) {
             class: 'btn-info',
             label: 'Back'
           }
-      }
+      }*/
   };
 
   // Export Order on click (in nav button) - Reactive Modal Dialog
@@ -1298,7 +1306,7 @@ if (Meteor.isClient) {
       //modalFooterClass: "modal-footer",//optional
       closable: true,
       removeOnHide: true,
-      buttons: {
+      /*buttons: {
         //"cancel": {
         //  class: 'btn-danger',
         //  label: 'Cancel'
@@ -1308,7 +1316,7 @@ if (Meteor.isClient) {
             class: 'btn-info',
             label: 'Back'
           }
-      }
+      }*/
   };
 
   // Import Order on click (in nav button) - Reactive Modal
@@ -1318,9 +1326,9 @@ if (Meteor.isClient) {
       //modalDialogClass: "modal-dialog", //optional
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
-      closable: false,
+      closable: true,
       removeOnHide: true,
-      buttons: {
+      /*buttons: {
         //"cancel": {
         //  class: 'btn-danger',
         //  label: 'Cancel'
@@ -1330,7 +1338,7 @@ if (Meteor.isClient) {
             class: 'btn-info',
             label: 'Back'
           }
-      }
+      }*/
   };
 
   // Import Order from Planned Markers file (in nav button) - Reactive Modal Dialog
@@ -1340,9 +1348,9 @@ if (Meteor.isClient) {
       //modalDialogClass: "modal-dialog", //optional
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
-      closable: false,
+      closable: true,
       removeOnHide: true,
-      buttons: {
+      /*buttons: {
         //"cancel": {
         //  class: 'btn-danger',
         //  label: 'Cancel'
@@ -1352,7 +1360,7 @@ if (Meteor.isClient) {
             class: 'btn-info',
             label: 'Back'
           }
-      }
+      }*/
   };
 
   var rm_Statistics = {
@@ -1361,9 +1369,9 @@ if (Meteor.isClient) {
       //modalDialogClass: "modal-dialog", //optional
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
-      closable: false,
+      closable: true,
       removeOnHide: true,
-      buttons: {
+      /*buttons: {
         //"cancel": {
         //  class: 'btn-danger',
         //  label: 'Cancel'
@@ -1373,7 +1381,7 @@ if (Meteor.isClient) {
             class: 'btn-info',
             label: 'Back'
           }
-      } 
+      }*/
   };
 
   var rm_Operators = {
@@ -1382,9 +1390,9 @@ if (Meteor.isClient) {
       //modalDialogClass: "modal-dialog", //optional
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
-      closable: false,
+      closable: true,
       removeOnHide: true,
-      buttons: {
+      /*buttons: {
         //"cancel": {
         //  class: 'btn-danger',
         //  label: 'Cancel'
@@ -1394,7 +1402,7 @@ if (Meteor.isClient) {
             class: 'btn-info',
             label: 'Back'
           }
-      } 
+      }*/
   };
 
   var rm_NewOperators = {
@@ -1403,9 +1411,9 @@ if (Meteor.isClient) {
       //modalDialogClass: "modal-dialog", //optional
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
-      closable: false,
+      closable: true,
       removeOnHide: true,
-      buttons: {
+      /*buttons: {
         //"cancel": {
         //  class: 'btn-danger',
         //  label: 'Cancel'
@@ -1415,7 +1423,7 @@ if (Meteor.isClient) {
             class: 'btn-info',
             label: 'Back'
           }
-      } 
+      }*/
   };
 
   Template.tmp_Statistics.helpers({

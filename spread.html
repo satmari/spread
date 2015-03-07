@@ -398,12 +398,12 @@
                       </div>
               <hr />
               <big><b>Order Information</b></big><br />
-              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,XL,XXL,SpreadDate,SpreadOperator,CutDate,Status,Position"}}
+              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,XL,XXL,SpreadDate,SpreadOperator,CutDate,Status,Position,OrderLink"}}
 
-              <div class="">
+              <!--<div class="">
                 <br />
                 <button class="btn btn-primary" id="deleteOrder" type="button">Delete order</button>  
-              </div> 
+              </div> -->
             {{/if}}
 
             {{#if isUserSp}}  

@@ -8,6 +8,9 @@
  * Based on Bootstrap
 */
 /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
+.navbar-default {
+  background-color: #BE3636 !important;
+}
 
 .operator {
   position: absolute;
@@ -99,7 +102,9 @@ tbody .S_Cut,tbody .M_Cut,tbody .L_Cut, tbody .XL_Cut, tbody .XXL_Cut, tbody .Ko
 .table-hover > tbody > tr.default:hover > td {
   
 }
-
+.container {
+  width: 575px !important; 
+}
 
 html {
   font-family: sans-serif;
