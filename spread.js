@@ -726,6 +726,15 @@ if (Meteor.isClient) {
             //{ key: '_id', label: '_ID' },
             { key: 'Position', label: 'Pos' , sort: 'ascending'},
             { key: 'No', label: 'No' },
+            { key: 'OrderLink', label: 'Linked',
+              fn: function (value){
+                if (value == true) {
+                  return "Linked";
+                } else {
+                  return "" ;
+                };
+              }
+            },
             /*{ key: 'Date', label: 'Date',
               fn: function (value) {
                 if (value){
@@ -816,6 +825,15 @@ if (Meteor.isClient) {
             //{ key: '_id', label: '_ID' },
             { key: 'No', label: 'No'},
             { key: 'Position', label: 'Pos'},
+            { key: 'OrderLink', label: 'Linked',
+              fn: function (value){
+                if (value == true) {
+                  return "Linked";
+                } else {
+                  return "" ;
+                };
+              }
+            },
             /*{ key: 'Date', label: 'Date',
               fn: function (value) {
                 if (value){
