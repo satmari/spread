@@ -21,4 +21,5 @@ pahans:reactive-modal
 mrt:jquery-csv
 settinghead:auto-nprogress
 mrt:bootstrap-select
-mrt:accounts-ui-bootstrap-3
+mrt:jquery-ui-bootstrap
+accounts-ui
