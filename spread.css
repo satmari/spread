@@ -11,6 +11,10 @@
 .navbar-default {
   /*background-color: #BE3636 !important;*/
 }
+html {
+  /*overflow-y: scroll;*/
+  overflow-x: auto;
+}
 
 .operator {
   position: absolute;
