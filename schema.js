@@ -1,5 +1,5 @@
-Order = new Meteor.Collection("order", {
-  schema: {
+Order = new Meteor.Collection("order");
+Order.attachSchema(new SimpleSchema({
     'No': {
         type: Number,
         unique: true,
@@ -95,7 +95,7 @@ Order = new Meteor.Collection("order", {
         type: String,
         label: "Bagno",
         optional: true,
-        max: 10
+        max: 100
     },
     'Layers': {
         type: Number,
@@ -309,8 +309,7 @@ Order = new Meteor.Collection("order", {
         defaultValue: false,
     },
     
-  }
-});
+}));
 
 //Order.attachSchema(Schemas.OneOrder);
 
@@ -357,8 +356,8 @@ Comment
 OrderLink 
 */
 
-Message = new Meteor.Collection("message",  {
-schema: {
+Message = new Meteor.Collection("message");
+Message.attachSchema(new SimpleSchema({
     'No': {
         type: Number,
         unique: true,
@@ -407,12 +406,12 @@ schema: {
 
     }
 
-  }
-});
+}));
 
 
-Operators = new Meteor.Collection("operators",  {
-schema: {
+
+Operators = new Meteor.Collection("operators");
+Operators.attachSchema(new SimpleSchema({
     'OP_Code': {
         type: Number,
         unique: true,
@@ -454,5 +453,4 @@ schema: {
             }
         }
     }
-  }
-});
+}));

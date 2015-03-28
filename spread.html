@@ -1,9 +1,10 @@
 
 <head>
-  <title>Gordon Cutting Orders - Web application</title>
+  <title>Gordon Cutting - Web application</title>
   <!--<link rel="icon" type="image/x-icon" href="/public/logo.png">-->
   <!--<link rel="shortcut icon" type="image/png" href="public/logo.png">-->
-  <link rel="icon" size="16x16" href="/logo.png">
+  <!--<link rel="icon" size="16x16" href="/logo.png">-->
+  <link rel="shortcut icon" href="/logo.png" />
 </head>
 
 <body>
@@ -28,7 +29,7 @@
 
   <div class="navbar-header">
     <!--<span class="glyphicon glyphicon-scissors"></span> -->
-    <a class="navbar-brand" href="#">Cutting orders 
+    <a class="navbar-brand" href="#">Cutting application 
     </a>
     
     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
@@ -61,7 +62,7 @@
         <button id="import_from_planned_markers" class="btn btn-default">Import from Planned Markers</button>
         <button id="export_orders" class="btn btn-info">Export order</button> 
         <button id="import_orders" class="btn btn-info">Import order</button>
-        <!--<button id="refresh_sum" class="btn btn-success">Refresh Data</button>-->
+        <button id="refresh_sum" class="btn btn-success">Refresh Meters Req</button>
         <button id="statistics" class="btn btn-warning">Statistics</button>
       </div></li>
     </ul>
@@ -79,8 +80,8 @@
         <div class="form-group">
           <!--<li><span style="color: white">Orders without Order Date: </span></li>-->
           <!--<li><span style="color: white">Orders without Status SP.. : </span></li>-->
-          <li><span style="color: white">All orders (+date range (Date)): </span></li>
-          <li><span style="color: white">All orders (+date range (Spread Date)): </span></li>
+          <li><span style="color: white">All orders (+date filter (Date)): </span></li>
+          <li><span style="color: white">All orders (+date filter (Spread Date)): </span></li>
           <!--<li><span style="color: white">All orders (+date range (Cut Date)): </span></li>-->
         </div>
         <div class="form-group">
@@ -108,28 +109,28 @@
           </button>-->
 
           <label class="btn btn-default">
-            <input type="radio" name="options" id="sp1"> SP 1 
+            <input type="radio" name="options" id="sp1"> Spreader 1 
           </label>
           <!--<button type="radio" class="btn btn-default" id="sp1">SP 1 
             <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
           </button>-->
 
           <label class="btn btn-default ">
-            <input type="radio" name="options" id="sp2"> SP 2 
+            <input type="radio" name="options" id="sp2"> Spreader 2 
           </label>
           <!--<button type="radio" class="btn btn-default" id="sp1">SP 2 
             <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
           </button>-->
 
           <label class="btn btn-default ">
-            <input type="radio" name="options" id="ms1"> MS 1 
+            <input type="radio" name="options" id="ms1"> Manual Spreader 1 
           </label>
           <!--<button type="radio" class="btn btn-default" id="sp1"> MS 1 
             <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
           </button>-->
 
           <label class="btn btn-info ">
-            <input type="radio" name="options" id="cut"> to CUT
+            <input type="radio" name="options" id="cut"> Cutter
           </label>
           <!--<button type="radio" class="btn btn-info" id="sp1"> to CUT 
             <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
@@ -398,12 +399,12 @@
                       </div>
               <hr />
               <big><b>Order Information</b></big><br />
-              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,XL,XXL,SpreadDate,SpreadOperator,CutDate,Status,Position"}}
+              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,XL,XXL,SpreadDate,SpreadOperator,CutDate,Status,Position,OrderLink"}}
 
-              <div class="">
+              <!--<div class="">
                 <br />
                 <button class="btn btn-primary" id="deleteOrder" type="button">Delete order</button>  
-              </div> 
+              </div> -->
             {{/if}}
 
             {{#if isUserSp}}  
