@@ -67,20 +67,30 @@ if (Meteor.isClient) {
         //console.log("Startup: UserName: " + User.username);
     }
 
-    Session.set("ses_selectOperator", "");
-    var selectOperator = Session.get("ses_selectOperator");
+    Session.set("ses_selectOperatorSpreader", "");
+    var selectOperatorSpreader = Session.get("ses_selectOperatorSpreader");
     //console.log("operator is(startup): " + selectOperator);
 
-    if (selectOperator) {
-      $('.select_operator').hide();
-      $('#changeOperator').show();
+    Session.set("ses_selectOperatorCutter", "");
+    var selectOperatorCutter = Session.get("ses_selectOperatorCutter");
+    //console.log("operator is(startup): " + selectOperator);
+
+    if (selectOperatorSpreader) {
+      $('.select_operator_spreader').hide();
+      $('#changeOperatorSpreader').show();
     } else {
-      $('.select_operator').show();
-      $('#selectOperator').val($('#selectOperator option:first').val());
-      $('#changeOperator').hide();
+      $('.select_operator_spreader').show();
+      $('#selectOperatorSpreader').val($('#selectOperatorSpreader option:first').val());
+      $('#changeOperatorSpreader').hide();
     }
-    //Session.set("ses_SP1message", "");
-    //Session.set("ses_SP2message", "");
+    if (selectOperatorCutter) {
+      $('.select_operator_cutter').hide();
+      $('#changeOperatorCutter').show();
+    } else {
+      $('.select_operator_cutter').show();
+      $('#selectOperatorCutter').val($('#selectOperatorCutter option:first').val());
+      $('#changeOperatorCutter').hide();
+    }
 
   })
 
@@ -148,20 +158,27 @@ if (Meteor.isClient) {
     // Operators
     Meteor.subscribe('filter_allOperators');
 
-    var selectOperator = Session.get("ses_selectOperator");
-    //console.log("operator is (autosubscribe): " + selectOperator);
+    var selectOperatorSpreader = Session.get("ses_selectOperatorSpreader");
+    var selectOperatorCutter = Session.get("ses_selectOperatorCutter");
 
-    if (selectOperator) {
-      $('.select_operator').hide();
-      $('#changeOperator').show();
+    if (selectOperatorSpreader) {
+      $('.select_operator_spreader').hide();
+      $('#changeOperatorSpreader').show();
     } else {
-      $('.select_operator').show();
-      $('#selectOperator').val($('#selectOperator option:first').val());
-      $('#changeOperator').hide();
+      $('.select_operator_spreader').show();
+      $('#selectOperatorSpreader').val($('#selectOperatorSpreader option:first').val());
+      $('#changeOperatorSpreader').hide();
+    }
+    if (selectOperatorCutter) {
+      $('.select_operator_cutter').hide();
+      $('#changeOperatorCutter').show();
+    } else {
+      $('.select_operator_cutter').show();
+      $('#selectOperatorCutter').val($('#selectOperatorCutter option:first').val());
+      $('#changeOperatorCutter').hide();
     }
       
       
-
       Meteor.call('method_uniquecountPosNA', function(err, data) {
         //console.log("method_uniquecountPosNA: " + data);
         Session.set("ses_uniquecountPosNA", data);
@@ -191,36 +208,7 @@ if (Meteor.isClient) {
         Session.set("ses_uniquecountPosTRASH", data);
       });
     
-      /* Messages */
-      //var ses_SP1message = Session.get("ses_SP1message");
-      //console.log("ses_SP1message: " + ses_SP1message);
-      //var ses_SP2message = Session.get("ses_SP2message");
-      //console.log("ses_SP2message: " + ses_SP2message);
-
-      /*
-      if ((ses_SP1message == "") || (typeof ses_SP1message === 'undefined')) {
-      } else {
-        alert(ses_SP1message);
-        console.log("ses_SP1message: " + ses_SP1message);
-        Session.set("ses_SP1message", "");
-
-      } 
-      if ((ses_SP2message == "") || (typeof ses_SP2message === 'undefined')) {
-      } else {
-        alert(ses_SP2message);
-        console.log("ses_SP2message: " + ses_SP2message);
-        Session.set("ses_SP2message", "");
-      }
-      */
   });
-  
-  /*
-  FlashMessages.configure({
-    autoHide: true,
-    hideDelay: 5000,
-    autoScroll: true
-  });
-  */
 
   Template.nav.helpers ({
     isAdminOrGuest: function() {
@@ -248,6 +236,17 @@ if (Meteor.isClient) {
         }
       }
     },
+    isCut: function() {
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if ((User.username == "cut1") || (User.username == "cut2")) {
+          return true;
+        } else {
+          return false;  
+        }
+      }
+    },
     User: function(){
       var userId = Meteor.userId();
       if (userId) {
@@ -255,7 +254,7 @@ if (Meteor.isClient) {
         return User;
       }
     }, 
-    operatorSelect: function  (){
+    operatorSelectSpreader: function  (){ // dropdown list
       var userId = Meteor.userId();
       var posarray = [];
 
@@ -278,16 +277,34 @@ if (Meteor.isClient) {
       posarray.sort(function(a, b){return a-b});
       return posarray;
     }, 
-    OperatorSelected: function () {
-      var operator = Session.get("ses_selectOperator");
+    operatorSelectCutter: function () { // dropdown list
+      var userId = Meteor.userId();
+      var posarray = [];
+
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if ((User.username == "cut1") || (User.username == "cut2")) {
+          var operators = Operators.find({Status: "Active", Machine: "Cutter"}).fetch();
+        } 
+      }
+
+      for (var i = 0; i < operators.length; i++) {
+        //id = operators[i]._Id;
+        pos = operators[i].OP_Name;
+        posarray.push(pos);
+      }
+      posarray.sort(function(a, b){return a-b});
+      return posarray;
+    },
+    OperatorSelectedSpreader: function () {
+      var operator = Session.get("ses_selectOperatorSpreader");
+      return operator;
+    },
+    OperatorSelectedCutter: function () {
+      var operator = Session.get("ses_selectOperatorCutter");
       return operator;
     }
   });
-    
-   // Reactive-table /*DEPRECATED*/
-  /*Template.reactiveTebleList.orders = function () {
-      return Order.find();
-  }*/
 
   Template.reactiveTebleList.helpers({
     orders: function () {
@@ -497,6 +514,7 @@ if (Meteor.isClient) {
               }
             }
           },
+          { key: 'CutOperator', label: 'Cut Operator'},
           { key: 'Comment', label: 'Comment' },
         ],
           //useFontAwesome: true,
@@ -684,6 +702,7 @@ if (Meteor.isClient) {
               }
             }
           },
+          { key: 'CutOperator', label: 'Cut Operator'},
           //{ key: 'OrderLink', label: 'Linked' },
           { key: 'Comment', label: 'Comment' },
         ],
@@ -1250,9 +1269,10 @@ if (Meteor.isClient) {
         }
       },
       isOperatorNotSlected: function (){
-        var operatorSelected = Session.get("ses_selectOperator");
+        var OperatorSelectedSpreader = Session.get("ses_selectOperatorSpreader");
+        var OperatorSelectedCutter = Session.get("ses_selectOperatorCutter");
 
-        if (operatorSelected || (operatorSelected != "")) {
+        if ((OperatorSelectedSpreader || (OperatorSelectedSpreader != "")) || (OperatorSelectedCutter || (OperatorSelectedCutter != ""))) {
           return false;
         } else {
           return true;
@@ -2038,36 +2058,33 @@ if (Meteor.isClient) {
     },
 
     'change #allorder_date': function (e, t) {
-
-        if ($('#allorder_date').prop('checked')){
-          console.log("allorder_date: checked");
-          Session.set("ses_allorder_date", true);
-        } else {
-          console.log("allorder_date: unchecked");
-          Session.set("ses_allorder_date", false);
-        }
+      if ($('#allorder_date').prop('checked')){
+        console.log("allorder_date: checked");
+        Session.set("ses_allorder_date", true);
+      } else {
+        console.log("allorder_date: unchecked");
+        Session.set("ses_allorder_date", false);
+      }
     },
 
     'change #allorder_spreaddate': function (e, t) {
-
-        if ($('#allorder_spreaddate').prop('checked')){
-          console.log("allorder_spreaddate: checked");
-          Session.set("ses_allorder_spreaddate", true);
-        } else {
-          console.log("allorder_spreaddate: unchecked");
-          Session.set("ses_allorder_spreaddate", false);
-        }
+      if ($('#allorder_spreaddate').prop('checked')){
+        console.log("allorder_spreaddate: checked");
+        Session.set("ses_allorder_spreaddate", true);
+      } else {
+        console.log("allorder_spreaddate: unchecked");
+        Session.set("ses_allorder_spreaddate", false);
+      }
     },
 
     'change #allorder_cutdate': function (e, t) {
-
-        if ($('#allorder_cutdate').prop('checked')){
-          console.log("allorder_cutdate: checked");
-          Session.set("ses_allorder_cutdate", true);
-        } else {
-          console.log("allorder_cutdate: unchecked");
-          Session.set("ses_allorder_cutdate", false);
-        }
+      if ($('#allorder_cutdate').prop('checked')){
+        console.log("allorder_cutdate: checked");
+        Session.set("ses_allorder_cutdate", true);
+      } else {
+        console.log("allorder_cutdate: unchecked");
+        Session.set("ses_allorder_cutdate", false);
+      }
     },
 
     'change #not_assigned': function  (e, t) {
@@ -2107,23 +2124,37 @@ if (Meteor.isClient) {
       $( ".btn-group label" ).removeClass( "active" );
     },
 
-    'change #selectOperator': function (e, t) {
-      var selectOperator = $('#selectOperator').find(":selected").text();
-      //console.log("selectOperator: " + selectOperator); 
-      Session.set("ses_selectOperator", selectOperator);
-      $('.select_operator').hide();
-      $('#changeOperator').show();
+    'change #selectOperatorSpreader': function (e, t) {
+      var selectOperatorSpreader = $('#selectOperatorSpreader').find(":selected").text();
+      Session.set("ses_selectOperatorSpreader", selectOperatorSpreader);
+      $('.select_operator_spreader').hide();
+      $('#changeOperatorSpreader').show();
     },
 
-    'click #changeOperator' : function (e, t) {
-      Session.set("ses_selectOperator", "");
-      $('.select_operator').show();
-      $('#selectOperator').val($('#selectOperator option:first').val());
-      $('#changeOperator').hide();
+    'change #selectOperatorCutter': function (e, t) {
+      var selectOperatorCutter = $('#selectOperatorCutter').find(":selected").text();
+      Session.set("ses_selectOperatorCutter", selectOperatorCutter);
+      $('.select_operator_cutter').hide();
+      $('#changeOperatorCutter').show();
+    },
+
+    'click #changeOperatorSpreader' : function (e, t) {
+      Session.set("ses_selectOperatorSpreader", "");
+      $('.select_operator_spreader').show();
+      $('#selectOperatorSpreader').val($('#selectOperatorSpreader option:first').val());
+      $('#changeOperatorSpreader').hide();
+    },
+
+    'click #changeOperatorCutter' : function (e, t) {
+      Session.set("ses_selectOperatorCutter", "");
+      $('.select_operator_cutter').show();
+      $('#selectOperatorCutter').val($('#selectOperatorCutter option:first').val());
+      $('#changeOperatorCutter').hide();
     },
 
     'click #login-buttons-logout': function (e, t) {
-      Session.set("ses_selectOperator", "");
+      Session.set("ses_selectOperatorSpreader", "");
+      Session.set("ses_selectOperatorCutter", "");
     }
 
   });
@@ -2160,21 +2191,6 @@ if (Meteor.isClient) {
       } else {
         // Do nothing!
       }
-
-      // message
-      /*
-      var time = new Date();
-      if (actualStatus == 'SP 1') {
-        var message = time + ": Order deleted from SP 1 !";
-        Session.set('ses_SP1message', message);
-      } else if (actualStatus == 'SP 2') {  
-        var message = time + ": Order deleted from SP 2 !";
-        Session.set('ses_SP2message', message);
-      } else if (actualStatus == 'MS 1') {  
-        var message = time + ": Order deleted from MS 1!";
-        Session.set('ses_MS1message', message);
-      }
-      */
 
       rm_EditOrder.hide();
     },
@@ -2284,10 +2300,10 @@ if (Meteor.isClient) {
       var uniquecountSelected = Session.get("ses_uniquecountPosCUT");
       var uniquecountSelectedPosition = uniquecountSelected + 1;
 
-      var selectedOperator = Session.get("ses_selectOperator");
-      console.log("selectedOperator: " + selectedOperator);
+      var selectedOperatorSpreader = Session.get("ses_selectOperatorSpreader");
+      //console.log("selectedOperatorSpreader: " + selectedOperatorSpreader);
 
-      Meteor.call('method_spreadOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperator, function(err, data) {
+      Meteor.call('method_spreadOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperatorSpreader, function(err, data) {
         //console.log("method_spreadOrder: " + data);
       });
       
@@ -2335,7 +2351,10 @@ if (Meteor.isClient) {
       var uniquecountSelected = Session.get("ses_uniquecountPosF");
       var uniquecountSelectedPosition = uniquecountSelected + 1;
 
-      Meteor.call('method_cutOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditCut, cutDate, function(err, data) {
+      var selectedOperatorCutter = Session.get("ses_selectOperatorCutter");
+      //console.log("selectedOperatorCutter: " + selectedOperatorCutter);
+
+      Meteor.call('method_cutOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditCut, cutDate, selectedOperatorCutter, function(err, data) {
         //console.log("method_cutOrder: " + data);
       });
 
@@ -2751,6 +2770,7 @@ if (Meteor.isClient) {
             } else {
               spreaddate2 = "";
             }
+            var spreadoperator = all[i]['SpreadOperator'];
             var cut = all[i]['Cut'];
             var cutdate = all[i]['CutDate'];
             if (cutdate) {
@@ -2761,6 +2781,7 @@ if (Meteor.isClient) {
             } else {
               cutdate2 = "";
             }
+            var cutoperator = all[i]['CutOperator'];
 
             var comment = all[i]['Comment'];
             var orderlink = all[i]['OrderLink'];
@@ -2768,7 +2789,7 @@ if (Meteor.isClient) {
             //One by One
             //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,Status: all[i]['Status'], Priority: priority});    
             
-            Order.insert({No: no, Position: position, Status: status, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, S_Cut: s_cut, M: m, MonLayer: monlayer, M_Cut: m_cut, L: l, LonLayer: lonlayer, L_Cut: l_cut, XL: xl, XLonLayer: xlonlayer, XL_Cut: xl_cut, XXL: xxl, XXLonLayer: xxlonlayer, XXL_Cut: xxl_cut, Load: load, Spread: spread, SpreadDate: spreaddate2, Cut: cut, CutDate: cutdate2, Comment: comment, OrderLink: orderlink});
+            Order.insert({No: no, Position: position, Status: status, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, S_Cut: s_cut, M: m, MonLayer: monlayer, M_Cut: m_cut, L: l, LonLayer: lonlayer, L_Cut: l_cut, XL: xl, XLonLayer: xlonlayer, XL_Cut: xl_cut, XXL: xxl, XXLonLayer: xxlonlayer, XXL_Cut: xxl_cut, Load: load, Spread: spread, SpreadDate: spreaddate2, SpreadOperator: spreadoperator ,Cut: cut, CutDate: cutdate2, CutOperator: cutoperator,Comment: comment, OrderLink: orderlink});
             // Can not insert order created and _id , this values is automaticali created
           } 
       }
@@ -2777,13 +2798,46 @@ if (Meteor.isClient) {
     }
   });
 
-  Template.tmp_ExportOrder.order = function() {
-    return Order.find(); // orders form subscribe
-  }
+  Template.tmp_ExportOrder.helpers({
+    order: function() {
+      return Order.find(); // orders form subscribe
+    }
+  });
 
-  Template.tmp_Operators.operators = function() {
-    return Operators.find(); // operators form subscribe                                       
-  }
+  Template.tmp_Operators.helpers({
+    operators: function() {
+      return Operators.find(); // operators form subscribe                                       
+    },
+    makeUniqueID: function  () {
+      return "update-each-" + this._id;_
+    },
+    options: function () {
+      return  [
+            {label: "Active", value: "Active"},
+            {label: "Not active", value: "Not active"}
+            ]
+    },
+    /*
+    options: function () {
+    return [
+      {
+        optgroup: "Fun Years",
+        options: [
+          {label: "Active", value: "Active"},
+          {label: "Not active", value: "Not active"}
+        ]
+      },
+      {
+        optgroup: "Boring Years",
+        options: [
+          {label: "2011", value: 2011},
+          {label: "2010", value: 2010},
+          {label: "2009", value: 2009}
+        ]
+      }
+    ];
+    }*/
+  });
 
   Template.tmp_Operators.events({
     'click #newoperators' : function (e, t) {
@@ -3151,7 +3205,7 @@ if (Meteor.isServer) {
       }
     return "Not found method_loadOrder";
   }, 
-  method_spreadOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperator) {
+  method_spreadOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperatorSpreader) {
     var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
       for (var i = 0; i < order.length; i++) {
         var oreder_id = order[i]._id;
@@ -3217,7 +3271,7 @@ if (Meteor.isServer) {
         var XXL_Cut = XXL;
 
         Order.update({ _id: order[i]._id},
-          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Spread: userEditSpread, SpreadDate: spreadDate, S: S, M: M, L: L, XL: XL, XXL: XXL, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut, XL_Cut: XL_Cut, XXL_Cut: XXL_Cut, SpreadOperator: selectedOperator}},
+          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Spread: userEditSpread, SpreadDate: spreadDate, S: S, M: M, L: L, XL: XL, XXL: XXL, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut, XL_Cut: XL_Cut, XXL_Cut: XXL_Cut, SpreadOperator: selectedOperatorSpreader}},
           //{$inc: {Position: -1}}, 
           {multi: true}
         ); 
@@ -3225,7 +3279,7 @@ if (Meteor.isServer) {
       }
     return "Not found method_spreadOrder";
   },
-  method_cutOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditCut, cutDate) {
+  method_cutOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditCut, cutDate, selectedOperatorCutter) {
     var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
       for (var i = 0; i < order.length; i++) {
         var oreder_id = order[i]._id;
@@ -3233,7 +3287,7 @@ if (Meteor.isServer) {
         var layersactual = order[i].LayersActual;
       
         Order.update({ _id: order[i]._id},
-          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Cut: userEditCut, CutDate: cutDate}},
+          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Cut: userEditCut, CutDate: cutDate, CutOperator: selectedOperatorCutter}},
           //{$inc: {Position: -1}}, 
           {multi: true}
         ); 
@@ -3374,6 +3428,12 @@ if (Meteor.isServer) {
     return Operators.find();
   });
 
+  Operators.allow({   
+    update: function () {
+      return true;
+    }
+  });
+
 
 }
 
@@ -3387,7 +3447,7 @@ var sp22 = "";  // 222222
 var sp23 = "";  // 232323
 var cut1 = "";  // c1c1c1
 var cut2 = "";  // c2c2c2
-var ms1 = "";   // 111111
+var ms1 = "";   // 111111 //old
 var ms11 = "";   // 111111
 var ms12 = "";   // 121212
 
@@ -3408,6 +3468,7 @@ var ms12 = "";   // 121212
 // meteor add mrt:bootstrap-3  // meteor add bootstrap
 //meteor add mrt:jquery-ui-bootstrap 
 //meteor add mrt:accounts-ui-bootstrap-3
+//meteor add ctjp:meteor-bootstrap-switch
 
 // meteor add mrt:moment
 

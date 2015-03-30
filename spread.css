@@ -110,6 +110,11 @@ tbody .S_Cut,tbody .M_Cut,tbody .L_Cut, tbody .XL_Cut, tbody .XXL_Cut, tbody .Ko
   width: 575px !important; 
 }
 
+.small-status {
+  height: 25px !important;
+  padding: 0px 15px !important;
+}
+
 html {
   font-family: sans-serif;
   -ms-text-size-adjust: 100%;
