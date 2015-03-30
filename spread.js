@@ -2817,6 +2817,17 @@ if (Meteor.isClient) {
             {label: "Not active", value: "Not active"}
             ]
     },
+    isAdmin: function() {
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if (User.username == "admin") {
+          return true;
+        } else {
+          return false;  
+        }
+      }
+    },
     /*
     options: function () {
     return [

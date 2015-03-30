@@ -690,9 +690,11 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
             <td>{{this.OP_Name}}</td>
             <td>{{this.Machine}}</td>
             <td>
-            {{#autoForm id=makeUniqueID type="update" collection="Operators" doc=this autosave=true}}
-              {{> afFormGroup name="Status" label=false options=options class="small-status" }}
-            {{/autoForm}}
+            {{#if isAdmin}}
+              {{#autoForm id=makeUniqueID type="update" collection="Operators" doc=this autosave=true}}
+                {{> afFormGroup name="Status" label=false options=options class="small-status" }}
+              {{/autoForm}}
+            {{/if}}
             </td>
           </tr>
         {{/each}}
