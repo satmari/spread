@@ -702,8 +702,9 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
       </table>
   </div>
   <div>
-  <a href="#" id="newoperators" class="btn btn-info btn">Add new Operator</a>
-
+    {{#if isAdmin}}
+      <a href="#" id="newoperators" class="btn btn-info btn">Add new Operator</a>
+    {{/if}}
   </div>
 </template>
 
