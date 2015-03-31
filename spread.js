@@ -135,7 +135,7 @@ if (Meteor.isClient) {
     } else if ((ses_loggedUserName == "sp31") || (ses_loggedUserName == "sp32") || (ses_loggedUserName == "sp33")){
       //Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
       Meteor.subscribe('filter_spreader3');
-    } else if ((ses_loggedUserName == "ms1") || (ses_loggedUserName == "ms11") || (ses_loggedUserName == "ms12")){
+    } else if ((ses_loggedUserName == "ms11") || (ses_loggedUserName == "ms12")){
       Meteor.subscribe('filter_spreaderm1');
     
     } else if (ses_allorder_date) {
@@ -349,7 +349,7 @@ if (Meteor.isClient) {
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33") || (User.username == "ms1") || (User.username == "ms11") || (User.username == "ms12")){
+          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33") || (User.username == "ms11") || (User.username == "ms12")){
             return true;
           } else {
             return false;  
@@ -1111,7 +1111,7 @@ if (Meteor.isClient) {
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33") || (User.username == "ms1") || (User.username == "ms11") || (User.username == "ms12")){
+          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33") || (User.username == "ms11") || (User.username == "ms12")){
             return true;
           } else {
             return false;  
@@ -1648,10 +1648,6 @@ if (Meteor.isClient) {
       var order = Order.find({Load: "SP 3-3"});
       return order.count();
     },
-    MS1noLoadRollsShift: function (){
-      var order = Order.find({Load: "MS 1"});
-      return order.count();
-    },
     MS1noLoadRollsShift1: function (){
       var order = Order.find({Load: "MS 1-1"});
       return order.count();
@@ -1694,10 +1690,6 @@ if (Meteor.isClient) {
     },
     SP3noSpreadRollsShift3: function (){
       var order = Order.find({Spread: "SP 3-3"});
-      return order.count();
-    },
-    MS1noSpreadRollsShift: function (){
-      var order = Order.find({Spread: "MS 1"});
       return order.count();
     },
     MS1noSpreadRollsShift1: function (){
@@ -1798,16 +1790,6 @@ if (Meteor.isClient) {
     },
     SP3LoadMetShift3: function (){
       var order = Order.find({Load: "SP 3-3"}).fetch();
-      var sum = 0;
-      for (var i = 0; i < order.length; i++) {
-        sum += order[i].LengthSum;
-      }
-      sum = Number(sum);
-      sum = sum.toFixed(2);
-      return sum;
-    },
-    MS1LoadMetShift: function (){
-      var order = Order.find({Load: "MS 1"}).fetch();
       var sum = 0;
       for (var i = 0; i < order.length; i++) {
         sum += order[i].LengthSum;
@@ -1918,16 +1900,6 @@ if (Meteor.isClient) {
     },
     SP3SpreadMetShift3: function (){
       var order = Order.find({Spread: "SP 3-3"}).fetch();
-      var sum = 0;
-      for (var i = 0; i < order.length; i++) {
-        sum += order[i].LengthSum;
-      }
-      sum = Number(sum);
-      sum = sum.toFixed(2);
-      return sum;
-    },
-    MS1SpreadMetShift: function (){
-      var order = Order.find({Spread: "MS 1"}).fetch();
       var sum = 0;
       for (var i = 0; i < order.length; i++) {
         sum += order[i].LengthSum;
@@ -2333,8 +2305,6 @@ if (Meteor.isClient) {
         userEditLoad = "SP 3-2";
       } else if (userEdit == "sp33") {
         userEditLoad = "SP 3-3";
-      } else if (userEdit == "ms1") {
-        userEditLoad = "MS 1";
       } else if (userEdit == "ms11") {
         userEditLoad = "MS 1-1";
       } else if (userEdit == "ms12") {
@@ -2390,8 +2360,6 @@ if (Meteor.isClient) {
         var userEditSpread = "SP 3-2";
       } else if (userEdit == "sp33") {
         var userEditSpread = "SP 3-3";
-      } else if (userEdit == "ms1") {
-        var userEditSpread = "MS 1";
       } else if (userEdit == "ms11") {
         var userEditSpread = "MS 1-1";
       } else if (userEdit == "ms12") {
@@ -3634,7 +3602,6 @@ var sp32 = "";  // 323232
 var sp33 = "";  // 333333
 var cut1 = "";  // c1c1c1
 var cut2 = "";  // c2c2c2
-var ms1 = "";   // 111111 //old
 var ms11 = "";   // 111111
 var ms12 = "";   // 121212
 
