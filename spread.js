@@ -124,7 +124,7 @@ if (Meteor.isClient) {
 
     //console.log("Autosubcribe sesion: " + ses + " , typeof: " + typeof ses);
 
-    if ((ses_loggedUserName == "cut1") || (ses_loggedUserName == "cut2")){
+    if ((ses_loggedUserName == "cut1") || (ses_loggedUserName == "cut2") || (ses_loggedUserName == "mor1") || (ses_loggedUserName == "mor2") || (ses_loggedUserName == "lec1") || (ses_loggedUserName == "lec2")){
       Meteor.subscribe('filter_cutter');
     } else if ((ses_loggedUserName == "sp11") || (ses_loggedUserName == "sp12") || (ses_loggedUserName == "sp13")){
       //Meteor.subscribe('spreader1', Session.get("ses_datefilter"));
@@ -247,7 +247,7 @@ if (Meteor.isClient) {
       var userId = Meteor.userId();
       if (userId) {
         var User = Meteor.users.findOne({_id: userId});
-        if ((User.username == "cut1") || (User.username == "cut2")) {
+        if ((User.username == "cut1") || (User.username == "cut2") || (User.username == "mor1") || (User.username == "mor2") || (User.username == "lec1") || (User.username == "lec2")) {
           return true;
         } else {
           return false;  
@@ -290,7 +290,7 @@ if (Meteor.isClient) {
 
       if (userId) {
         var User = Meteor.users.findOne({_id: userId});
-        if ((User.username == "cut1") || (User.username == "cut2")) {
+        if ((User.username == "cut1") || (User.username == "cut2") || (User.username == "mor1") || (User.username == "mor2") || (User.username == "lec1") || (User.username == "lec2")) {
           var operators = Operators.find({Status: "Active", Machine: "Cutter"}).fetch();
         } 
       }
@@ -363,7 +363,7 @@ if (Meteor.isClient) {
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if ((User.username == "cut1") || (User.username == "cut2")) {
+          if ((User.username == "cut1") || (User.username == "cut2") || (User.username == "mor1") || (User.username == "mor2") || (User.username == "lec1") || (User.username == "lec2")) {
             return true;
           } else {
             return false;  
@@ -1122,7 +1122,7 @@ if (Meteor.isClient) {
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if ((User.username == "cut1") || (User.username == "cut2")) {
+          if ((User.username == "cut1") || (User.username == "cut2") || (User.username == "mor1") || (User.username == "mor2") || (User.username == "lec1") || (User.username == "lec2")) {
             return true;
           } else {
             return false;  
@@ -1184,6 +1184,20 @@ if (Meteor.isClient) {
         var CurrentStatus = "Current Status: " + Stat;
         return CurrentStatus;
       },
+      /*
+      makeUniqueID: function  () {
+        return "update-" + this._id;_
+      },
+      optionStatus: function () {
+      return  [
+            {label: "Not assigned", value: "Not assigned"},
+            {label: "SP 1", value: "SP 1"},
+            {label: "SP 2", value: "SP 2"},
+            {label: "SP 3", value: "SP 3"},
+            {label: "MS 1", value: "MS 1"},
+            {label: "TRASH", value: "TRASH"}
+            ]
+      },*/
       Order_Fabric: function () {
         var ses = Session.get("selectedDocId")
         var order = Order.find({_id: ses}).fetch();
@@ -1636,7 +1650,7 @@ if (Meteor.isClient) {
       var order = Order.find({Load: "SP 2-3"});
       return order.count();
     },
-    SP1noLoadRollsShift1: function (){
+    SP3noLoadRollsShift1: function (){
       var order = Order.find({Load: "SP 3-1"});
       return order.count();
     },
@@ -1706,6 +1720,22 @@ if (Meteor.isClient) {
     },
     CutnoRollsShift2: function  (){
       var order = Order.find({Cut: "CUT 2"});
+      return order.count();
+    },
+    MCutnoRollsShift1: function  (){
+      var order = Order.find({Cut: "MOR 1"});
+      return order.count();
+    },
+    MCutnoRollsShift2: function  (){
+      var order = Order.find({Cut: "MOR 2"});
+      return order.count();
+    },
+    LCutnoRollsShift1: function  (){
+      var order = Order.find({Cut: "LEC 1"});
+      return order.count();
+    },
+    LCutnoRollsShift2: function  (){
+      var order = Order.find({Cut: "LEC 2"});
       return order.count();
     },
     SP1LoadMetShift1: function (){
@@ -1948,6 +1978,46 @@ if (Meteor.isClient) {
       sum = sum.toFixed(2);
       return sum;
     },
+    MCutMetShift1: function (){
+      var order = Order.find({Cut: "MOR 1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    MCutMetShift2: function (){
+      var order = Order.find({Cut: "MOR 2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    LCutMetShift1: function (){
+      var order = Order.find({Cut: "LEC 1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    LCutMetShift2: function (){
+      var order = Order.find({Cut: "LEC 2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
 
   });
 
@@ -2110,10 +2180,10 @@ if (Meteor.isClient) {
     },
 
     'click #refresh_sum' : function () {
-      console.log('refresh_sum - click')
+      //console.log('refresh_sum - click')
 
       Meteor.call('method_refreshSum',function(err, data) {
-        console.log("method_refreshSum: " + data);
+        //console.log("method_refreshSum: " + data);
       });
     
     },
@@ -2130,72 +2200,72 @@ if (Meteor.isClient) {
 
     'change #allorder_date': function (e, t) {
       if ($('#allorder_date').prop('checked')){
-        console.log("allorder_date: checked");
+        //console.log("allorder_date: checked");
         Session.set("ses_allorder_date", true);
       } else {
-        console.log("allorder_date: unchecked");
+        //console.log("allorder_date: unchecked");
         Session.set("ses_allorder_date", false);
       }
     },
 
     'change #allorder_spreaddate': function (e, t) {
       if ($('#allorder_spreaddate').prop('checked')){
-        console.log("allorder_spreaddate: checked");
+        //console.log("allorder_spreaddate: checked");
         Session.set("ses_allorder_spreaddate", true);
       } else {
-        console.log("allorder_spreaddate: unchecked");
+        //console.log("allorder_spreaddate: unchecked");
         Session.set("ses_allorder_spreaddate", false);
       }
     },
 
     'change #allorder_cutdate': function (e, t) {
       if ($('#allorder_cutdate').prop('checked')){
-        console.log("allorder_cutdate: checked");
+        //console.log("allorder_cutdate: checked");
         Session.set("ses_allorder_cutdate", true);
       } else {
-        console.log("allorder_cutdate: unchecked");
+        //console.log("allorder_cutdate: unchecked");
         Session.set("ses_allorder_cutdate", false);
       }
     },
 
     'change #not_assigned': function  (e, t) {
       Session.set("ses_statusfilter", "Not assigned");
-      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
     },
 
     'change #sp1': function  (e, t) {
       Session.set("ses_statusfilter", "SP 1");
-      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
     },
 
     'change #sp2': function  (e, t) {
       Session.set("ses_statusfilter", "SP 2");
-      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
     },
 
     'change #sp3': function  (e, t) {
       Session.set("ses_statusfilter", "SP 3");
-      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
     },
 
     'change #ms1': function  (e, t) {
       Session.set("ses_statusfilter", "MS 1");
-      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
     },
 
     'change #cut': function  (e, t) {
       Session.set("ses_statusfilter", "CUT");
-      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
     },
 
     'change #finished': function  (e, t) {
       Session.set("ses_statusfilter", "Finished");
-      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
     },
 
     'click #trash_orders': function  (e, t) {
       Session.set("ses_statusfilter", "TRASH");
-      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
 
       $( ".btn-group label" ).removeClass( "active" );
     },
@@ -2414,6 +2484,14 @@ if (Meteor.isClient) {
         var userEditCut = "CUT 1";
       } else if (userEdit == "cut2") {
         var userEditCut = "CUT 2";
+      } else if (userEdit == "mor1") {
+        var userEditCut = "MOR 1";
+      } else if (userEdit == "mor2") {
+        var userEditCut = "MOR 2";
+      } else if (userEdit == "lec1") {
+        var userEditCut = "LEC 1";
+      } else if (userEdit == "lec2") {
+        var userEditCut = "LEC 2";
       } 
 
       var cutDate = new Date();
@@ -3600,10 +3678,14 @@ var sp23 = "";  // 232323
 var sp31 = "";  // 313131
 var sp32 = "";  // 323232 
 var sp33 = "";  // 333333
-var cut1 = "";  // c1c1c1
-var cut2 = "";  // c2c2c2
-var ms11 = "";   // 111111
-var ms12 = "";   // 121212
+var cut1 = "";  // c1c1c1 //Gordon
+var cut2 = "";  // c2c2c2 //Gordon
+var mor1 = "";  // m1m1m1 //Zalli
+var mor2 = "";  // m2m2m2 //Zalli
+var lec1 = "";  // l1l1l1 //Zalli
+var lec2 = "";  // l2l2l2 //Zalli
+var ms11 = "";  // 111111
+var ms12 = "";  // 121212
 
 
 // kill -9 `ps ax | grep node | grep meteor | awk '{print $1}'`

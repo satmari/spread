@@ -1,6 +1,7 @@
 
 <head>
   <title>Gordon Cutting - Web application</title>
+  <!--<title>Zalli Cutting - Web application</title>-->
   <!--<link rel="icon" type="image/x-icon" href="/public/logo.png">-->
   <!--<link rel="shortcut icon" type="image/png" href="public/logo.png">-->
   <!--<link rel="icon" size="16x16" href="/logo.png">-->
@@ -34,8 +35,6 @@
     
     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
       <span class="sr-only"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
   </div>
@@ -319,6 +318,11 @@
                            <option>{{this}}</option>
                         {{/each}}
                       </select>
+                      <!--
+                      {{#autoForm collection="Order" id=makeUniqueID type="update" autosave=true doc=editingDoc }}
+                          {{> afFormGroup options=optionStatus name=Status}}
+                      {{/autoForm}}
+                      -->
                       <br />
 
                       <div>
@@ -691,7 +695,7 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
         </tbody>
       </table>
       <hr />
-      <p><b>Stastistic for - Cutter</b></p>
+      <p><b>Stastistic for - Cutter (Gordon)</b></p>
       
       <table class="table table-bordered table-hover">
         <thead>
@@ -711,6 +715,56 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
             <td>Shift 2</td>
             <td>{{CutnoRollsShift2}}</td>
             <td>{{CutMetShift2}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr />
+      <p><b>Stastistic for - Morgan Cutter (Zalli)</b></p>
+      
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Cut orders</th>
+            <th>Cut meters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Shift 1</td>
+            <td>{{MCutnoRollsShift1}}</td>
+            <td>{{MCutMetShift1}}</td>
+          </tr>
+          <tr>
+            <td>Shift 2</td>
+            <td>{{MCutnoRollsShift2}}</td>
+            <td>{{MCutMetShift2}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr />
+      <p><b>Stastistic for - Lectra Cutter (Zalli)</b></p>
+      
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Cut orders</th>
+            <th>Cut meters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Shift 1</td>
+            <td>{{LCutnoRollsShift1}}</td>
+            <td>{{LCutMetShift1}}</td>
+          </tr>
+          <tr>
+            <td>Shift 2</td>
+            <td>{{LCutnoRollsShift2}}</td>
+            <td>{{LCutMetShift2}}</td>
           </tr>
         </tbody>
       </table>

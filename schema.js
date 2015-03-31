@@ -276,7 +276,7 @@ Order.attachSchema(new SimpleSchema({
         label: "Spread",
         optional: true,
         defaultValue: "",
-        allowedValues: ["", "SP 1-1", "SP 1-2", "SP 1-3", "SP 2-1", "SP 2-2", "SP 2-3", "SP 3-1", "SP 3-2", "SP 3-3", "MS 1", "MS 1-1", "MS 1-2"]
+        allowedValues: ["", "SP 1-1", "SP 1-2", "SP 1-3", "SP 2-1", "SP 2-2", "SP 2-3", "SP 3-1", "SP 3-2", "SP 3-3", "MS 1-1", "MS 1-2"]
     },
     'SpreadDate': {
         type: Date,
@@ -295,7 +295,9 @@ Order.attachSchema(new SimpleSchema({
         label: "Cut",
         optional: true,
         defaultValue: "",
-        allowedValues: ["", "CUT 1", "CUT 2"]
+        //allowedValues: ["", "CUT 1", "CUT 2"] // Gordon
+        //allowedValues: ["", "MOR 1", "MOR 2", "LEC 1", "LEC 2"]  // Zalli
+        allowedValues: ["", "CUT 1", "CUT 2", "MOR 1", "MOR 2", "LEC 1", "LEC 2"] 
     },
     'CutDate': {
         type: Date,

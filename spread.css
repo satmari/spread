@@ -16,6 +16,15 @@ html {
   overflow-x: auto;
 }
 
+body {
+  /*background: url("/background/subtle_white_feathers.png") repeat;*/
+  background: url("/background/gord3.jpg") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
 .operator {
   position: absolute;
   color: white;
@@ -6487,14 +6496,4 @@ input:focus {
 
 .reactive-table-navigation .form-inline input {
   width: 60px;
-}
-
-body {
-  /*background: transparent url("/background/subtle_white_feathers.png") repeat;*/
-
-  background: url("/background/gord3.jpg")  no-repeat center center fixed; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
 }
