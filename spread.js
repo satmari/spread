@@ -432,7 +432,7 @@ if (Meteor.isClient) {
                 return v.toFixed(2);
               }
           },
-          { key: 'PcsBundle', label: 'Nr. Pcs Bundle',
+          /*{ key: 'PcsBundle', label: 'Nr. Pcs Bundle',
             fn: function (value){
               if (value == 0) {
                 return "";
@@ -440,7 +440,7 @@ if (Meteor.isClient) {
                 return value ;
               };
             }
-          },
+          },*/
           //{ key: 'Width', label: 'Width (cm)' },
           { key: 'SonLayer', label: 'S per Layer'},
           { key: 'S', label: 'S Tot' },
@@ -535,9 +535,11 @@ if (Meteor.isClient) {
           },
           { key: 'CutOperator', label: 'Cut Operator'},
           { key: 'Comment', label: 'Comment' },
+          /*
           { key: 'SkalaMarker', label: 'SkalaMarker' },
           { key: 'Sector', label: 'Sector' },
           { key: 'Pattern', label: 'Pattern' },
+          */
 
         ],
           //useFontAwesome: true,
@@ -636,7 +638,7 @@ if (Meteor.isClient) {
                 return v.toFixed(2);
               }
           },
-          { key: 'PcsBundle', label: 'Nr. Pcs Bundle',
+          /*{ key: 'PcsBundle', label: 'Nr. Pcs Bundle',
             fn: function (value){
               if (value == 0) {
                 return "";
@@ -644,7 +646,7 @@ if (Meteor.isClient) {
                 return value ;
               };
             }
-          },
+          },*/
           //{ key: 'Width', label: 'Width (cm)' },
           { key: 'SonLayer', label: 'S per Layer'},
           { key: 'S', label: 'S Tot' },
@@ -740,10 +742,11 @@ if (Meteor.isClient) {
           { key: 'CutOperator', label: 'Cut Operator'},
           //{ key: 'OrderLink', label: 'Linked' },
           { key: 'Comment', label: 'Comment' },
+          /*
           { key: 'SkalaMarker', label: 'SkalaMarker' },
           { key: 'Sector', label: 'Sector' },
           { key: 'Pattern', label: 'Pattern' },
-
+          */
         ],
 
           //useFontAwesome: true,
