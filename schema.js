@@ -137,6 +137,13 @@ Order.attachSchema(new SimpleSchema({
                 return result;
         }*/
     },
+    'PcsBundle': {
+        type: Number,
+        label: "Nr. Pcs Bundle",
+        optional: true,
+        decimal: false, 
+        min: 0
+    },
     'Width': {
         type: Number,
         label: "Width",
@@ -315,7 +322,27 @@ Order.attachSchema(new SimpleSchema({
         optional: true,
         defaultValue: false,
     },
-    
+    'SkalaMarker': {
+        type: String,
+        label: "Skala Marker",
+        optional: true,
+        defaultValue: "",
+        max: 20
+    },
+    'Sector': {
+        type: String,
+        label: "Sector",
+        optional: true,
+        defaultValue: "",
+        max: 20
+    },
+    'Pattern': {
+        type: String,
+        label: "Pattern",
+        optional: true,
+        defaultValue: "",
+        max: 10
+    }
 }));
 
 //Order.attachSchema(Schemas.OneOrder);
@@ -341,6 +368,7 @@ LayersActual
 Length
 Extra
 LengthSum
+PcsBundle
 Width
 S
 SonLayer
@@ -359,8 +387,12 @@ SpreadDate
 SpreadOperator
 Cut
 CutDate
+CutOperator
 Comment
 OrderLink 
+SkalaMarker
+Sector
+Pattern
 */
 
 Operators = new Meteor.Collection("operators");

@@ -424,7 +424,16 @@ if (Meteor.isClient) {
                 var v = Number(value);
                 return v.toFixed(2);
               }
-            },
+          },
+          { key: 'PcsBundle', label: 'Nr. Pcs Bundle',
+            fn: function (value){
+              if (value == 0) {
+                return "";
+              } else {
+                return value ;
+              };
+            }
+          },
           //{ key: 'Width', label: 'Width (cm)' },
           { key: 'SonLayer', label: 'S per Layer'},
           { key: 'S', label: 'S Tot' },
@@ -516,6 +525,10 @@ if (Meteor.isClient) {
           },
           { key: 'CutOperator', label: 'Cut Operator'},
           { key: 'Comment', label: 'Comment' },
+          { key: 'SkalaMarker', label: 'SkalaMarker' },
+          { key: 'Sector', label: 'Sector' },
+          { key: 'Pattern', label: 'Pattern' },
+
         ],
           //useFontAwesome: true,
           //group: 'orderExtra'
@@ -612,7 +625,16 @@ if (Meteor.isClient) {
                 var v = Number(value);
                 return v.toFixed(2);
               }
-            },
+          },
+          { key: 'PcsBundle', label: 'Nr. Pcs Bundle',
+            fn: function (value){
+              if (value == 0) {
+                return "";
+              } else {
+                return value ;
+              };
+            }
+          },
           //{ key: 'Width', label: 'Width (cm)' },
           { key: 'SonLayer', label: 'S per Layer'},
           { key: 'S', label: 'S Tot' },
@@ -705,6 +727,10 @@ if (Meteor.isClient) {
           { key: 'CutOperator', label: 'Cut Operator'},
           //{ key: 'OrderLink', label: 'Linked' },
           { key: 'Comment', label: 'Comment' },
+          { key: 'SkalaMarker', label: 'SkalaMarker' },
+          { key: 'Sector', label: 'Sector' },
+          { key: 'Pattern', label: 'Pattern' },
+
         ],
 
           //useFontAwesome: true,
@@ -2615,6 +2641,9 @@ if (Meteor.isClient) {
             var extra = Number(all[i]['Length All. [cm]']);
             var lengthsumX = Number((length + (extra/100)) * layers);
             var lengthsum = Number(lengthsumX).toFixed(2);
+
+            var pcsbundle = Number(all[i]['Nr. Pcs Bundle']);
+
             var width = Number(all[i]['Marker Width [cm]']);
             var s = Number(all[i]['tot S']);
             var sonlayer = Number(all[i]['S']);
@@ -2633,6 +2662,10 @@ if (Meteor.isClient) {
             //console.log("all[i]['DATE']: " + orderd);
             var orderdate = new Date(all[i]['DATE']);
             orderdate.setHours(2,0,0,0);
+
+            var skala = all[i]['SKALA marker'];
+            var sektor = all[i]['Sector'];
+            var pattern = all[i]['Pattern'];
               
             if (status == "1" ){
               status = 'SP 1';
@@ -2665,12 +2698,12 @@ if (Meteor.isClient) {
 
            //One by One
             if ((orderd != 0) || (orderd)) { 
-              Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status});    
+              Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern});    
               setPos = 0;
               countSP2set = 0;
               countSP1set = 0; 
             } else {
-              Order.insert({No: no, Position: setPos, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status});    
+              Order.insert({No: no, Position: setPos, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern});    
               setPos = 0;
               countSP2set = 0;
               countSP1set = 0;
@@ -2738,6 +2771,7 @@ if (Meteor.isClient) {
             //var lengthsumX = Number((length + extra) * layers);
             //var lengthsum = lengthsumX.toFixed(3);
             var lengthsum = Number(all[i]['LengthSum']);
+            var pcsbundle = Number(all[i]['PcsBundle'])
             var width = Number(all[i]['Width']);
 
             var s = Number(all[i]['S']);
@@ -2786,10 +2820,14 @@ if (Meteor.isClient) {
             var comment = all[i]['Comment'];
             var orderlink = all[i]['OrderLink'];
 
+            var skala = all[i]['SKALA marker'];
+            var sektor = all[i]['Sector'];
+            var pattern = all[i]['Pattern'];
+
             //One by One
             //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,Status: all[i]['Status'], Priority: priority});    
             
-            Order.insert({No: no, Position: position, Status: status, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, S_Cut: s_cut, M: m, MonLayer: monlayer, M_Cut: m_cut, L: l, LonLayer: lonlayer, L_Cut: l_cut, XL: xl, XLonLayer: xlonlayer, XL_Cut: xl_cut, XXL: xxl, XXLonLayer: xxlonlayer, XXL_Cut: xxl_cut, Load: load, Spread: spread, SpreadDate: spreaddate2, SpreadOperator: spreadoperator ,Cut: cut, CutDate: cutdate2, CutOperator: cutoperator,Comment: comment, OrderLink: orderlink});
+            Order.insert({No: no, Position: position, Status: status, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, S_Cut: s_cut, M: m, MonLayer: monlayer, M_Cut: m_cut, L: l, LonLayer: lonlayer, L_Cut: l_cut, XL: xl, XLonLayer: xlonlayer, XL_Cut: xl_cut, XXL: xxl, XXLonLayer: xxlonlayer, XXL_Cut: xxl_cut, Load: load, Spread: spread, SpreadDate: spreaddate2, SpreadOperator: spreadoperator ,Cut: cut, CutDate: cutdate2, CutOperator: cutoperator,Comment: comment, OrderLink: orderlink, SkalaMarker: skala, Sector: sektor, Pattern: pattern});
             // Can not insert order created and _id , this values is automaticali created
           } 
       }
