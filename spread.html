@@ -123,7 +123,14 @@
           </button>-->
 
           <label class="btn btn-default ">
-            <input type="radio" name="options" id="ms1"> Manual Spreader 1 
+            <input type="radio" name="options" id="sp3"> Spreader 3 
+          </label>
+          <!--<button type="radio" class="btn btn-default" id="sp1">SP 2 
+            <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
+          </button>-->
+
+          <label class="btn btn-default ">
+            <input type="radio" name="options" id="ms1"> Manual Spreader 
           </label>
           <!--<button type="radio" class="btn btn-default" id="sp1"> MS 1 
             <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
@@ -615,6 +622,44 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
         </tbody>
       </table>
       <hr />
+      <p><b>Stastistic for - Spreader 3</b></p>
+      
+      Assigned orders to Spreader 3: {{SP3noRolls}}
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Load orders</th>
+            <th>Load meters</th>
+            <th>Spread orders</th>
+            <th>Spread meters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Shift 1</td>
+            <td>{{SP3noLoadRollsShift1}}</td>
+            <td>{{SP3LoadMetShift1}}</td>
+            <td>{{SP3noSpreadRollsShift1}}</td>
+            <td>{{SP3SpreadMetShift1}}</td>
+          </tr>
+          <tr>
+            <td>Shift 2</td>
+            <td>{{SP3noLoadRollsShift2}}</td>
+            <td>{{SP3LoadMetShift2}}</td>
+            <td>{{SP3noSpreadRollsShift2}}</td>
+            <td>{{SP3SpreadMetShift2}}</td>
+          </tr>
+          <tr>
+            <td>Shift 3</td>
+            <td>{{SP3noLoadRollsShift3}}</td>
+            <td>{{SP3LoadMetShift3}}</td>
+            <td>{{SP3noSpreadRollsShift3}}</td>
+            <td>{{SP3SpreadMetShift3}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <hr />
       <p><b>Stastistic for - Manual Spreader 1</b></p>
       
       Assigned orders to Manual Spreader 1: {{MS1noRolls}}
@@ -710,5 +755,4 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
 
 <template name="tmp_NewOperators">
   {{> quickForm collection="Operators" id="insertOperatorsForm" type="insert" buttonContent="Add Operator" omitFields="Created"}}
-  
 </template>
