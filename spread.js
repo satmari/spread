@@ -2809,6 +2809,7 @@ if (Meteor.isClient) {
             var sektor = all[i]['Sector'];
             var pattern = all[i]['Pattern'];
               
+            /*
             if (status == "1" ){
               status = 'SP 1';
               var uniquecountPosSp1 = Session.get("ses_uniquecountPosSp1");
@@ -2834,30 +2835,69 @@ if (Meteor.isClient) {
               Session.set("ses_uniquecountPosMs1", uniquecountPosMs1);
               setPos = uniquecountPosMs1;    
             } else {
+
+              */
               var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
               var uniquecountPosNA = uniquecountPosNA + 1;
-              Session.set("ses_uniquecountPosNA", uniquecountPosNA); 
+              Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+              //console.log("set ses_uniquecountPosNA: " + uniquecountPosNA);
+
               setPos = uniquecountPosNA;                             
               status = 'Not assigned';                            
               //setPos = 999;
-            }
+            /*}*/
 
-            // STATUS = ['Not assigned','SP 1','SP 2','SP 3','CUT','Finish']
+            
+            Meteor.call('method_insertOrders', no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, function(err, data) {
+              console.log("method_insertOrders: " + data);
+
+            });
 
            //One by One
+           /*
             if ((orderd != 0) || (orderd)) { 
-              Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern});    
+              Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern}, 
+                function(err, numberAffected, rawResponse) {
+                  if (numberAffected == false) {
+                    uniquecountPosNA = uniquecountPosNA - 1;                    
+                    Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+                    console.log("a uniquecountPosNA -1 = " + uniquecountPosNA);
+
+                  } else {
+
+                    Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+                    console.log("a uniquecountPosNA +1 = " + uniquecountPosNA);
+                  }
+                }
+              );
+              
               setPos = 0;
               countSP2set = 0;
               countSP1set = 0; 
+
             } else {
-              Order.insert({No: no, Position: setPos, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern});    
+              Order.insert({No: no, Position: setPos, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern},
+              function(err, numberAffected, rawResponse) {
+                  if (numberAffected == false) {
+                    uniquecountPosNA = uniquecountPosNA - 1;                    
+                    Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+                    console.log("a uniquecountPosNA -1 = " + uniquecountPosNA);
+
+                  } else {
+
+                    Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+                    console.log("a uniquecountPosNA +1 = " + uniquecountPosNA);
+                  }
+                }
+              );
+
               setPos = 0;
               countSP2set = 0;
               countSP1set = 0;
             }
-
+            */
           }
+
       }
       reader.readAsText(file_a);
       rm_ImportPlannedMarkers.hide();
@@ -3161,8 +3201,8 @@ if (Meteor.isServer) {
     if (isNaN(posarray[0])) {
       return 0;
     } else {
-      var largest1 = Math.max.apply(null, posarray);
-      return largest1;
+      var largest = Math.max.apply(null, posarray);
+      return largest;
     }
   },
   method_uniquecountPosSp1: function() {
@@ -3175,8 +3215,8 @@ if (Meteor.isServer) {
     if (isNaN(posarray[0])) {
       return 0;
     } else {
-      var largest1 = Math.max.apply(null, posarray);
-      return largest1;
+      var largest = Math.max.apply(null, posarray);
+      return largest;
     }
   },
   method_uniquecountPosSp2: function() {
@@ -3189,8 +3229,8 @@ if (Meteor.isServer) {
     if (isNaN(posarray[0])) {
       return 0;
     } else {
-      var largest2 = Math.max.apply(null, posarray);
-      return largest2;
+      var largest = Math.max.apply(null, posarray);
+      return largest;
     }
   },
   method_uniquecountPosSp3: function() {
@@ -3203,8 +3243,8 @@ if (Meteor.isServer) {
     if (isNaN(posarray[0])) {
       return 0;
     } else {
-      var largest3 = Math.max.apply(null, posarray);
-      return largest3;
+      var largest = Math.max.apply(null, posarray);
+      return largest;
     }
   },
   method_uniquecountPosMs1: function() {
@@ -3217,8 +3257,8 @@ if (Meteor.isServer) {
     if (isNaN(posarray[0])) {
       return 0;
     } else {
-      var largest4 = Math.max.apply(null, posarray);
-      return largest4;
+      var largest = Math.max.apply(null, posarray);
+      return largest;
     }
   },
   method_uniquecountPosCUT: function() {
@@ -3231,8 +3271,8 @@ if (Meteor.isServer) {
     if (isNaN(posarray[0])) {
       return 0;
     } else {
-      var largest2 = Math.max.apply(null, posarray);
-      return largest2;
+      var largest = Math.max.apply(null, posarray);
+      return largest;
     }
   },
   method_uniquecountPosF: function() {
@@ -3245,8 +3285,8 @@ if (Meteor.isServer) {
     if (isNaN(posarray[0])) {
       return 0;
     } else {
-      var largest2 = Math.max.apply(null, posarray);
-      return largest2;
+      var largest = Math.max.apply(null, posarray);
+      return largest;
     }
   },
   method_uniquecountPosTRASH: function() {
@@ -3259,8 +3299,8 @@ if (Meteor.isServer) {
     if (isNaN(posarray[0])) {
       return 0;
     } else {
-      var largest2 = Math.max.apply(null, posarray);
-      return largest2;
+      var largest = Math.max.apply(null, posarray);
+      return largest;
     }
   },
   method_arrayofPosNA: function() {
@@ -3568,6 +3608,48 @@ if (Meteor.isServer) {
       
       return "LengthSum fields are refreshed!";
    },
+   method_insertOrders: function (no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern) {
+    
+    var order = Order.find({Status: 'Not assigned'}).fetch();
+    var posarray = [];
+    for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+    }
+    if (isNaN(posarray[0])) {
+      var largest =  0;
+    } else {
+      var largest = Math.max.apply(null, posarray);
+      //return largest;
+    }
+
+    //var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
+    var uniquecountPosNA = largest + 1;
+    //Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+    console.log("uniquecountPosNA: " + uniquecountPosNA);
+
+    setPos = uniquecountPosNA;                             
+    status = 'Not assigned';
+
+    Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern}, 
+      function(err, numberAffected, rawResponse) {
+        if (numberAffected == false) {
+
+          //uniquecountPosNA = uniquecountPosNA - 1;                    
+          //Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+          //console.log("a uniquecountPosNA -1 = " + uniquecountPosNA);
+          console.log("a uniquecountPosNA -1 = " + uniquecountPosNA);
+
+        } else {
+
+          //Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+          //console.log("a uniquecountPosNA +1 = " + uniquecountPosNA);
+          console.log("a uniquecountPosNA +1 = " + uniquecountPosNA);
+        }
+      }
+    );
+
+   }
   
   
 });
