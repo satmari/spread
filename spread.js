@@ -583,12 +583,12 @@ if (Meteor.isClient) {
             }
           },
           { key: 'CutOperator', label: 'Cut Operator'},
-          { key: 'Consumption', label: 'Consumption' },
-          { key: 'LabelPrinted', label: 'LabelPrinted', hidden: true},
+          { key: 'Consumption', label: 'Consumption',hidden: true },
+          { key: 'LabelPrinted', label: 'LabelPrinted'},
+          { key: 'SkalaMarker', label: 'SkalaMarker'},
+          { key: 'Sector', label: 'Sector'},
+          { key: 'Pattern', label: 'Pattern'},
           { key: 'Comment', label: 'Comment' },
-          { key: 'SkalaMarker', label: 'SkalaMarker', hidden: true},
-          { key: 'Sector', label: 'Sector', hidden: true},
-          { key: 'Pattern', label: 'Pattern', hidden: true},
         ],
           //useFontAwesome: true,
           //group: 'orderExtra'
@@ -789,13 +789,12 @@ if (Meteor.isClient) {
             }
           },
           { key: 'CutOperator', label: 'Cut Operator'},
-          //{ key: 'OrderLink', label: 'Linked' },
-          { key: 'Consumption', label: 'Consumption' },
-          { key: 'LabelPrinted', label: 'LabelPrinted', hidden: true},
+          { key: 'Consumption', label: 'Consumption',hidden: true },
+          { key: 'LabelPrinted', label: 'LabelPrinted'},
+          { key: 'SkalaMarker', label: 'SkalaMarker'},
+          { key: 'Sector', label: 'Sector'},
+          { key: 'Pattern', label: 'Pattern'},
           { key: 'Comment', label: 'Comment' },
-          { key: 'SkalaMarker', label: 'SkalaMarker', hidden: true},
-          { key: 'Sector', label: 'Sector', hidden: true},
-          { key: 'Pattern', label: 'Pattern', hidden: true},
         ],
 
           //useFontAwesome: true,
@@ -4137,7 +4136,8 @@ var lec1 = "";  // l1l1l1 //Zalli
 var lec2 = "";  // l2l2l2 //Zalli
 var ms11 = "";  // 111111
 var ms12 = "";  // 121212
-
+var label = ""; // llllll
+var cons = "";  // cccccc
 
 // kill -9 `ps ax | grep node | grep meteor | awk '{print $1}'`
 

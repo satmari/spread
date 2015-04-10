@@ -17,12 +17,12 @@ html {
 }
 
 body {
-  /*background: url("/background/subtle_white_feathers.png") repeat;*/
-  background: url("/background/gord3.jpg") no-repeat center center fixed; 
+  background: url("/background/subtle_white_feathers.png") repeat;
+  /*background: url("/background/gord3.jpg") no-repeat center center fixed; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
-  background-size: cover;
+  background-size: cover;*/
 }
 
 .operator {
