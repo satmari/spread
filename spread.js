@@ -4137,7 +4137,8 @@ var lec1 = "";  // l1l1l1 //Zalli
 var lec2 = "";  // l2l2l2 //Zalli
 var ms11 = "";  // 111111
 var ms12 = "";  // 121212
-
+var label = ""; // llllll
+var cons = "";  // cccccc
 
 // kill -9 `ps ax | grep node | grep meteor | awk '{print $1}'`
 
