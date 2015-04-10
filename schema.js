@@ -342,6 +342,19 @@ Order.attachSchema(new SimpleSchema({
         optional: true,
         defaultValue: "",
         max: 10
+    },
+    'Consumption': {
+        type: Number,
+        label: "Tot Consumption",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'LabelPrinted': {
+        type: Boolean,
+        label: "Label Printed",
+        optional: true,
+        defaultValue: false
     }
 }));
 
@@ -393,6 +406,8 @@ OrderLink
 SkalaMarker
 Sector
 Pattern
+Consumption
+LabelPrinted
 */
 
 Operators = new Meteor.Collection("operators");

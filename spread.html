@@ -213,6 +213,37 @@
 
   {{/if}}
 
+  {{#if isLabel}}
+    <ul class="nav navbar-nav">
+      <div class="navbar-form">
+      <div class="form-group" style="border: 1px solid #000; border-radius: 5px; margin-left: 10px;">
+        <span style="color: white; margin-left: 10px; margin-right: 10px;">Filter Order Range (Spread Date): </span>
+        <input type="date" id="filterOrderDateBefore" class="form-control" placeholder="Filter Order Date Before"/> <span style="color: white"> - </span>
+        <input type="date" id="filterOrderDateAfter" class="form-control" placeholder="Filter Order Date After"/>
+        <button id="btnfilterOrderDateStart" class="btn btn-default">
+          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+        </button>
+      </div>
+      </div>  
+    </ul>
+  {{/if}}
+
+
+  {{#if isCons}}
+    <ul class="nav navbar-nav">
+      <div class="navbar-form">
+      <div class="form-group" style="border: 1px solid #000; border-radius: 5px; margin-left: 10px;">
+        <span style="color: white; margin-left: 10px; margin-right: 10px;">Filter Order Range (Spread Date): </span>
+        <input type="date" id="filterOrderDateBefore" class="form-control" placeholder="Filter Order Date Before"/> <span style="color: white"> - </span>
+        <input type="date" id="filterOrderDateAfter" class="form-control" placeholder="Filter Order Date After"/>
+        <button id="btnfilterOrderDateStart" class="btn btn-default">
+          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+        </button>
+      </div>
+      </div>  
+    </ul>
+  {{/if}}
+
 
   {{#if isAdminOrGuest}}
       <ul class="nav navbar-nav navbar-right">
@@ -233,9 +264,27 @@
       </ul>
     {{/if}}
 
-    {{#if User.username}}
+    {{#if isSp}}
       <ul class="nav navbar-nav machine">
         <h3 style="color:white; font-size: 20px;"> <small> Machine and shift: </small>{{User.username}} </h3>
+      </ul>
+    {{/if}}
+
+    {{#if isCut}}
+      <ul class="nav navbar-nav machine">
+        <h3 style="color:white; font-size: 20px;"> <small> Machine and shift: </small>{{User.username}} </h3>
+      </ul>
+    {{/if}}
+
+    {{#if isLabel}}
+      <ul class="nav navbar-nav machine">
+        <h3 style="color:white; font-size: 20px;"> <small> User: </small>{{User.username}} </h3>
+      </ul>
+    {{/if}}
+
+    {{#if isCons}}
+      <ul class="nav navbar-nav machine">
+        <h3 style="color:white; font-size: 20px;"> <small> User: </small>{{User.username}} </h3>
       </ul>
     {{/if}}
  
@@ -265,6 +314,16 @@
   {{#if isUserCut}}
     <h3>Order table</h3>
     {{> reactiveTable collection=orders settings=settingsUserCut}}
+  {{/if}}
+
+  {{#if isUserLabel}}
+    <h3>Order table</h3>
+    {{> reactiveTable collection=orders settings=settingsUserLabel}}
+  {{/if}}
+
+  {{#if isUserCons}}
+    <h3>Order table</h3>
+    {{> reactiveTable collection=orders settings=settingsUserCons}}
   {{/if}}
 
   </div>
@@ -428,6 +487,60 @@
                 </table>
             {{/if}}
 
+            {{#if isUserLabel}}
+                <table class="table" style="width:550px"> 
+                  <tbody>
+                    <p>User:  <big>{{User}}</big></p>
+                    <p>Oredr Info: <big>No: <b>{{Order_No}}</b>, Komesa: <b>{{Order_Komesa}}</b>, Marker: <b>{{Order_Marker}}</b></big></p>
+                    <p>Fabric Info: <big>Fabric: <b>{{Order_Fabric}}</b>, Bagno: <b>{{Order_Bagno}}</b>, Color Desc: <b>{{Order_ColorDesc}}</b></big></p>
+                    <p>Actual Layers: <big><b>{{Order_ActualLayers}}</b></big></p>
+                    <!--
+                    <hr />
+                    {{#autoForm collection="Order" id="editOrderForm" type="update" autosave=true doc=editingDoc }}
+                      <fieldset>
+                        {{> afQuickField name='LabelPrinted'}}
+                        {{> afQuickField name='Comment'}}
+                      </fieldset>
+                    {{/autoForm}}
+                    -->
+                    <hr />
+                    <tr>
+                      <td>
+                        <a href="#" id="printOrder" class="btn btn-success btn-lg btn-block">Label Printed</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+            {{/if}}
+
+            {{#if isUserCons}}
+                <table class="table" style="width:550px"> 
+                  <tbody>
+                    <p>User:  <big>{{User}}</big></p>
+                    <p>Oredr Info: <big>No: <b>{{Order_No}}</b>, Komesa: <b>{{Order_Komesa}}</b>, Marker: <b>{{Order_Marker}}</b></big></p>
+                    <p>Fabric Info: <big>Fabric: <b>{{Order_Fabric}}</b>, Bagno: <b>{{Order_Bagno}}</b>, Color Desc: <b>{{Order_ColorDesc}}</b></big></p>
+                    <p>Actual Layers: <big><b>{{Order_ActualLayers}}</b></big></p>
+                    <hr />
+
+                    {{#autoForm collection="Order" id="editOrderForm" type="update" autosave=true doc=editingDoc }}
+                      <fieldset>
+                        <!--<legend>Actual Layers</legend>-->
+                        {{> afQuickField name='Consumption'}}
+                        <!--{{> afQuickField name='Comment'}}-->
+                      </fieldset>
+                    {{/autoForm}}
+                    <!--
+                    <hr />
+                    <tr>
+                      <td>
+                        <a href="#" id="cutOrder" class="btn btn-success btn-lg btn-block">Cut Order</a>
+                      </td>
+                    </tr>
+                    -->
+                  </tbody>
+                </table>
+            {{/if}}
+
             {{#if isUserGuest}}
               Sorry, guest can not edit orders!
             {{/if}}
@@ -487,8 +600,8 @@
     <div>
       <p>Copy CSV code (Order list): </p>
       <textarea id="textarea_json" class="text" style="width:100%; height:200px;">
-_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;PcsBundle;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;XL;XLonLayer;XL_Cut;XXL;XXLonLayer;XXL_Cut;Priority;Load;Spread;SpreadDate;SpreadOperator;Cut;CutDate;CutOperator;Comment;OrderLink;SkalaMarker;Sector;Pattern
-{{#each order}}{{_id}};{{No}};{{Position}};{{Status}};{{formatDate Date "short"}};{{formatDate Created "long"}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{formaColorDesc ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{formatNumber Length}};{{Extra}};{{formatNumber LengthSum}};{{PcsBundle}};{{Width}};{{S}};{{SonLayer}};{{S_Cut}};{{M}};{{MonLayer}};{{M_Cut}};{{L}};{{LonLayer}};{{L_Cut}};{{XL}};{{XLonLayer}};{{XL_Cut}};{{XXL}};{{XXLonLayer}};{{XXL_Cut}};{{Priority}};{{Load}};{{Spread}};{{formatDate SpreadDate "short"}};{{SpreadOperator}};{{Cut}};{{formatDate CutDate "short"}};{{CutOperator}};{{Comment}};{{OrderLink}};{{SkalaMarker}};{{Sector}};{{Pattern}}
+_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;PcsBundle;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;XL;XLonLayer;XL_Cut;XXL;XXLonLayer;XXL_Cut;Priority;Load;Spread;SpreadDate;SpreadOperator;Cut;CutDate;CutOperator;Comment;OrderLink;SkalaMarker;Sector;Pattern;Consumption;LabelPrinted
+{{#each order}}{{_id}};{{No}};{{Position}};{{Status}};{{formatDate Date "short"}};{{formatDate Created "long"}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{formaColorDesc ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{formatNumber Length}};{{Extra}};{{formatNumber LengthSum}};{{PcsBundle}};{{Width}};{{S}};{{SonLayer}};{{S_Cut}};{{M}};{{MonLayer}};{{M_Cut}};{{L}};{{LonLayer}};{{L_Cut}};{{XL}};{{XLonLayer}};{{XL_Cut}};{{XXL}};{{XXLonLayer}};{{XXL_Cut}};{{Priority}};{{Load}};{{Spread}};{{formatDate SpreadDate "short"}};{{SpreadOperator}};{{Cut}};{{formatDate CutDate "short"}};{{CutOperator}};{{Comment}};{{OrderLink}};{{SkalaMarker}};{{Sector}};{{Pattern}};{{Consumption}};{{LabelPrinted}}
 {{/each}}</textarea>
       <!--<textarea id="textarea_json" class="text" style="width:100%; height:200px;">
 _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink

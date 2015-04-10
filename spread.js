@@ -137,7 +137,11 @@ if (Meteor.isClient) {
       Meteor.subscribe('filter_spreader3');
     } else if ((ses_loggedUserName == "ms11") || (ses_loggedUserName == "ms12")){
       Meteor.subscribe('filter_spreaderm1');
-    
+    } else if (ses_loggedUserName == "label"){
+      Meteor.subscribe('filter_label', ses_DaysBefore, ses_DaysAfter);
+    } else if (ses_loggedUserName == "cons"){
+      Meteor.subscribe('filter_cons', ses_DaysBefore, ses_DaysAfter);
+
     } else if (ses_allorder_date) {
       Meteor.subscribe('filter_allOrderswithDate', ses_DaysBefore, ses_DaysAfter);
     } else if (ses_allorder_spreaddate) {
@@ -248,6 +252,28 @@ if (Meteor.isClient) {
       if (userId) {
         var User = Meteor.users.findOne({_id: userId});
         if ((User.username == "cut1") || (User.username == "cut2") || (User.username == "mor1") || (User.username == "mor2") || (User.username == "lec1") || (User.username == "lec2")) {
+          return true;
+        } else {
+          return false;  
+        }
+      }
+    },
+    isLabel: function() {
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if (User.username == "label") {
+          return true;
+        } else {
+          return false;  
+        }
+      }
+    },
+    isCons: function() {
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if (User.username == "cons") {
           return true;
         } else {
           return false;  
@@ -370,6 +396,28 @@ if (Meteor.isClient) {
           }
         }
     },
+    isUserLabel: function() {
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "label") {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+    },
+    isUserCons: function() {
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "cons") {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+    },
     filter: function() {
         return ses_statusfilter = Session.get("ses_statusfilter");
     },
@@ -378,6 +426,7 @@ if (Meteor.isClient) {
         rowsPerPage: 100,
         showFilter: true,
         showNavigation: 'auto',
+        showColumnToggles: true,
         fields: [
           //{ key: '_id', label: '_ID' },
           { key: 'Position', label: 'Pos' , sort: 'ascending'},
@@ -534,6 +583,8 @@ if (Meteor.isClient) {
             }
           },
           { key: 'CutOperator', label: 'Cut Operator'},
+          { key: 'Consumption', label: 'Consumption' },
+          //{ key: 'LabelPrinted', label: 'LabelPrinted' },
           { key: 'Comment', label: 'Comment' },
           /*
           { key: 'SkalaMarker', label: 'SkalaMarker' },
@@ -584,6 +635,7 @@ if (Meteor.isClient) {
         rowsPerPage: 100,
         showFilter: true,
         showNavigation: 'auto',
+        showColumnToggles: true,
         fields: [
           //{ key: '_id', label: '_ID' },
           { key: 'Position', label: 'Pos' , sort: 'ascending'},
@@ -741,6 +793,8 @@ if (Meteor.isClient) {
           },
           { key: 'CutOperator', label: 'Cut Operator'},
           //{ key: 'OrderLink', label: 'Linked' },
+          { key: 'Consumption', label: 'Consumption' },
+          //{ key: 'LabelPrinted', label: 'LabelPrinted' },
           { key: 'Comment', label: 'Comment' },
           /*
           { key: 'SkalaMarker', label: 'SkalaMarker' },
@@ -997,6 +1051,251 @@ if (Meteor.isClient) {
           },
       };
     },
+    settingsUserLabel: function () {
+      return {
+          rowsPerPage: 50,
+          showFilter: true,
+          showNavigation: 'auto',
+          fields: [
+            //{ key: '_id', label: '_ID' },
+            { key: 'No', label: 'No'},
+            /*{ key: 'Position', label: 'Pos'},*/
+            { key: 'OrderLink', label: 'Linked',
+              fn: function (value){
+                if (value == true) {
+                  return "Linked";
+                } else {
+                  return "" ;
+                };
+              }
+            },
+            /*{ key: 'Date', label: 'Date',
+              fn: function (value) {
+                if (value){
+                  return moment(value).format("DD-MMM");
+                } else {
+                  return "";
+                }
+                //return moment(value).format("DD-MM-YYYY");
+              }//, sort: 'descending' // ascending
+            },*/
+            
+            //{ key: 'Created', label: 'Created' },
+            { key: 'Komesa', label: 'Komesa' },
+            { key: 'Marker', label: 'Marker' },
+            { key: 'Style', label: 'Style' },
+            { key: 'Fabric', label: 'Fabric' },
+            { key: 'ColorCode', label: 'Color Code' },
+            { key: 'ColorDesc', label: 'Color Desc' },
+            { key: 'Bagno', label: 'Bagno' },
+            //{ key: 'Layers', label: 'Layers' },
+            { key: 'LayersActual', label: 'Layers Actual',
+              fn: function (value){
+                if (value == 0) {
+                  return "";
+                } else {
+                  return value ;
+                };
+              }
+            },
+            { key: 'Length', label: 'Length(m)' },
+            //{ key: 'Extra', label: 'Extra (cm)' },
+            //{ key: 'LengthSum', label: 'Length Sum (m)' },
+            { key: 'Width', label: 'Width (cm)' },
+            //{ key: 'S', label: 'S' },
+            { key: 'S_Cut', label: 'S Cut'},
+            //{ key: 'M', label: 'M' },
+            { key: 'M_Cut', label: 'M Cut'},
+            //{ key: 'L', label: 'L' },
+            { key: 'L_Cut', label: 'L Cut'},
+            //{ key: 'XLonLayer', label: 'XL per Layer'},
+            //{ key: 'XL', label: 'XL Marker' },
+            { key: 'XL_Cut', label: 'XL Cut'},
+            //{ key: 'XXLonLayer', label: 'XXL per Layer'},
+            //{ key: 'XXL', label: 'XXL Marker' },
+            { key: 'XXL_Cut', label: 'XXL Cut'},
+            //{ key: 'Status', label: 'Status'},
+            { key: 'Priority', label: 'Priority',  
+              fn: function (value){
+                if (value == 2) {
+                  return "High";
+                } else if (value == 3) {
+                 return "Top Priority" ;
+                } else {
+                 return "Normal" ;
+                }
+              }
+            },
+            /*{ key: 'Load', label: 'Load'},*/
+            /*{ key: 'Spread', label: 'Spread'},*/
+            { key: 'SpreadDate', label: 'Spread Date', sort: 'descending' ,
+             fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD HH:mm:ss");
+              } else {
+                return "";
+              }
+            }
+          },
+            //{ key: 'Cut', label: 'Cut' },
+            //{ key: 'OrderLink', label: 'Linked' },
+            //{ key: 'Comment', label: 'Comment' },
+            //{ key: 'Consumption', label: 'Consumption' },
+            { key: 'LabelPrinted', label: 'LabelPrinted' },
+          ],
+            //useFontAwesome: true,
+            //group: 'Komesa', 
+            //rowClass: "warning", //warning, danger
+            rowClass: function(item) {
+            var priority = item.Priority;
+            var load = item.Load;
+            var spread = item.Spread;
+            var status = item.Status;
+
+            if (status == "Finished")  {
+              return 'success'; // green
+            /*
+            } else if (priority == 2) {
+              return 'warning'; // orange
+            } else if (priority == 3) {
+              return 'danger';  // red
+              //active, success, info, warning, danger
+            */
+            } else if (status == 'CUT') {
+              return 'info';    // dark blue
+            } else if (load) {
+              return 'load';    // greey
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
+              return 'active';  // light blue
+            } else {
+
+            }
+          },
+      };
+    },
+    settingsUserCons: function () {
+      return {
+          rowsPerPage: 50,
+          showFilter: true,
+          showNavigation: 'auto',
+          fields: [
+            //{ key: '_id', label: '_ID' },
+            { key: 'No', label: 'No'},
+            /*{ key: 'Position', label: 'Pos'},*/
+            { key: 'OrderLink', label: 'Linked',
+              fn: function (value){
+                if (value == true) {
+                  return "Linked";
+                } else {
+                  return "" ;
+                };
+              }
+            },
+            /*{ key: 'Date', label: 'Date',
+              fn: function (value) {
+                if (value){
+                  return moment(value).format("DD-MMM");
+                } else {
+                  return "";
+                }
+                //return moment(value).format("DD-MM-YYYY");
+              }//, sort: 'descending' // ascending
+            },*/
+            
+            //{ key: 'Created', label: 'Created' },
+            { key: 'Komesa', label: 'Komesa' },
+            { key: 'Marker', label: 'Marker' },
+            { key: 'Style', label: 'Style' },
+            { key: 'Fabric', label: 'Fabric' },
+            { key: 'ColorCode', label: 'Color Code' },
+            { key: 'ColorDesc', label: 'Color Desc' },
+            { key: 'Bagno', label: 'Bagno' },
+            //{ key: 'Layers', label: 'Layers' },
+            { key: 'LayersActual', label: 'Layers Actual',
+              fn: function (value){
+                if (value == 0) {
+                  return "";
+                } else {
+                  return value ;
+                };
+              }
+            },
+            { key: 'Length', label: 'Length(m)' },
+            //{ key: 'Extra', label: 'Extra (cm)' },
+            //{ key: 'LengthSum', label: 'Length Sum (m)' },
+            { key: 'Width', label: 'Width (cm)' },
+            //{ key: 'S', label: 'S' },
+            { key: 'S_Cut', label: 'S Cut'},
+            //{ key: 'M', label: 'M' },
+            { key: 'M_Cut', label: 'M Cut'},
+            //{ key: 'L', label: 'L' },
+            { key: 'L_Cut', label: 'L Cut'},
+            //{ key: 'XLonLayer', label: 'XL per Layer'},
+            //{ key: 'XL', label: 'XL Marker' },
+            { key: 'XL_Cut', label: 'XL Cut'},
+            //{ key: 'XXLonLayer', label: 'XXL per Layer'},
+            //{ key: 'XXL', label: 'XXL Marker' },
+            { key: 'XXL_Cut', label: 'XXL Cut'},
+            //{ key: 'Status', label: 'Status'},
+            { key: 'Priority', label: 'Priority', 
+              fn: function (value){
+                if (value == 2) {
+                  return "High";
+                } else if (value == 3) {
+                 return "Top Priority" ;
+                } else {
+                 return "Normal" ;
+                }
+              }
+            },
+            /*{ key: 'Load', label: 'Load'},*/
+            /*{ key: 'Spread', label: 'Spread'},*/
+            { key: 'SpreadDate', label: 'Spread Date', sort: 'descending' , 
+             fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD HH:mm:ss");
+              } else {
+                return "";
+              }
+            }
+          },
+            //{ key: 'Cut', label: 'Cut' },
+            //{ key: 'OrderLink', label: 'Linked' },
+            //{ key: 'Comment', label: 'Comment' },
+            { key: 'Consumption', label: 'Total Consumption' },
+            //{ key: 'LabelPrinted', label: 'LabelPrinted' },
+          ],
+            //useFontAwesome: true,
+            //group: 'Komesa', 
+            //rowClass: "warning", //warning, danger
+            rowClass: function(item) {
+            var priority = item.Priority;
+            var load = item.Load;
+            var spread = item.Spread;
+            var status = item.Status;
+
+            if (status == "Finished")  {
+              return 'success'; // green
+            /*
+            } else if (priority == 2) {
+              return 'warning'; // orange
+            } else if (priority == 3) {
+              return 'danger';  // red
+              //active, success, info, warning, danger
+            */
+            } else if (status == 'CUT') {
+              return 'info';    // dark blue
+            } else if (load) {
+              return 'load';    // greey
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
+              return 'active';  // light blue
+            } else {
+
+            }
+          },
+      };
+    },
+
   });
 
   // Reactive Table events
@@ -1132,6 +1431,28 @@ if (Meteor.isClient) {
           }
         }
       },
+      isUserLabel: function() {
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "label") {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+      },
+      isUserCons: function() {
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "cons") {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+      },
       User: function() {
         var userId = Meteor.userId();
         if (userId) {
@@ -1240,8 +1561,6 @@ if (Meteor.isClient) {
         for (var i = 0; i < order.length; i++) {
           var Loaded = order[i].Load;       
         }
-
-        //console.log("Loaded: " + Loaded);
         if (Loaded) {
           return false;
         } else {
@@ -2526,6 +2845,23 @@ if (Meteor.isClient) {
       rm_EditOrder.hide();
     },
 
+    'click #printOrder': function (){
+      var orderToEdit = Session.get("selectedDocId");
+      //console.log("orderToEdit: " + orderToEdit);
+
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          
+          var actualPosition = order[i].Position;
+          var actualStatus = order[i].Status;
+          var actual_id = order[i]._id;
+      }
+
+      Order.update({_id: orderToEdit},{$set: {LabelPrinted: true }});
+      
+      rm_EditOrder.hide();
+    },
+
     'click #insertposition': function(e){
       //console.log("saveposition clicked");
 
@@ -3015,10 +3351,13 @@ if (Meteor.isClient) {
             var sektor = all[i]['Sector'];
             var pattern = all[i]['Pattern'];
 
+            var label = all[i]['LabelPrinted'];
+            var cons = all[i]['Consumption'];
+
             //One by One
             //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,Status: all[i]['Status'], Priority: priority});    
             
-            Order.insert({No: no, Position: position, Status: status, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, S_Cut: s_cut, M: m, MonLayer: monlayer, M_Cut: m_cut, L: l, LonLayer: lonlayer, L_Cut: l_cut, XL: xl, XLonLayer: xlonlayer, XL_Cut: xl_cut, XXL: xxl, XXLonLayer: xxlonlayer, XXL_Cut: xxl_cut, Load: load, Spread: spread, SpreadDate: spreaddate2, SpreadOperator: spreadoperator ,Cut: cut, CutDate: cutdate2, CutOperator: cutoperator,Comment: comment, OrderLink: orderlink, SkalaMarker: skala, Sector: sektor, Pattern: pattern});
+            Order.insert({No: no, Position: position, Status: status, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, S_Cut: s_cut, M: m, MonLayer: monlayer, M_Cut: m_cut, L: l, LonLayer: lonlayer, L_Cut: l_cut, XL: xl, XLonLayer: xlonlayer, XL_Cut: xl_cut, XXL: xxl, XXLonLayer: xxlonlayer, XXL_Cut: xxl_cut, Load: load, Spread: spread, SpreadDate: spreaddate2, SpreadOperator: spreadoperator ,Cut: cut, CutDate: cutdate2, CutOperator: cutoperator,Comment: comment, OrderLink: orderlink, SkalaMarker: skala, Sector: sektor, Pattern: pattern, LabelPrinted: label, Consumption: cons});
             // Can not insert order created and _id , this values is automaticali created
           } 
       }
@@ -3708,6 +4047,38 @@ if (Meteor.isServer) {
           ]},
       ]
     })*/
+  });
+
+  Meteor.publish("filter_label", function(Daysbefore, Daysafter){
+    return Order.find({
+    $and: [
+      { $or: [
+          { Status: "CUT" },
+          { Status: "Finished" }
+        ]},
+      { $or: [ 
+          { LabelPrinted: false },  
+          { LabelPrinted: { $exists: false }}
+        ]},
+      { $and: [ 
+          {SpreadDate: {$gte: Daysbefore, $lt: Daysafter}}
+        ]},
+      ]
+    })
+  });
+
+  Meteor.publish("filter_cons", function(Daysbefore, Daysafter){
+    return Order.find({
+    $and: [
+      { $or: [
+          { Status: "CUT" },
+          { Status: "Finished" }
+        ]},
+      { $and: [ 
+          {SpreadDate: {$gte: Daysbefore, $lt: Daysafter}}
+        ]},
+      ]
+    })
   });
 
   Meteor.publish("filter_statusfilter", function(status){
