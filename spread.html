@@ -1,6 +1,7 @@
 
 <head>
   <title>Gordon Cutting - Web application</title>
+  <!--<title>Zalli Cutting - Web application</title>-->
   <!--<link rel="icon" type="image/x-icon" href="/public/logo.png">-->
   <!--<link rel="shortcut icon" type="image/png" href="public/logo.png">-->
   <!--<link rel="icon" size="16x16" href="/logo.png">-->
@@ -34,8 +35,6 @@
     
     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
       <span class="sr-only"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
   </div>
@@ -123,7 +122,14 @@
           </button>-->
 
           <label class="btn btn-default ">
-            <input type="radio" name="options" id="ms1"> Manual Spreader 1 
+            <input type="radio" name="options" id="sp3"> Spreader 3 
+          </label>
+          <!--<button type="radio" class="btn btn-default" id="sp1">SP 2 
+            <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
+          </button>-->
+
+          <label class="btn btn-default ">
+            <input type="radio" name="options" id="ms1"> Manual Spreader 
           </label>
           <!--<button type="radio" class="btn btn-default" id="sp1"> MS 1 
             <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
@@ -144,10 +150,10 @@
           </button>-->
         </div>
 
-        <div class="form-group" style="border: 1px solid #000; border-radius: 5px;">
+        <div class="form-group" style="border: 1px solid #000; border-radius: 5px; margin-left: 10px;">
           <!--<span style="color: white">Filter Order Date : </span>
           <input type="date" id="filterOrderDate" class="form-control" placeholder="Filter Order Date"/>-->
-          <span style="color: white">Filter Order Range (Finished): </span>
+          <span style="color: white; margin-left: 10px; margin-right: 10px;">Filter Order Range (Finished): </span>
           <input type="date" id="filterOrderDateBefore" class="form-control" placeholder="Filter Order Date Before"/> <span style="color: white"> - </span>
           <input type="date" id="filterOrderDateAfter" class="form-control" placeholder="Filter Order Date After"/>
           <button id="btnfilterOrderDateStart" class="btn btn-default">
@@ -168,29 +174,13 @@
         <input type="text" id="filterName" class="form-control" placeholder="Filter Order Name"/>
       </div>
     </ul>-->
-  {{#if isSp}}
-    <!--
-    <ul class="nav navbar-nav">
-        <div class="navbar-form">
-          <div class="dropdown">
-          <a data-toggle="dropdown" href="#" class="btn btn-info">Select your name</a>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-            <li role="presentation"><a tabindex="-1" role="menuitem" href="#">Action</a></li>
-            <li role="presentation"><a tabindex="-1" role="menuitem" href="#">Another action</a></li>
-            <li role="presentation"><a tabindex="-1" role="menuitem" href="#">Something else here</a></li>
-            <li class="divider" role="presentation"></li>
-            <li role="presentation"><a tabindex="-1" role="menuitem" href="#">Separated link</a></li>  
-          </ul>
-        </div>
-      </div>
-    </ul>
-    -->
 
+  {{#if isSp}}
     <ul class="nav navbar-nav">
-       <div class="navbar-form select_operator"><span style="color:#b4bcc2;font-size:16px">Select operator: </span>
-          <select class="form-control selectpicker" id="selectOperator" title="Select operator">
+       <div class="navbar-form select_operator_spreader"><span style="color:#b4bcc2;font-size:16px">Select operator: </span>
+          <select class="form-control selectpicker" id="selectOperatorSpreader" title="Select operator">
                 <option></option>
-             {{#each operatorSelect}}
+             {{#each operatorSelectSpreader}}
                 <option>{{this}}</option>
              {{/each}}
           </select>
@@ -198,75 +188,111 @@
     </ul>
     <ul class="nav navbar-nav">
       <div class="navbar-form">
-        <button id="changeOperator" class="btn btn-default">Change operator</button>
+        <button id="changeOperatorSpreader" class="btn btn-default">Change operator</button>
       </div>
     </ul>
 
-    {{/if}}
+  {{/if}}
+
+  {{#if isCut}}
+    <ul class="nav navbar-nav">
+       <div class="navbar-form select_operator_cutter"><span style="color:#b4bcc2;font-size:16px">Select operator: </span>
+          <select class="form-control selectpicker" id="selectOperatorCutter" title="Select operator">
+                <option></option>
+             {{#each operatorSelectCutter}}
+                <option>{{this}}</option>
+             {{/each}}
+          </select>
+      </div>
+    </ul>
+    <ul class="nav navbar-nav">
+      <div class="navbar-form">
+        <button id="changeOperatorCutter" class="btn btn-default">Change operator</button>
+      </div>
+    </ul>
+
+  {{/if}}
+
+  {{#if isLabel}}
+    <ul class="nav navbar-nav">
+      <div class="navbar-form">
+      <div class="form-group" style="border: 1px solid #000; border-radius: 5px; margin-left: 10px;">
+        <span style="color: white; margin-left: 10px; margin-right: 10px;">Filter Order Range (Spread Date): </span>
+        <input type="date" id="filterOrderDateBefore" class="form-control" placeholder="Filter Order Date Before"/> <span style="color: white"> - </span>
+        <input type="date" id="filterOrderDateAfter" class="form-control" placeholder="Filter Order Date After"/>
+        <button id="btnfilterOrderDateStart" class="btn btn-default">
+          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+        </button>
+      </div>
+      </div>  
+    </ul>
+  {{/if}}
 
 
+  {{#if isCons}}
+    <ul class="nav navbar-nav">
+      <div class="navbar-form">
+      <div class="form-group" style="border: 1px solid #000; border-radius: 5px; margin-left: 10px;">
+        <span style="color: white; margin-left: 10px; margin-right: 10px;">Filter Order Range (Spread Date): </span>
+        <input type="date" id="filterOrderDateBefore" class="form-control" placeholder="Filter Order Date Before"/> <span style="color: white"> - </span>
+        <input type="date" id="filterOrderDateAfter" class="form-control" placeholder="Filter Order Date After"/>
+        <button id="btnfilterOrderDateStart" class="btn btn-default">
+          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+        </button>
+      </div>
+      </div>  
+    </ul>
+  {{/if}}
 
-    {{#if isAdminOrGuest}}
+
+  {{#if isAdminOrGuest}}
       <ul class="nav navbar-nav navbar-right">
         <h3 style="color:white; font-size: 20px;"> <small> User:  </small>{{User.username}} </h3>
       </ul>
     
-    {{else}}
+  {{else}}
     
-    {{#if OperatorSelected}}
+    {{#if OperatorSelectedSpreader}}
       <ul class="nav navbar-nav operator">
-        <h3 style="color:white; font-size: 20px;" > <small> Operator: </small>{{OperatorSelected}} </h3>
+        <h3 style="color:white; font-size: 20px;" > <small> Operator: </small>{{OperatorSelectedSpreader}} </h3>
       </ul>
     {{/if}}
-    {{#if User.username}}
+
+    {{#if OperatorSelectedCutter}}
+      <ul class="nav navbar-nav operator">
+        <h3 style="color:white; font-size: 20px;" > <small> Operator: </small>{{OperatorSelectedCutter}} </h3>
+      </ul>
+    {{/if}}
+
+    {{#if isSp}}
       <ul class="nav navbar-nav machine">
         <h3 style="color:white; font-size: 20px;"> <small> Machine and shift: </small>{{User.username}} </h3>
       </ul>
     {{/if}}
- 
+
+    {{#if isCut}}
+      <ul class="nav navbar-nav machine">
+        <h3 style="color:white; font-size: 20px;"> <small> Machine and shift: </small>{{User.username}} </h3>
+      </ul>
     {{/if}}
+
+    {{#if isLabel}}
+      <ul class="nav navbar-nav machine">
+        <h3 style="color:white; font-size: 20px;"> <small> User: </small>{{User.username}} </h3>
+      </ul>
+    {{/if}}
+
+    {{#if isCons}}
+      <ul class="nav navbar-nav machine">
+        <h3 style="color:white; font-size: 20px;"> <small> User: </small>{{User.username}} </h3>
+      </ul>
+    {{/if}}
+ 
+  {{/if}}
     
   </div>
   </div>
 </template>
-
-<!--
-<template name="orderForm">
-  <div class="input-group">
-  <div class="input-group-sm">
-    <h1>orderForm</h1>
-    <input type="text" id="orderDate" placeholder="Date"/>
-    <input type="text" id="orderDate" placeholder="OrderDate" >
-    <input type="text" id="orderName" placeholder="OdrerName">
-    <input type="text" id="orderFileName" placeholder="FileName">
-    <input type="text" id="orderModel" placeholder="Model">
-    <input type="text" id="orderFabric" placeholder="Fabric">
-    <input type="text" id="orderBagno" placeholder="Bagno">
-    <input type="text" id="orderLayers" placeholder="Layers">
-    <input type="text" id="orderLength" placeholder="Length">
-    <input type="text" id="orderExtra" placeholder="Extra">
-    <input type="text" id="orderLengthSum" placeholder="LengthSum">
-    <input type="text" id="orderPriority" placeholder="Priority">
-    <input type="checkbox" id="orderLoad" {{showLoadChecked}}>
-    <input type="checkbox" id="orderSpread" {{showSpreadChecked}}>
-    <button id="addOrder"> Add </button>
-  </div>
-</template>
--->
-<!--
-<template name="orderQuickForm">
-  <div class="container">
-    <div class="row">
-      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-        <legend>Quick Form title</legend>
-      </div>
-      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-        {{> quickForm collection="Order" id="insertOrderForm" type='insert' buttonContent="Add Order" omitFields="orderLengthSum,orderCreated"}}
-      </div>
-    </div>
-  </div>
-</template>
--->
 
 <template name="reactiveTebleList">
   <div>
@@ -290,6 +316,16 @@
     {{> reactiveTable collection=orders settings=settingsUserCut}}
   {{/if}}
 
+  {{#if isUserLabel}}
+    <h3>Order table</h3>
+    {{> reactiveTable collection=orders settings=settingsUserLabel}}
+  {{/if}}
+
+  {{#if isUserCons}}
+    <h3>Order table</h3>
+    {{> reactiveTable collection=orders settings=settingsUserCons}}
+  {{/if}}
+
   </div>
 </template>
 
@@ -304,57 +340,6 @@
       </div>
     </div>
   </div>
-</template>
-
-<template name="tmp_EditOrder_OLD">
-  <div class="container">
-        <div class="row" style="width:550px">
-          <!--
-          <div class="col-sm-12">
-            <legend></legend>
-          </div>
-          -->
-          <!--<div class="col-sm-8">-->
-          <div>
-          {{#if isUser}}
-            {{#if isAdmin}}
-              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="LengthSum,Created,S,M,L"}}
-              <div class="">
-                <br />
-                <button class="btn btn-primary" id="deleteOrder" type="button">Delete order</button>  
-              </div> 
-            {{else}}
-              <!--{{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Update Order" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,M,L,Status,Priority,LengthSum,Created"}}-->
-              
-                <table class="table" style="width:550px">
-                  <tbody>
-                    <p>User:  <big>{{User}}</big></p>
-                    <p>User:  <big>{{User}}</big></p>
-                    <tr>
-                      <td>
-                      <a href="#" id="loadOrder" class="btn btn-default btn-lg btn-block btn-primary">
-                      Load Order</a>
-                      </td>
-                    </tr>
-                    <br />
-                    <tr>
-                      <td>
-                        <a href="#" id="spreadOrder" class="btn btn-default btn-lg btn-block btn-success"> Spread Order</a>
-                      </td>
-                    </tr>
-                    <br />
-                    <tr>
-                      {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save comment" doc=editingDoc omitFields="No,Date,Komesa,Marker,Style,Fabric,ColorCode,ColorDesc,Bagno,Layers,Length,Extra,Width,S,SonLayer,M,MonLayer,L,LonLayer,Status,Priority,LengthSum,Created,Load,Spread,Cut"}}
-                    </tr>
-                  </tbody>
-                </table>
-            {{/if}}
-            {{else}}
-            <p>Please log in!</p>
-          {{/if}}
-          </div>
-        </div>
-    </div>
 </template>
 
 <template name="tmp_EditOrder">
@@ -392,6 +377,11 @@
                            <option>{{this}}</option>
                         {{/each}}
                       </select>
+                      <!--
+                      {{#autoForm collection="Order" id=makeUniqueID type="update" autosave=true doc=editingDoc }}
+                          {{> afFormGroup options=optionStatus name=Status}}
+                      {{/autoForm}}
+                      -->
                       <br />
 
                       <div>
@@ -399,7 +389,7 @@
                       </div>
               <hr />
               <big><b>Order Information</b></big><br />
-              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,XL,XXL,SpreadDate,SpreadOperator,CutDate,Status,Position,OrderLink"}}
+              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" autosave=true doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,XL,XXL,SpreadDate,SpreadOperator,CutDate,CutOperator,Status,Position,OrderLink"}}
 
               <!--<div class="">
                 <br />
@@ -422,12 +412,11 @@
 
                     {{#if isNotLoaded}}
                     
-                    {{#autoForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc }}
+                    {{#autoForm collection="Order" id="editOrderForm" type="update" autosave=true doc=editingDoc }}
                       <fieldset>
                         {{> afQuickField name='Comment'}}
-                      </fieldset>
-                      <button type="submit" class="btn btn-danger">Save</button>
-                      {{/autoForm}}
+                      </fieldset>  
+                    {{/autoForm}}
 
                     <hr />
                     <tr>
@@ -437,13 +426,11 @@
                     </tr>
                     {{else}}
                                         
-                      {{#autoForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc }}
-                      <fieldset>
-                        <!--<legend>Actual Layers</legend>-->
-                        {{> afQuickField name='LayersActual'}}
-                        {{> afQuickField name='Comment'}}
-                      </fieldset>
-                      <button type="submit" class="btn btn-danger">Save</button>
+                      {{#autoForm collection="Order" id="editOrderForm" type="update" autosave=true doc=editingDoc }}
+                        <fieldset>
+                          {{> afQuickField name='LayersActual'}}
+                          {{> afQuickField name='Comment'}}
+                        </fieldset>
                       {{/autoForm}}
 
                       <hr />
@@ -468,7 +455,14 @@
                     <p>Actual Layers: <big><b>{{Order_ActualLayers}}</b></big></p>
                     
                     <hr />
-                    {{#autoForm collection="Order" id="editOrderForm" type="update" buttonContent="Save" doc=editingDoc }}
+
+                  {{#if isOperatorNotSlected}}
+
+                    <legend style="color:red;">Please select operator</legend>
+
+                  {{else}}
+
+                    {{#autoForm collection="Order" id="editOrderForm" type="update" autosave=true doc=editingDoc }}
                       <fieldset>
                         <!--<legend>Actual Layers</legend>-->
                         {{> afQuickField name='S_Cut'}}
@@ -478,7 +472,7 @@
                         {{> afQuickField name='XXL_Cut'}}
                         {{> afQuickField name='Comment'}}
                       </fieldset>
-                      <button type="submit" class="btn btn-danger">Save</button>
+                      
                     {{/autoForm}}
 
                     <hr />
@@ -488,6 +482,61 @@
                       </td>
                     </tr>
 
+                  {{/if}}
+                  </tbody>
+                </table>
+            {{/if}}
+
+            {{#if isUserLabel}}
+                <table class="table" style="width:550px"> 
+                  <tbody>
+                    <p>User:  <big>{{User}}</big></p>
+                    <p>Oredr Info: <big>No: <b>{{Order_No}}</b>, Komesa: <b>{{Order_Komesa}}</b>, Marker: <b>{{Order_Marker}}</b></big></p>
+                    <p>Fabric Info: <big>Fabric: <b>{{Order_Fabric}}</b>, Bagno: <b>{{Order_Bagno}}</b>, Color Desc: <b>{{Order_ColorDesc}}</b></big></p>
+                    <p>Actual Layers: <big><b>{{Order_ActualLayers}}</b></big></p>
+                    <!--
+                    <hr />
+                    {{#autoForm collection="Order" id="editOrderForm" type="update" autosave=true doc=editingDoc }}
+                      <fieldset>
+                        {{> afQuickField name='LabelPrinted'}}
+                        {{> afQuickField name='Comment'}}
+                      </fieldset>
+                    {{/autoForm}}
+                    -->
+                    <hr />
+                    <tr>
+                      <td>
+                        <a href="#" id="printOrder" class="btn btn-success btn-lg btn-block">Label Printed</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+            {{/if}}
+
+            {{#if isUserCons}}
+                <table class="table" style="width:550px"> 
+                  <tbody>
+                    <p>User:  <big>{{User}}</big></p>
+                    <p>Oredr Info: <big>No: <b>{{Order_No}}</b>, Komesa: <b>{{Order_Komesa}}</b>, Marker: <b>{{Order_Marker}}</b></big></p>
+                    <p>Fabric Info: <big>Fabric: <b>{{Order_Fabric}}</b>, Bagno: <b>{{Order_Bagno}}</b>, Color Desc: <b>{{Order_ColorDesc}}</b></big></p>
+                    <p>Actual Layers: <big><b>{{Order_ActualLayers}}</b></big></p>
+                    <hr />
+
+                    {{#autoForm collection="Order" id="editOrderForm" type="update" autosave=true doc=editingDoc }}
+                      <fieldset>
+                        <!--<legend>Actual Layers</legend>-->
+                        {{> afQuickField name='Consumption'}}
+                        <!--{{> afQuickField name='Comment'}}-->
+                      </fieldset>
+                    {{/autoForm}}
+                    <!--
+                    <hr />
+                    <tr>
+                      <td>
+                        <a href="#" id="cutOrder" class="btn btn-success btn-lg btn-block">Cut Order</a>
+                      </td>
+                    </tr>
+                    -->
                   </tbody>
                 </table>
             {{/if}}
@@ -499,14 +548,6 @@
       </div>
     </div>
 </template>
-
-<!--
-<template name="tmp_AddNewOrderFull">
-</template>
-
-<template name="tmp_EditOrderFull">
-</template>
--->
 
 <template name="tmp_ImportPlannedMarkers">
     <div>
@@ -559,8 +600,8 @@
     <div>
       <p>Copy CSV code (Order list): </p>
       <textarea id="textarea_json" class="text" style="width:100%; height:200px;">
-_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;XL;XLonLayer;XL_Cut;XXL;XXLonLayer;XXL_Cut;Priority;Load;Spread;SpreadDate;SpreadOperator;Cut;CutDate;Comment;OrderLink
-{{#each order}}{{_id}};{{No}};{{Position}};{{Status}};{{formatDate Date "short"}};{{formatDate Created "long"}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{formaColorDesc ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{formatNumber Length}};{{Extra}};{{formatNumber LengthSum}};{{Width}};{{S}};{{SonLayer}};{{S_Cut}};{{M}};{{MonLayer}};{{M_Cut}};{{L}};{{LonLayer}};{{L_Cut}};{{XL}};{{XLonLayer}};{{XL_Cut}};{{XXL}};{{XXLonLayer}};{{XXL_Cut}};{{Priority}};{{Load}};{{Spread}};{{formatDate SpreadDate "short"}};{{SpreadOperator}};{{Cut}};{{formatDate CutDate "short"}};{{Comment}};{{OrderLink}}
+_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;PcsBundle;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;XL;XLonLayer;XL_Cut;XXL;XXLonLayer;XXL_Cut;Priority;Load;Spread;SpreadDate;SpreadOperator;Cut;CutDate;CutOperator;Comment;OrderLink;SkalaMarker;Sector;Pattern;Consumption;LabelPrinted
+{{#each order}}{{_id}};{{No}};{{Position}};{{Status}};{{formatDate Date "short"}};{{formatDate Created "long"}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{formaColorDesc ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{formatNumber Length}};{{Extra}};{{formatNumber LengthSum}};{{PcsBundle}};{{Width}};{{S}};{{SonLayer}};{{S_Cut}};{{M}};{{MonLayer}};{{M_Cut}};{{L}};{{LonLayer}};{{L_Cut}};{{XL}};{{XLonLayer}};{{XL_Cut}};{{XXL}};{{XXLonLayer}};{{XXL_Cut}};{{Priority}};{{Load}};{{Spread}};{{formatDate SpreadDate "short"}};{{SpreadOperator}};{{Cut}};{{formatDate CutDate "short"}};{{CutOperator}};{{Comment}};{{OrderLink}};{{SkalaMarker}};{{Sector}};{{Pattern}};{{Consumption}};{{LabelPrinted}}
 {{/each}}</textarea>
       <!--<textarea id="textarea_json" class="text" style="width:100%; height:200px;">
 _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink
@@ -698,6 +739,44 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
         </tbody>
       </table>
       <hr />
+      <p><b>Stastistic for - Spreader 3</b></p>
+      
+      Assigned orders to Spreader 3: {{SP3noRolls}}
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Load orders</th>
+            <th>Load meters</th>
+            <th>Spread orders</th>
+            <th>Spread meters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Shift 1</td>
+            <td>{{SP3noLoadRollsShift1}}</td>
+            <td>{{SP3LoadMetShift1}}</td>
+            <td>{{SP3noSpreadRollsShift1}}</td>
+            <td>{{SP3SpreadMetShift1}}</td>
+          </tr>
+          <tr>
+            <td>Shift 2</td>
+            <td>{{SP3noLoadRollsShift2}}</td>
+            <td>{{SP3LoadMetShift2}}</td>
+            <td>{{SP3noSpreadRollsShift2}}</td>
+            <td>{{SP3SpreadMetShift2}}</td>
+          </tr>
+          <tr>
+            <td>Shift 3</td>
+            <td>{{SP3noLoadRollsShift3}}</td>
+            <td>{{SP3LoadMetShift3}}</td>
+            <td>{{SP3noSpreadRollsShift3}}</td>
+            <td>{{SP3SpreadMetShift3}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <hr />
       <p><b>Stastistic for - Manual Spreader 1</b></p>
       
       Assigned orders to Manual Spreader 1: {{MS1noRolls}}
@@ -729,7 +808,7 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
         </tbody>
       </table>
       <hr />
-      <p><b>Stastistic for - Cutter</b></p>
+      <p><b>Stastistic for - Cutter (Gordon)</b></p>
       
       <table class="table table-bordered table-hover">
         <thead>
@@ -752,6 +831,57 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
           </tr>
         </tbody>
       </table>
+      <!--
+      <hr />
+      <p><b>Stastistic for - Morgan Cutter (Zalli)</b></p>
+      
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Cut orders</th>
+            <th>Cut meters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Shift 1</td>
+            <td>{{MCutnoRollsShift1}}</td>
+            <td>{{MCutMetShift1}}</td>
+          </tr>
+          <tr>
+            <td>Shift 2</td>
+            <td>{{MCutnoRollsShift2}}</td>
+            <td>{{MCutMetShift2}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr />
+      <p><b>Stastistic for - Lectra Cutter (Zalli)</b></p>
+      
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Cut orders</th>
+            <th>Cut meters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Shift 1</td>
+            <td>{{LCutnoRollsShift1}}</td>
+            <td>{{LCutMetShift1}}</td>
+          </tr>
+          <tr>
+            <td>Shift 2</td>
+            <td>{{LCutnoRollsShift2}}</td>
+            <td>{{LCutMetShift2}}</td>
+          </tr>
+        </tbody>
+      </table>
+      -->
   </div>
 </template>
 
@@ -769,32 +899,28 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
         <tbody>
         {{#each operators}}
           <tr>
-            <td>{{OP_Code}}</td>
-            <td>{{OP_Name}}</td>
-            <td>{{Machine}}</td>
-            <td>{{Status}}</td>
+            <td>{{this.OP_Code}}</td>
+            <td>{{this.OP_Name}}</td>
+            <td>{{this.Machine}}</td>
+            <td>
+            {{#if isAdmin}}
+              {{#autoForm id=makeUniqueID type="update" collection="Operators" doc=this autosave=true}}
+                {{> afFormGroup name="Status" label=false options=options class="small-status" }}
+              {{/autoForm}}
+            {{/if}}
+            </td>
           </tr>
         {{/each}}
         </tbody>
       </table>
   </div>
   <div>
-  <a href="#" id="newoperators" class="btn btn-info btn">Add new Operator</a>
-    
-  
-
+    {{#if isAdmin}}
+      <a href="#" id="newoperators" class="btn btn-info btn">Add new Operator</a>
+    {{/if}}
   </div>
 </template>
 
 <template name="tmp_NewOperators">
   {{> quickForm collection="Operators" id="insertOperatorsForm" type="insert" buttonContent="Add Operator" omitFields="Created"}}
-</template>
-
-<template name="tmp_alert">
-  <div class="bs-example">
-    <div class="alert alert-danger alert-error">
-        <a href="#" class="close" data-dismiss="alert">&times;</a>
-        <strong>Error!</strong> A problem has been occurred while submitting your data.
-    </div>
-  </div>
 </template>

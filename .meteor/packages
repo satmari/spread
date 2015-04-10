@@ -22,3 +22,4 @@ mrt:jquery-csv
 settinghead:auto-nprogress
 mrt:bootstrap-select
 mrt:accounts-ui-bootstrap-3
+ctjp:meteor-bootstrap-switch

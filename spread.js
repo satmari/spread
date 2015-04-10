@@ -67,20 +67,30 @@ if (Meteor.isClient) {
         //console.log("Startup: UserName: " + User.username);
     }
 
-    Session.set("ses_selectOperator", "");
-    var selectOperator = Session.get("ses_selectOperator");
+    Session.set("ses_selectOperatorSpreader", "");
+    var selectOperatorSpreader = Session.get("ses_selectOperatorSpreader");
     //console.log("operator is(startup): " + selectOperator);
 
-    if (selectOperator) {
-      $('.select_operator').hide();
-      $('#changeOperator').show();
+    Session.set("ses_selectOperatorCutter", "");
+    var selectOperatorCutter = Session.get("ses_selectOperatorCutter");
+    //console.log("operator is(startup): " + selectOperator);
+
+    if (selectOperatorSpreader) {
+      $('.select_operator_spreader').hide();
+      $('#changeOperatorSpreader').show();
     } else {
-      $('.select_operator').show();
-      $('#selectOperator').val($('#selectOperator option:first').val());
-      $('#changeOperator').hide();
+      $('.select_operator_spreader').show();
+      $('#selectOperatorSpreader').val($('#selectOperatorSpreader option:first').val());
+      $('#changeOperatorSpreader').hide();
     }
-    //Session.set("ses_SP1message", "");
-    //Session.set("ses_SP2message", "");
+    if (selectOperatorCutter) {
+      $('.select_operator_cutter').hide();
+      $('#changeOperatorCutter').show();
+    } else {
+      $('.select_operator_cutter').show();
+      $('#selectOperatorCutter').val($('#selectOperatorCutter option:first').val());
+      $('#changeOperatorCutter').hide();
+    }
 
   })
 
@@ -114,7 +124,7 @@ if (Meteor.isClient) {
 
     //console.log("Autosubcribe sesion: " + ses + " , typeof: " + typeof ses);
 
-    if ((ses_loggedUserName == "cut1") || (ses_loggedUserName == "cut2")){
+    if ((ses_loggedUserName == "cut1") || (ses_loggedUserName == "cut2") || (ses_loggedUserName == "mor1") || (ses_loggedUserName == "mor2") || (ses_loggedUserName == "lec1") || (ses_loggedUserName == "lec2")){
       Meteor.subscribe('filter_cutter');
     } else if ((ses_loggedUserName == "sp11") || (ses_loggedUserName == "sp12") || (ses_loggedUserName == "sp13")){
       //Meteor.subscribe('spreader1', Session.get("ses_datefilter"));
@@ -122,9 +132,16 @@ if (Meteor.isClient) {
     } else if ((ses_loggedUserName == "sp21") || (ses_loggedUserName == "sp22") || (ses_loggedUserName == "sp23")){
       //Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
       Meteor.subscribe('filter_spreader2');
-    } else if ((ses_loggedUserName == "ms1") || (ses_loggedUserName == "ms11") || (ses_loggedUserName == "ms12")){
+    } else if ((ses_loggedUserName == "sp31") || (ses_loggedUserName == "sp32") || (ses_loggedUserName == "sp33")){
+      //Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
+      Meteor.subscribe('filter_spreader3');
+    } else if ((ses_loggedUserName == "ms11") || (ses_loggedUserName == "ms12")){
       Meteor.subscribe('filter_spreaderm1');
-    
+    } else if (ses_loggedUserName == "label"){
+      Meteor.subscribe('filter_label', ses_DaysBefore, ses_DaysAfter);
+    } else if (ses_loggedUserName == "cons"){
+      Meteor.subscribe('filter_cons', ses_DaysBefore, ses_DaysAfter);
+
     } else if (ses_allorder_date) {
       Meteor.subscribe('filter_allOrderswithDate', ses_DaysBefore, ses_DaysAfter);
     } else if (ses_allorder_spreaddate) {
@@ -148,20 +165,27 @@ if (Meteor.isClient) {
     // Operators
     Meteor.subscribe('filter_allOperators');
 
-    var selectOperator = Session.get("ses_selectOperator");
-    //console.log("operator is (autosubscribe): " + selectOperator);
+    var selectOperatorSpreader = Session.get("ses_selectOperatorSpreader");
+    var selectOperatorCutter = Session.get("ses_selectOperatorCutter");
 
-    if (selectOperator) {
-      $('.select_operator').hide();
-      $('#changeOperator').show();
+    if (selectOperatorSpreader) {
+      $('.select_operator_spreader').hide();
+      $('#changeOperatorSpreader').show();
     } else {
-      $('.select_operator').show();
-      $('#selectOperator').val($('#selectOperator option:first').val());
-      $('#changeOperator').hide();
+      $('.select_operator_spreader').show();
+      $('#selectOperatorSpreader').val($('#selectOperatorSpreader option:first').val());
+      $('#changeOperatorSpreader').hide();
+    }
+    if (selectOperatorCutter) {
+      $('.select_operator_cutter').hide();
+      $('#changeOperatorCutter').show();
+    } else {
+      $('.select_operator_cutter').show();
+      $('#selectOperatorCutter').val($('#selectOperatorCutter option:first').val());
+      $('#changeOperatorCutter').hide();
     }
       
       
-
       Meteor.call('method_uniquecountPosNA', function(err, data) {
         //console.log("method_uniquecountPosNA: " + data);
         Session.set("ses_uniquecountPosNA", data);
@@ -173,6 +197,10 @@ if (Meteor.isClient) {
       Meteor.call('method_uniquecountPosSp2', function(err, data) {
         //console.log("method_uniquecountPosSp2: " + data);
         Session.set("ses_uniquecountPosSp2", data);
+      });
+      Meteor.call('method_uniquecountPosSp3', function(err, data) {
+        //console.log("method_uniquecountPosSp2: " + data);
+        Session.set("ses_uniquecountPosSp3", data);
       });
       Meteor.call('method_uniquecountPosMs1', function(err, data) {
         //console.log("method_uniquecountPosMs1: " + data);
@@ -191,36 +219,7 @@ if (Meteor.isClient) {
         Session.set("ses_uniquecountPosTRASH", data);
       });
     
-      /* Messages */
-      //var ses_SP1message = Session.get("ses_SP1message");
-      //console.log("ses_SP1message: " + ses_SP1message);
-      //var ses_SP2message = Session.get("ses_SP2message");
-      //console.log("ses_SP2message: " + ses_SP2message);
-
-      /*
-      if ((ses_SP1message == "") || (typeof ses_SP1message === 'undefined')) {
-      } else {
-        alert(ses_SP1message);
-        console.log("ses_SP1message: " + ses_SP1message);
-        Session.set("ses_SP1message", "");
-
-      } 
-      if ((ses_SP2message == "") || (typeof ses_SP2message === 'undefined')) {
-      } else {
-        alert(ses_SP2message);
-        console.log("ses_SP2message: " + ses_SP2message);
-        Session.set("ses_SP2message", "");
-      }
-      */
   });
-  
-  /*
-  FlashMessages.configure({
-    autoHide: true,
-    hideDelay: 5000,
-    autoScroll: true
-  });
-  */
 
   Template.nav.helpers ({
     isAdminOrGuest: function() {
@@ -241,7 +240,40 @@ if (Meteor.isClient) {
       var userId = Meteor.userId();
       if (userId) {
         var User = Meteor.users.findOne({_id: userId});
-        if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "ms11") || (User.username == "ms12")) {
+        if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33") || (User.username == "ms11") || (User.username == "ms12")) {
+          return true;
+        } else {
+          return false;  
+        }
+      }
+    },
+    isCut: function() {
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if ((User.username == "cut1") || (User.username == "cut2") || (User.username == "mor1") || (User.username == "mor2") || (User.username == "lec1") || (User.username == "lec2")) {
+          return true;
+        } else {
+          return false;  
+        }
+      }
+    },
+    isLabel: function() {
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if (User.username == "label") {
+          return true;
+        } else {
+          return false;  
+        }
+      }
+    },
+    isCons: function() {
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if (User.username == "cons") {
           return true;
         } else {
           return false;  
@@ -255,13 +287,13 @@ if (Meteor.isClient) {
         return User;
       }
     }, 
-    operatorSelect: function  (){
+    operatorSelectSpreader: function  (){ // dropdown list
       var userId = Meteor.userId();
       var posarray = [];
 
       if (userId) {
         var User = Meteor.users.findOne({_id: userId});
-        if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23")) {
+        if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33")) {
           var operators = Operators.find({Status: "Active", Machine: "Spreader"}).fetch();
 
         } else if ((User.username == "ms11") || (User.username == "ms12")) { 
@@ -278,16 +310,34 @@ if (Meteor.isClient) {
       posarray.sort(function(a, b){return a-b});
       return posarray;
     }, 
-    OperatorSelected: function () {
-      var operator = Session.get("ses_selectOperator");
+    operatorSelectCutter: function () { // dropdown list
+      var userId = Meteor.userId();
+      var posarray = [];
+
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if ((User.username == "cut1") || (User.username == "cut2") || (User.username == "mor1") || (User.username == "mor2") || (User.username == "lec1") || (User.username == "lec2")) {
+          var operators = Operators.find({Status: "Active", Machine: "Cutter"}).fetch();
+        } 
+      }
+
+      for (var i = 0; i < operators.length; i++) {
+        //id = operators[i]._Id;
+        pos = operators[i].OP_Name;
+        posarray.push(pos);
+      }
+      posarray.sort(function(a, b){return a-b});
+      return posarray;
+    },
+    OperatorSelectedSpreader: function () {
+      var operator = Session.get("ses_selectOperatorSpreader");
+      return operator;
+    },
+    OperatorSelectedCutter: function () {
+      var operator = Session.get("ses_selectOperatorCutter");
       return operator;
     }
   });
-    
-   // Reactive-table /*DEPRECATED*/
-  /*Template.reactiveTebleList.orders = function () {
-      return Order.find();
-  }*/
 
   Template.reactiveTebleList.helpers({
     orders: function () {
@@ -325,7 +375,7 @@ if (Meteor.isClient) {
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "ms1") || (User.username == "ms11") || (User.username == "ms12")){
+          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33") || (User.username == "ms11") || (User.username == "ms12")){
             return true;
           } else {
             return false;  
@@ -339,7 +389,29 @@ if (Meteor.isClient) {
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if ((User.username == "cut1") || (User.username == "cut2")) {
+          if ((User.username == "cut1") || (User.username == "cut2") || (User.username == "mor1") || (User.username == "mor2") || (User.username == "lec1") || (User.username == "lec2")) {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+    },
+    isUserLabel: function() {
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "label") {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+    },
+    isUserCons: function() {
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "cons") {
             return true;
           } else {
             return false;  
@@ -354,6 +426,7 @@ if (Meteor.isClient) {
         rowsPerPage: 100,
         showFilter: true,
         showNavigation: 'auto',
+        showColumnToggles: true,
         fields: [
           //{ key: '_id', label: '_ID' },
           { key: 'Position', label: 'Pos' , sort: 'ascending'},
@@ -407,7 +480,16 @@ if (Meteor.isClient) {
                 var v = Number(value);
                 return v.toFixed(2);
               }
-            },
+          },
+          /*{ key: 'PcsBundle', label: 'Nr. Pcs Bundle',
+            fn: function (value){
+              if (value == 0) {
+                return "";
+              } else {
+                return value ;
+              };
+            }
+          },*/
           //{ key: 'Width', label: 'Width (cm)' },
           { key: 'SonLayer', label: 'S per Layer'},
           { key: 'S', label: 'S Tot' },
@@ -431,6 +513,9 @@ if (Meteor.isClient) {
               }
               else if (value == "SP 2") {
                 return "SP 2";
+              }
+              else if (value == "SP 3") {
+                return "SP 3";
               }
               else if (value == "MS 1") {
                 return "MS 1";
@@ -497,7 +582,13 @@ if (Meteor.isClient) {
               }
             }
           },
+          { key: 'CutOperator', label: 'Cut Operator'},
+          { key: 'Consumption', label: 'Consumption' },
+          { key: 'LabelPrinted', label: 'LabelPrinted', hidden: true},
           { key: 'Comment', label: 'Comment' },
+          { key: 'SkalaMarker', label: 'SkalaMarker', hidden: true},
+          { key: 'Sector', label: 'Sector', hidden: true},
+          { key: 'Pattern', label: 'Pattern', hidden: true},
         ],
           //useFontAwesome: true,
           //group: 'orderExtra'
@@ -522,7 +613,7 @@ if (Meteor.isClient) {
               return 'info';    // dark blue
             } else if (load) {
               return 'load';    // greey
-            } else if ((status == "SP 1") || (status == "SP 2") || (status == "MS 1")) {
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
               return 'active';  // light blue
             } else if (priority == 2) {
               return 'warning'; // orange
@@ -541,6 +632,7 @@ if (Meteor.isClient) {
         rowsPerPage: 100,
         showFilter: true,
         showNavigation: 'auto',
+        showColumnToggles: true,
         fields: [
           //{ key: '_id', label: '_ID' },
           { key: 'Position', label: 'Pos' , sort: 'ascending'},
@@ -594,7 +686,16 @@ if (Meteor.isClient) {
                 var v = Number(value);
                 return v.toFixed(2);
               }
-            },
+          },
+          /*{ key: 'PcsBundle', label: 'Nr. Pcs Bundle',
+            fn: function (value){
+              if (value == 0) {
+                return "";
+              } else {
+                return value ;
+              };
+            }
+          },*/
           //{ key: 'Width', label: 'Width (cm)' },
           { key: 'SonLayer', label: 'S per Layer'},
           { key: 'S', label: 'S Tot' },
@@ -618,6 +719,9 @@ if (Meteor.isClient) {
               }
               else if (value == "SP 2") {
                 return "SP 2";
+              }
+              else if (value == "SP 3") {
+                return "SP 3";
               }
               else if (value == "MS 1") {
                 return "MS 1";
@@ -684,8 +788,14 @@ if (Meteor.isClient) {
               }
             }
           },
+          { key: 'CutOperator', label: 'Cut Operator'},
           //{ key: 'OrderLink', label: 'Linked' },
+          { key: 'Consumption', label: 'Consumption' },
+          { key: 'LabelPrinted', label: 'LabelPrinted', hidden: true},
           { key: 'Comment', label: 'Comment' },
+          { key: 'SkalaMarker', label: 'SkalaMarker', hidden: true},
+          { key: 'Sector', label: 'Sector', hidden: true},
+          { key: 'Pattern', label: 'Pattern', hidden: true},
         ],
 
           //useFontAwesome: true,
@@ -704,7 +814,7 @@ if (Meteor.isClient) {
               return 'info';    // dark blue
             } else if (load) {
               return 'load';    // greey
-            } else if ((status == "SP 1") || (status == "SP 2") || (status == "MS 1")) {
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
               return 'active';  // light blue
             } else if (priority == 2) {
               return 'warning'; // orange
@@ -803,7 +913,7 @@ if (Meteor.isClient) {
               return 'info';    // dark blue
             } else if (load) {
               return 'load';    // greey
-            } else if ((status == "SP 1") || (status == "SP 2") || (status == "MS 1")) {
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
               return 'active';  // light blue
             } else if (priority == 2) {
               return 'warning'; // orange
@@ -928,7 +1038,7 @@ if (Meteor.isClient) {
               return 'info';    // dark blue
             } else if (load) {
               return 'load';    // greey
-            } else if ((status == "SP 1") || (status == "SP 2") || (status == "MS 1")) {
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
               return 'active';  // light blue
             } else {
 
@@ -936,6 +1046,251 @@ if (Meteor.isClient) {
           },
       };
     },
+    settingsUserLabel: function () {
+      return {
+          rowsPerPage: 50,
+          showFilter: true,
+          showNavigation: 'auto',
+          fields: [
+            //{ key: '_id', label: '_ID' },
+            { key: 'No', label: 'No'},
+            /*{ key: 'Position', label: 'Pos'},*/
+            { key: 'OrderLink', label: 'Linked',
+              fn: function (value){
+                if (value == true) {
+                  return "Linked";
+                } else {
+                  return "" ;
+                };
+              }
+            },
+            /*{ key: 'Date', label: 'Date',
+              fn: function (value) {
+                if (value){
+                  return moment(value).format("DD-MMM");
+                } else {
+                  return "";
+                }
+                //return moment(value).format("DD-MM-YYYY");
+              }//, sort: 'descending' // ascending
+            },*/
+            
+            //{ key: 'Created', label: 'Created' },
+            { key: 'Komesa', label: 'Komesa' },
+            { key: 'Marker', label: 'Marker' },
+            { key: 'Style', label: 'Style' },
+            { key: 'Fabric', label: 'Fabric' },
+            { key: 'ColorCode', label: 'Color Code' },
+            { key: 'ColorDesc', label: 'Color Desc' },
+            { key: 'Bagno', label: 'Bagno' },
+            //{ key: 'Layers', label: 'Layers' },
+            { key: 'LayersActual', label: 'Layers Actual',
+              fn: function (value){
+                if (value == 0) {
+                  return "";
+                } else {
+                  return value ;
+                };
+              }
+            },
+            { key: 'Length', label: 'Length(m)' },
+            //{ key: 'Extra', label: 'Extra (cm)' },
+            //{ key: 'LengthSum', label: 'Length Sum (m)' },
+            { key: 'Width', label: 'Width (cm)' },
+            //{ key: 'S', label: 'S' },
+            { key: 'S_Cut', label: 'S Cut'},
+            //{ key: 'M', label: 'M' },
+            { key: 'M_Cut', label: 'M Cut'},
+            //{ key: 'L', label: 'L' },
+            { key: 'L_Cut', label: 'L Cut'},
+            //{ key: 'XLonLayer', label: 'XL per Layer'},
+            //{ key: 'XL', label: 'XL Marker' },
+            { key: 'XL_Cut', label: 'XL Cut'},
+            //{ key: 'XXLonLayer', label: 'XXL per Layer'},
+            //{ key: 'XXL', label: 'XXL Marker' },
+            { key: 'XXL_Cut', label: 'XXL Cut'},
+            //{ key: 'Status', label: 'Status'},
+            { key: 'Priority', label: 'Priority',  
+              fn: function (value){
+                if (value == 2) {
+                  return "High";
+                } else if (value == 3) {
+                 return "Top Priority" ;
+                } else {
+                 return "Normal" ;
+                }
+              }
+            },
+            /*{ key: 'Load', label: 'Load'},*/
+            /*{ key: 'Spread', label: 'Spread'},*/
+            { key: 'SpreadDate', label: 'Spread Date', sort: 'descending' ,
+             fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD HH:mm:ss");
+              } else {
+                return "";
+              }
+            }
+          },
+            //{ key: 'Cut', label: 'Cut' },
+            //{ key: 'OrderLink', label: 'Linked' },
+            //{ key: 'Comment', label: 'Comment' },
+            //{ key: 'Consumption', label: 'Consumption' },
+            { key: 'LabelPrinted', label: 'LabelPrinted' },
+          ],
+            //useFontAwesome: true,
+            //group: 'Komesa', 
+            //rowClass: "warning", //warning, danger
+            rowClass: function(item) {
+            var priority = item.Priority;
+            var load = item.Load;
+            var spread = item.Spread;
+            var status = item.Status;
+
+            if (status == "Finished")  {
+              return 'success'; // green
+            /*
+            } else if (priority == 2) {
+              return 'warning'; // orange
+            } else if (priority == 3) {
+              return 'danger';  // red
+              //active, success, info, warning, danger
+            */
+            } else if (status == 'CUT') {
+              return 'info';    // dark blue
+            } else if (load) {
+              return 'load';    // greey
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
+              return 'active';  // light blue
+            } else {
+
+            }
+          },
+      };
+    },
+    settingsUserCons: function () {
+      return {
+          rowsPerPage: 50,
+          showFilter: true,
+          showNavigation: 'auto',
+          fields: [
+            //{ key: '_id', label: '_ID' },
+            { key: 'No', label: 'No'},
+            /*{ key: 'Position', label: 'Pos'},*/
+            { key: 'OrderLink', label: 'Linked',
+              fn: function (value){
+                if (value == true) {
+                  return "Linked";
+                } else {
+                  return "" ;
+                };
+              }
+            },
+            /*{ key: 'Date', label: 'Date',
+              fn: function (value) {
+                if (value){
+                  return moment(value).format("DD-MMM");
+                } else {
+                  return "";
+                }
+                //return moment(value).format("DD-MM-YYYY");
+              }//, sort: 'descending' // ascending
+            },*/
+            
+            //{ key: 'Created', label: 'Created' },
+            { key: 'Komesa', label: 'Komesa' },
+            { key: 'Marker', label: 'Marker' },
+            { key: 'Style', label: 'Style' },
+            { key: 'Fabric', label: 'Fabric' },
+            { key: 'ColorCode', label: 'Color Code' },
+            { key: 'ColorDesc', label: 'Color Desc' },
+            { key: 'Bagno', label: 'Bagno' },
+            //{ key: 'Layers', label: 'Layers' },
+            { key: 'LayersActual', label: 'Layers Actual',
+              fn: function (value){
+                if (value == 0) {
+                  return "";
+                } else {
+                  return value ;
+                };
+              }
+            },
+            { key: 'Length', label: 'Length(m)' },
+            //{ key: 'Extra', label: 'Extra (cm)' },
+            //{ key: 'LengthSum', label: 'Length Sum (m)' },
+            { key: 'Width', label: 'Width (cm)' },
+            //{ key: 'S', label: 'S' },
+            { key: 'S_Cut', label: 'S Cut'},
+            //{ key: 'M', label: 'M' },
+            { key: 'M_Cut', label: 'M Cut'},
+            //{ key: 'L', label: 'L' },
+            { key: 'L_Cut', label: 'L Cut'},
+            //{ key: 'XLonLayer', label: 'XL per Layer'},
+            //{ key: 'XL', label: 'XL Marker' },
+            { key: 'XL_Cut', label: 'XL Cut'},
+            //{ key: 'XXLonLayer', label: 'XXL per Layer'},
+            //{ key: 'XXL', label: 'XXL Marker' },
+            { key: 'XXL_Cut', label: 'XXL Cut'},
+            //{ key: 'Status', label: 'Status'},
+            { key: 'Priority', label: 'Priority', 
+              fn: function (value){
+                if (value == 2) {
+                  return "High";
+                } else if (value == 3) {
+                 return "Top Priority" ;
+                } else {
+                 return "Normal" ;
+                }
+              }
+            },
+            /*{ key: 'Load', label: 'Load'},*/
+            /*{ key: 'Spread', label: 'Spread'},*/
+            { key: 'SpreadDate', label: 'Spread Date', sort: 'descending' , 
+             fn: function (value) {
+              if (value){
+                return moment(value).format("YYYY-MM-DD HH:mm:ss");
+              } else {
+                return "";
+              }
+            }
+          },
+            //{ key: 'Cut', label: 'Cut' },
+            //{ key: 'OrderLink', label: 'Linked' },
+            //{ key: 'Comment', label: 'Comment' },
+            { key: 'Consumption', label: 'Total Consumption' },
+            //{ key: 'LabelPrinted', label: 'LabelPrinted' },
+          ],
+            //useFontAwesome: true,
+            //group: 'Komesa', 
+            //rowClass: "warning", //warning, danger
+            rowClass: function(item) {
+            var priority = item.Priority;
+            var load = item.Load;
+            var spread = item.Spread;
+            var status = item.Status;
+
+            if (status == "Finished")  {
+              return 'success'; // green
+            /*
+            } else if (priority == 2) {
+              return 'warning'; // orange
+            } else if (priority == 3) {
+              return 'danger';  // red
+              //active, success, info, warning, danger
+            */
+            } else if (status == 'CUT') {
+              return 'info';    // dark blue
+            } else if (load) {
+              return 'load';    // greey
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
+              return 'active';  // light blue
+            } else {
+
+            }
+          },
+      };
+    },
+
   });
 
   // Reactive Table events
@@ -1053,7 +1408,7 @@ if (Meteor.isClient) {
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "ms1") || (User.username == "ms11") || (User.username == "ms12")){
+          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33") || (User.username == "ms11") || (User.username == "ms12")){
             return true;
           } else {
             return false;  
@@ -1064,7 +1419,29 @@ if (Meteor.isClient) {
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if ((User.username == "cut1") || (User.username == "cut2")) {
+          if ((User.username == "cut1") || (User.username == "cut2") || (User.username == "mor1") || (User.username == "mor2") || (User.username == "lec1") || (User.username == "lec2")) {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+      },
+      isUserLabel: function() {
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "label") {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+      },
+      isUserCons: function() {
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "cons") {
             return true;
           } else {
             return false;  
@@ -1126,6 +1503,20 @@ if (Meteor.isClient) {
         var CurrentStatus = "Current Status: " + Stat;
         return CurrentStatus;
       },
+      /*
+      makeUniqueID: function  () {
+        return "update-" + this._id;_
+      },
+      optionStatus: function () {
+      return  [
+            {label: "Not assigned", value: "Not assigned"},
+            {label: "SP 1", value: "SP 1"},
+            {label: "SP 2", value: "SP 2"},
+            {label: "SP 3", value: "SP 3"},
+            {label: "MS 1", value: "MS 1"},
+            {label: "TRASH", value: "TRASH"}
+            ]
+      },*/
       Order_Fabric: function () {
         var ses = Session.get("selectedDocId")
         var order = Order.find({_id: ses}).fetch();
@@ -1165,8 +1556,6 @@ if (Meteor.isClient) {
         for (var i = 0; i < order.length; i++) {
           var Loaded = order[i].Load;       
         }
-
-        //console.log("Loaded: " + Loaded);
         if (Loaded) {
           return false;
         } else {
@@ -1201,6 +1590,19 @@ if (Meteor.isClient) {
           }));
 
           return uniqarrayofPosSp2;
+
+        } else if (click_id_status == 'SP 3'){
+          
+          Meteor.call('method_arrayofPosSp3', function(err,data) {
+            var arrayofPosSp3 = data;
+            Session.set('ses_arrayofPosSp3', arrayofPosSp3);
+            //console.log("ses_arrayofPosSp3: " + arrayofPosSp3);
+          });
+          var uniqarrayofPosSp3 = $.makeArray($(Session.get('ses_arrayofPosSp3')).filter(function(i,itm){ 
+            return i == $(Session.get('ses_arrayofPosSp3')).index(itm);
+          }));
+
+          return uniqarrayofPosSp3;
 
         } else if (click_id_status == 'MS 1'){
 
@@ -1243,16 +1645,17 @@ if (Meteor.isClient) {
       },
       isSPfilter: function (){
         var statusFilter = Session.get("ses_statusfilter");
-        if ((statusFilter == "SP 1") || (statusFilter == "SP 2") || (statusFilter == "MS 1") || (statusFilter == "Not assigned")) {
+        if ((statusFilter == "SP 1") || (statusFilter == "SP 2") || (statusFilter == "SP 3") || (statusFilter == "MS 1") || (statusFilter == "Not assigned")) {
           return true;
         } else {
           return false;
         }
       },
       isOperatorNotSlected: function (){
-        var operatorSelected = Session.get("ses_selectOperator");
+        var OperatorSelectedSpreader = Session.get("ses_selectOperatorSpreader");
+        var OperatorSelectedCutter = Session.get("ses_selectOperatorCutter");
 
-        if (operatorSelected || (operatorSelected != "")) {
+        if ((OperatorSelectedSpreader || (OperatorSelectedSpreader != "")) || (OperatorSelectedCutter || (OperatorSelectedCutter != ""))) {
           return false;
         } else {
           return true;
@@ -1532,6 +1935,10 @@ if (Meteor.isClient) {
       var order = Order.find({Status: "SP 2"});
       return order.count();
     },
+    SP3noRolls: function (){
+      var order = Order.find({Status: "SP 3"});
+      return order.count();
+    },
     MS1noRolls: function (){
       var order = Order.find({Status: "MS 1"});
       return order.count();
@@ -1560,8 +1967,16 @@ if (Meteor.isClient) {
       var order = Order.find({Load: "SP 2-3"});
       return order.count();
     },
-    MS1noLoadRollsShift: function (){
-      var order = Order.find({Load: "MS 1"});
+    SP3noLoadRollsShift1: function (){
+      var order = Order.find({Load: "SP 3-1"});
+      return order.count();
+    },
+    SP3noLoadRollsShift2: function (){
+      var order = Order.find({Load: "SP 3-2"});
+      return order.count();
+    },
+    SP3noLoadRollsShift3: function (){
+      var order = Order.find({Load: "SP 3-3"});
       return order.count();
     },
     MS1noLoadRollsShift1: function (){
@@ -1596,8 +2011,16 @@ if (Meteor.isClient) {
       var order = Order.find({Spread: "SP 2-3"});
       return order.count();
     },
-    MS1noSpreadRollsShift: function (){
-      var order = Order.find({Spread: "MS 1"});
+    SP3noSpreadRollsShift1: function (){
+      var order = Order.find({Spread: "SP 3-1"});
+      return order.count();
+    },
+    SP3noSpreadRollsShift2: function (){
+      var order = Order.find({Spread: "SP 3-2"});
+      return order.count();
+    },
+    SP3noSpreadRollsShift3: function (){
+      var order = Order.find({Spread: "SP 3-3"});
       return order.count();
     },
     MS1noSpreadRollsShift1: function (){
@@ -1614,6 +2037,22 @@ if (Meteor.isClient) {
     },
     CutnoRollsShift2: function  (){
       var order = Order.find({Cut: "CUT 2"});
+      return order.count();
+    },
+    MCutnoRollsShift1: function  (){
+      var order = Order.find({Cut: "MOR 1"});
+      return order.count();
+    },
+    MCutnoRollsShift2: function  (){
+      var order = Order.find({Cut: "MOR 2"});
+      return order.count();
+    },
+    LCutnoRollsShift1: function  (){
+      var order = Order.find({Cut: "LEC 1"});
+      return order.count();
+    },
+    LCutnoRollsShift2: function  (){
+      var order = Order.find({Cut: "LEC 2"});
       return order.count();
     },
     SP1LoadMetShift1: function (){
@@ -1676,8 +2115,28 @@ if (Meteor.isClient) {
       sum = sum.toFixed(2);
       return sum;
     },
-    MS1LoadMetShift: function (){
-      var order = Order.find({Load: "MS 1"}).fetch();
+    SP3LoadMetShift1: function (){
+      var order = Order.find({Load: "SP 3-1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    SP3LoadMetShift2: function (){
+      var order = Order.find({Load: "SP 3-2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    SP3LoadMetShift3: function (){
+      var order = Order.find({Load: "SP 3-3"}).fetch();
       var sum = 0;
       for (var i = 0; i < order.length; i++) {
         sum += order[i].LengthSum;
@@ -1766,8 +2225,28 @@ if (Meteor.isClient) {
       sum = sum.toFixed(2);
       return sum;
     },
-    MS1SpreadMetShift: function (){
-      var order = Order.find({Spread: "MS 1"}).fetch();
+    SP3SpreadMetShift1: function (){
+      var order = Order.find({Spread: "SP 3-1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    SP3SpreadMetShift2: function (){
+      var order = Order.find({Spread: "SP 3-2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    SP3SpreadMetShift3: function (){
+      var order = Order.find({Spread: "SP 3-3"}).fetch();
       var sum = 0;
       for (var i = 0; i < order.length; i++) {
         sum += order[i].LengthSum;
@@ -1808,6 +2287,46 @@ if (Meteor.isClient) {
     },
     CutMetShift2: function (){
       var order = Order.find({Cut: "CUT 2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    MCutMetShift1: function (){
+      var order = Order.find({Cut: "MOR 1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    MCutMetShift2: function (){
+      var order = Order.find({Cut: "MOR 2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    LCutMetShift1: function (){
+      var order = Order.find({Cut: "LEC 1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    LCutMetShift2: function (){
+      var order = Order.find({Cut: "LEC 2"}).fetch();
       var sum = 0;
       for (var i = 0; i < order.length; i++) {
         sum += order[i].LengthSum;
@@ -1932,6 +2451,10 @@ if (Meteor.isClient) {
         Session.set("ses_uniquecountPosSp2", data);
         //console.log("method_uniquecountPosSp2: " + data);
       });
+       Meteor.call('method_uniquecountPosSp3', function(err, data) {
+        Session.set("ses_uniquecountPosSp3", data);
+        //console.log("method_uniquecountPosSp3: " + data);
+      });
       Meteor.call('method_uniquecountPosMs1', function(err, data) {
         Session.set("ses_uniquecountPosMs1", data);
         //console.log("method_uniquecountPosMs1: " + data);
@@ -1974,57 +2497,12 @@ if (Meteor.isClient) {
     },
 
     'click #refresh_sum' : function () {
-      console.log('refresh_sum - click')
+      //console.log('refresh_sum - click')
 
       Meteor.call('method_refreshSum',function(err, data) {
-        console.log("method_refreshSum: " + data);
+        //console.log("method_refreshSum: " + data);
       });
-      /*
-      var order_all = Order.find().fetch();
-
-      for (var i = 0; i < order_all.length; i++) {
-        
-        var length = Number(order_all[i].Length);
-        var extra = Number(order_all[i].Extra);
-        var layers = Number(order_all[i].Layers);
-        var layersactual = Number(order_all[i].LayersActual);
-        var sonlayer = Number(order_all[i].SonLayer);
-        var monlayer = Number(order_all[i].MonLayer);
-        var lonlayer = Number(order_all[i].LonLayer);
-        var xlonlayer = Number(order_all[i].XLonLayer);
-        var xxlonlayer = Number(order_all[i].XXLonLayer);
-
-        if (layersactual) {
-          LayersToCount = layersactual;
-        } else {
-          LayersToCount = layers;
-        }
-
-        var sum = Number((length + (extra/100)) * LayersToCount);
-        var sumf =sum.toFixed(2);
-       
-        if (sumf == "NaN") {
-          sumf = 0;
-        }
-
-        //S M L XL XXL
-        var Snew = Number(sonlayer * LayersToCount);
-        var Mnew = Number(monlayer * LayersToCount);
-        var Lnew = Number(lonlayer * LayersToCount);
-        var XLnew = Number(xlonlayer * LayersToCount);
-        var XXLnew = Number(xxlonlayer * LayersToCount);
-
-        Order.update({_id: order_all[i]._id},
-          {
-            $set: { LengthSum: sumf, S: Snew, M: Mnew, L: Lnew, XL: XLnew, XXL: XXLnew },
-          }, 
-          {
-            multi: true,
-          }
-        );
-      }
-      alert("LengthSum fields are refreshed!");
-      */
+    
     },
 
     'click #statistics' : function (e, t) {
@@ -2038,92 +2516,108 @@ if (Meteor.isClient) {
     },
 
     'change #allorder_date': function (e, t) {
-
-        if ($('#allorder_date').prop('checked')){
-          console.log("allorder_date: checked");
-          Session.set("ses_allorder_date", true);
-        } else {
-          console.log("allorder_date: unchecked");
-          Session.set("ses_allorder_date", false);
-        }
+      if ($('#allorder_date').prop('checked')){
+        //console.log("allorder_date: checked");
+        Session.set("ses_allorder_date", true);
+      } else {
+        //console.log("allorder_date: unchecked");
+        Session.set("ses_allorder_date", false);
+      }
     },
 
     'change #allorder_spreaddate': function (e, t) {
-
-        if ($('#allorder_spreaddate').prop('checked')){
-          console.log("allorder_spreaddate: checked");
-          Session.set("ses_allorder_spreaddate", true);
-        } else {
-          console.log("allorder_spreaddate: unchecked");
-          Session.set("ses_allorder_spreaddate", false);
-        }
+      if ($('#allorder_spreaddate').prop('checked')){
+        //console.log("allorder_spreaddate: checked");
+        Session.set("ses_allorder_spreaddate", true);
+      } else {
+        //console.log("allorder_spreaddate: unchecked");
+        Session.set("ses_allorder_spreaddate", false);
+      }
     },
 
     'change #allorder_cutdate': function (e, t) {
-
-        if ($('#allorder_cutdate').prop('checked')){
-          console.log("allorder_cutdate: checked");
-          Session.set("ses_allorder_cutdate", true);
-        } else {
-          console.log("allorder_cutdate: unchecked");
-          Session.set("ses_allorder_cutdate", false);
-        }
+      if ($('#allorder_cutdate').prop('checked')){
+        //console.log("allorder_cutdate: checked");
+        Session.set("ses_allorder_cutdate", true);
+      } else {
+        //console.log("allorder_cutdate: unchecked");
+        Session.set("ses_allorder_cutdate", false);
+      }
     },
 
     'change #not_assigned': function  (e, t) {
       Session.set("ses_statusfilter", "Not assigned");
-      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
     },
 
     'change #sp1': function  (e, t) {
       Session.set("ses_statusfilter", "SP 1");
-      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
     },
 
     'change #sp2': function  (e, t) {
       Session.set("ses_statusfilter", "SP 2");
-      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+    },
+
+    'change #sp3': function  (e, t) {
+      Session.set("ses_statusfilter", "SP 3");
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
     },
 
     'change #ms1': function  (e, t) {
       Session.set("ses_statusfilter", "MS 1");
-      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
     },
 
     'change #cut': function  (e, t) {
       Session.set("ses_statusfilter", "CUT");
-      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
     },
 
     'change #finished': function  (e, t) {
       Session.set("ses_statusfilter", "Finished");
-      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
     },
 
     'click #trash_orders': function  (e, t) {
       Session.set("ses_statusfilter", "TRASH");
-      console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
 
       $( ".btn-group label" ).removeClass( "active" );
     },
 
-    'change #selectOperator': function (e, t) {
-      var selectOperator = $('#selectOperator').find(":selected").text();
-      //console.log("selectOperator: " + selectOperator); 
-      Session.set("ses_selectOperator", selectOperator);
-      $('.select_operator').hide();
-      $('#changeOperator').show();
+    'change #selectOperatorSpreader': function (e, t) {
+      var selectOperatorSpreader = $('#selectOperatorSpreader').find(":selected").text();
+      Session.set("ses_selectOperatorSpreader", selectOperatorSpreader);
+      $('.select_operator_spreader').hide();
+      $('#changeOperatorSpreader').show();
     },
 
-    'click #changeOperator' : function (e, t) {
-      Session.set("ses_selectOperator", "");
-      $('.select_operator').show();
-      $('#selectOperator').val($('#selectOperator option:first').val());
-      $('#changeOperator').hide();
+    'change #selectOperatorCutter': function (e, t) {
+      var selectOperatorCutter = $('#selectOperatorCutter').find(":selected").text();
+      Session.set("ses_selectOperatorCutter", selectOperatorCutter);
+      $('.select_operator_cutter').hide();
+      $('#changeOperatorCutter').show();
+    },
+
+    'click #changeOperatorSpreader' : function (e, t) {
+      Session.set("ses_selectOperatorSpreader", "");
+      $('.select_operator_spreader').show();
+      $('#selectOperatorSpreader').val($('#selectOperatorSpreader option:first').val());
+      $('#changeOperatorSpreader').hide();
+    },
+
+    'click #changeOperatorCutter' : function (e, t) {
+      Session.set("ses_selectOperatorCutter", "");
+      $('.select_operator_cutter').show();
+      $('#selectOperatorCutter').val($('#selectOperatorCutter option:first').val());
+      $('#changeOperatorCutter').hide();
     },
 
     'click #login-buttons-logout': function (e, t) {
-      Session.set("ses_selectOperator", "");
+      Session.set("ses_selectOperatorSpreader", "");
+      Session.set("ses_selectOperatorCutter", "");
     }
 
   });
@@ -2161,21 +2655,6 @@ if (Meteor.isClient) {
         // Do nothing!
       }
 
-      // message
-      /*
-      var time = new Date();
-      if (actualStatus == 'SP 1') {
-        var message = time + ": Order deleted from SP 1 !";
-        Session.set('ses_SP1message', message);
-      } else if (actualStatus == 'SP 2') {  
-        var message = time + ": Order deleted from SP 2 !";
-        Session.set('ses_SP2message', message);
-      } else if (actualStatus == 'MS 1') {  
-        var message = time + ": Order deleted from MS 1!";
-        Session.set('ses_MS1message', message);
-      }
-      */
-
       rm_EditOrder.hide();
     },
 
@@ -2207,8 +2686,12 @@ if (Meteor.isClient) {
         userEditLoad = "SP 2-2";
       } else if (userEdit == "sp23") {
         userEditLoad = "SP 2-3";
-      } else if (userEdit == "ms1") {
-        userEditLoad = "MS 1";
+      } else if (userEdit == "sp31") {
+        userEditLoad = "SP 3-1";
+      } else if (userEdit == "sp32") {
+        userEditLoad = "SP 3-2";
+      } else if (userEdit == "sp33") {
+        userEditLoad = "SP 3-3";
       } else if (userEdit == "ms11") {
         userEditLoad = "MS 1-1";
       } else if (userEdit == "ms12") {
@@ -2258,8 +2741,12 @@ if (Meteor.isClient) {
         var userEditSpread = "SP 2-2";
       } else if (userEdit == "sp23") {
         var userEditSpread = "SP 2-3";
-      } else if (userEdit == "ms1") {
-        var userEditSpread = "MS 1";
+      } else if (userEdit == "sp31") {
+        var userEditSpread = "SP 3-1";
+      } else if (userEdit == "sp32") {
+        var userEditSpread = "SP 3-2";
+      } else if (userEdit == "sp33") {
+        var userEditSpread = "SP 3-3";
       } else if (userEdit == "ms11") {
         var userEditSpread = "MS 1-1";
       } else if (userEdit == "ms12") {
@@ -2284,10 +2771,10 @@ if (Meteor.isClient) {
       var uniquecountSelected = Session.get("ses_uniquecountPosCUT");
       var uniquecountSelectedPosition = uniquecountSelected + 1;
 
-      var selectedOperator = Session.get("ses_selectOperator");
-      console.log("selectedOperator: " + selectedOperator);
+      var selectedOperatorSpreader = Session.get("ses_selectOperatorSpreader");
+      //console.log("selectedOperatorSpreader: " + selectedOperatorSpreader);
 
-      Meteor.call('method_spreadOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperator, function(err, data) {
+      Meteor.call('method_spreadOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperatorSpreader, function(err, data) {
         //console.log("method_spreadOrder: " + data);
       });
       
@@ -2314,6 +2801,14 @@ if (Meteor.isClient) {
         var userEditCut = "CUT 1";
       } else if (userEdit == "cut2") {
         var userEditCut = "CUT 2";
+      } else if (userEdit == "mor1") {
+        var userEditCut = "MOR 1";
+      } else if (userEdit == "mor2") {
+        var userEditCut = "MOR 2";
+      } else if (userEdit == "lec1") {
+        var userEditCut = "LEC 1";
+      } else if (userEdit == "lec2") {
+        var userEditCut = "LEC 2";
       } 
 
       var cutDate = new Date();
@@ -2335,10 +2830,30 @@ if (Meteor.isClient) {
       var uniquecountSelected = Session.get("ses_uniquecountPosF");
       var uniquecountSelectedPosition = uniquecountSelected + 1;
 
-      Meteor.call('method_cutOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditCut, cutDate, function(err, data) {
+      var selectedOperatorCutter = Session.get("ses_selectOperatorCutter");
+      //console.log("selectedOperatorCutter: " + selectedOperatorCutter);
+
+      Meteor.call('method_cutOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditCut, cutDate, selectedOperatorCutter, function(err, data) {
         //console.log("method_cutOrder: " + data);
       });
 
+      rm_EditOrder.hide();
+    },
+
+    'click #printOrder': function (){
+      var orderToEdit = Session.get("selectedDocId");
+      //console.log("orderToEdit: " + orderToEdit);
+
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          
+          var actualPosition = order[i].Position;
+          var actualStatus = order[i].Status;
+          var actual_id = order[i]._id;
+      }
+
+      Order.update({_id: orderToEdit},{$set: {LabelPrinted: true }});
+      
       rm_EditOrder.hide();
     },
 
@@ -2460,6 +2975,9 @@ if (Meteor.isClient) {
       } else if (actualStatus == "SP 2"){
         var uniquecountPosSp2 = Session.get("ses_uniquecountPosSp2");
         var uniquecountSelected = uniquecountPosSp2;
+      } else if (actualStatus == "SP 3"){
+        var uniquecountPosSp3 = Session.get("ses_uniquecountPosSp3");
+        var uniquecountSelected = uniquecountPosSp3;
       } else if (actualStatus == "MS 1"){
         var uniquecountPosMs1 = Session.get("ses_uniquecountPosMs1");
         var uniquecountSelected = uniquecountPosMs1;
@@ -2511,6 +3029,9 @@ if (Meteor.isClient) {
       } else if (selectedStatus == "SP 2"){
         var uniquecountPosSp2 = Session.get("ses_uniquecountPosSp2");
         var uniquecountSelected = uniquecountPosSp2;
+      } else if (selectedStatus == "SP 3"){
+        var uniquecountPosSp3 = Session.get("ses_uniquecountPosSp3");
+        var uniquecountSelected = uniquecountPosSp3;
       } else if (selectedStatus == "MS 1"){
         var uniquecountPosMs1 = Session.get("ses_uniquecountPosMs1");
         var uniquecountSelected = uniquecountPosMs1;
@@ -2596,6 +3117,9 @@ if (Meteor.isClient) {
             var extra = Number(all[i]['Length All. [cm]']);
             var lengthsumX = Number((length + (extra/100)) * layers);
             var lengthsum = Number(lengthsumX).toFixed(2);
+
+            var pcsbundle = Number(all[i]['Nr. Pcs Bundle']);
+
             var width = Number(all[i]['Marker Width [cm]']);
             var s = Number(all[i]['tot S']);
             var sonlayer = Number(all[i]['S']);
@@ -2614,7 +3138,12 @@ if (Meteor.isClient) {
             //console.log("all[i]['DATE']: " + orderd);
             var orderdate = new Date(all[i]['DATE']);
             orderdate.setHours(2,0,0,0);
+
+            var skala = all[i]['SKALA marker'];
+            var sektor = all[i]['Sector'];
+            var pattern = all[i]['Pattern'];
               
+            /*
             if (status == "1" ){
               status = 'SP 1';
               var uniquecountPosSp1 = Session.get("ses_uniquecountPosSp1");
@@ -2628,36 +3157,81 @@ if (Meteor.isClient) {
               Session.set("ses_uniquecountPosSp2", uniquecountPosSp2);
               setPos = uniquecountPosSp2;     
             } else if (status == "3" ){
+              status = 'SP 3';
+              var uniquecountPosSp3 = Session.get("ses_uniquecountPosSp3");
+              var uniquecountPosSp3 = uniquecountPosSp3 + 1;
+              Session.set("ses_uniquecountPosSp3", uniquecountPosSp3);
+              setPos = uniquecountPosSp3;     
+            } else if (status == "4" ){
               status = 'MS 1';
               var uniquecountPosMs1 = Session.get("ses_uniquecountPosMs1");
               var uniquecountPosMs1 = uniquecountPosMs1 + 1;
               Session.set("ses_uniquecountPosMs1", uniquecountPosMs1);
               setPos = uniquecountPosMs1;    
             } else {
+
+              */
               var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
               var uniquecountPosNA = uniquecountPosNA + 1;
-              Session.set("ses_uniquecountPosNA", uniquecountPosNA); 
+              Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+              //console.log("set ses_uniquecountPosNA: " + uniquecountPosNA);
+
               setPos = uniquecountPosNA;                             
               status = 'Not assigned';                            
               //setPos = 999;
-            }
+            /*}*/
 
-            // STATUS = ['Not assigned','SP 1','SP 2','CUT','Finish']
+            
+            Meteor.call('method_insertOrders', no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, function(err, data) {
+              console.log("method_insertOrders: " + data);
+
+            });
 
            //One by One
+           /*
             if ((orderd != 0) || (orderd)) { 
-              Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status});    
+              Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern}, 
+                function(err, numberAffected, rawResponse) {
+                  if (numberAffected == false) {
+                    uniquecountPosNA = uniquecountPosNA - 1;                    
+                    Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+                    console.log("a uniquecountPosNA -1 = " + uniquecountPosNA);
+
+                  } else {
+
+                    Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+                    console.log("a uniquecountPosNA +1 = " + uniquecountPosNA);
+                  }
+                }
+              );
+              
               setPos = 0;
               countSP2set = 0;
               countSP1set = 0; 
+
             } else {
-              Order.insert({No: no, Position: setPos, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status});    
+              Order.insert({No: no, Position: setPos, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode , ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern},
+              function(err, numberAffected, rawResponse) {
+                  if (numberAffected == false) {
+                    uniquecountPosNA = uniquecountPosNA - 1;                    
+                    Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+                    console.log("a uniquecountPosNA -1 = " + uniquecountPosNA);
+
+                  } else {
+
+                    Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+                    console.log("a uniquecountPosNA +1 = " + uniquecountPosNA);
+                  }
+                }
+              );
+
               setPos = 0;
               countSP2set = 0;
               countSP1set = 0;
             }
-
+            */
           }
+
       }
       reader.readAsText(file_a);
       rm_ImportPlannedMarkers.hide();
@@ -2719,6 +3293,7 @@ if (Meteor.isClient) {
             //var lengthsumX = Number((length + extra) * layers);
             //var lengthsum = lengthsumX.toFixed(3);
             var lengthsum = Number(all[i]['LengthSum']);
+            var pcsbundle = Number(all[i]['PcsBundle'])
             var width = Number(all[i]['Width']);
 
             var s = Number(all[i]['S']);
@@ -2751,6 +3326,7 @@ if (Meteor.isClient) {
             } else {
               spreaddate2 = "";
             }
+            var spreadoperator = all[i]['SpreadOperator'];
             var cut = all[i]['Cut'];
             var cutdate = all[i]['CutDate'];
             if (cutdate) {
@@ -2761,14 +3337,22 @@ if (Meteor.isClient) {
             } else {
               cutdate2 = "";
             }
+            var cutoperator = all[i]['CutOperator'];
 
             var comment = all[i]['Comment'];
             var orderlink = all[i]['OrderLink'];
 
+            var skala = all[i]['SKALA marker'];
+            var sektor = all[i]['Sector'];
+            var pattern = all[i]['Pattern'];
+
+            var label = all[i]['LabelPrinted'];
+            var cons = all[i]['Consumption'];
+
             //One by One
             //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,Status: all[i]['Status'], Priority: priority});    
             
-            Order.insert({No: no, Position: position, Status: status, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, SonLayer: sonlayer, S_Cut: s_cut, M: m, MonLayer: monlayer, M_Cut: m_cut, L: l, LonLayer: lonlayer, L_Cut: l_cut, XL: xl, XLonLayer: xlonlayer, XL_Cut: xl_cut, XXL: xxl, XXLonLayer: xxlonlayer, XXL_Cut: xxl_cut, Load: load, Spread: spread, SpreadDate: spreaddate2, Cut: cut, CutDate: cutdate2, Comment: comment, OrderLink: orderlink});
+            Order.insert({No: no, Position: position, Status: status, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, S_Cut: s_cut, M: m, MonLayer: monlayer, M_Cut: m_cut, L: l, LonLayer: lonlayer, L_Cut: l_cut, XL: xl, XLonLayer: xlonlayer, XL_Cut: xl_cut, XXL: xxl, XXLonLayer: xxlonlayer, XXL_Cut: xxl_cut, Load: load, Spread: spread, SpreadDate: spreaddate2, SpreadOperator: spreadoperator ,Cut: cut, CutDate: cutdate2, CutOperator: cutoperator,Comment: comment, OrderLink: orderlink, SkalaMarker: skala, Sector: sektor, Pattern: pattern, LabelPrinted: label, Consumption: cons});
             // Can not insert order created and _id , this values is automaticali created
           } 
       }
@@ -2777,13 +3361,57 @@ if (Meteor.isClient) {
     }
   });
 
-  Template.tmp_ExportOrder.order = function() {
-    return Order.find(); // orders form subscribe
-  }
+  Template.tmp_ExportOrder.helpers({
+    order: function() {
+      return Order.find(); // orders form subscribe
+    }
+  });
 
-  Template.tmp_Operators.operators = function() {
-    return Operators.find(); // operators form subscribe                                       
-  }
+  Template.tmp_Operators.helpers({
+    operators: function() {
+      return Operators.find(); // operators form subscribe                                       
+    },
+    makeUniqueID: function  () {
+      return "update-each-" + this._id;_
+    },
+    options: function () {
+      return  [
+            {label: "Active", value: "Active"},
+            {label: "Not active", value: "Not active"}
+            ]
+    },
+    isAdmin: function() {
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if (User.username == "admin") {
+          return true;
+        } else {
+          return false;  
+        }
+      }
+    },
+    /*
+    options: function () {
+    return [
+      {
+        optgroup: "Fun Years",
+        options: [
+          {label: "Active", value: "Active"},
+          {label: "Not active", value: "Not active"}
+        ]
+      },
+      {
+        optgroup: "Boring Years",
+        options: [
+          {label: "2011", value: 2011},
+          {label: "2010", value: 2010},
+          {label: "2009", value: 2009}
+        ]
+      }
+    ];
+    }*/
+  });
 
   Template.tmp_Operators.events({
     'click #newoperators' : function (e, t) {
@@ -2894,6 +3522,9 @@ if (Meteor.isServer) {
   method_countPosSp2: function() {
     return Order.find({Status: 'SP 2'}).count();
   },
+  method_countPosSp3: function() {
+    return Order.find({Status: 'SP 3'}).count();
+  },
   method_countPosMs1: function() {
     return Order.find({Status: 'MS 1'}).count();
   },
@@ -2907,8 +3538,8 @@ if (Meteor.isServer) {
     if (isNaN(posarray[0])) {
       return 0;
     } else {
-      var largest1 = Math.max.apply(null, posarray);
-      return largest1;
+      var largest = Math.max.apply(null, posarray);
+      return largest;
     }
   },
   method_uniquecountPosSp1: function() {
@@ -2921,8 +3552,8 @@ if (Meteor.isServer) {
     if (isNaN(posarray[0])) {
       return 0;
     } else {
-      var largest1 = Math.max.apply(null, posarray);
-      return largest1;
+      var largest = Math.max.apply(null, posarray);
+      return largest;
     }
   },
   method_uniquecountPosSp2: function() {
@@ -2935,8 +3566,22 @@ if (Meteor.isServer) {
     if (isNaN(posarray[0])) {
       return 0;
     } else {
-      var largest2 = Math.max.apply(null, posarray);
-      return largest2;
+      var largest = Math.max.apply(null, posarray);
+      return largest;
+    }
+  },
+  method_uniquecountPosSp3: function() {
+    var order = Order.find({Status: 'SP 3'}).fetch();
+    var posarray = [];
+    for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+    }
+    if (isNaN(posarray[0])) {
+      return 0;
+    } else {
+      var largest = Math.max.apply(null, posarray);
+      return largest;
     }
   },
   method_uniquecountPosMs1: function() {
@@ -2949,8 +3594,8 @@ if (Meteor.isServer) {
     if (isNaN(posarray[0])) {
       return 0;
     } else {
-      var largest2 = Math.max.apply(null, posarray);
-      return largest2;
+      var largest = Math.max.apply(null, posarray);
+      return largest;
     }
   },
   method_uniquecountPosCUT: function() {
@@ -2963,8 +3608,8 @@ if (Meteor.isServer) {
     if (isNaN(posarray[0])) {
       return 0;
     } else {
-      var largest2 = Math.max.apply(null, posarray);
-      return largest2;
+      var largest = Math.max.apply(null, posarray);
+      return largest;
     }
   },
   method_uniquecountPosF: function() {
@@ -2977,8 +3622,8 @@ if (Meteor.isServer) {
     if (isNaN(posarray[0])) {
       return 0;
     } else {
-      var largest2 = Math.max.apply(null, posarray);
-      return largest2;
+      var largest = Math.max.apply(null, posarray);
+      return largest;
     }
   },
   method_uniquecountPosTRASH: function() {
@@ -2991,8 +3636,8 @@ if (Meteor.isServer) {
     if (isNaN(posarray[0])) {
       return 0;
     } else {
-      var largest2 = Math.max.apply(null, posarray);
-      return largest2;
+      var largest = Math.max.apply(null, posarray);
+      return largest;
     }
   },
   method_arrayofPosNA: function() {
@@ -3029,6 +3674,18 @@ if (Meteor.isServer) {
     posarray.sort(function(a, b){return a-b});
     return posarray;
   },
+  method_arrayofPosSp3: function() {
+    var order = Order.find({Status: 'SP 3'}).fetch();
+      var posarray = [];
+
+      for (var i = 0; i < order.length; i++) {
+        id = order[i]._Id;
+        pos = order[i].Position;
+        posarray.push(pos);
+      }
+    posarray.sort(function(a, b){return a-b});
+    return posarray;
+  },
   method_arrayofPosMs1: function() {
     var order = Order.find({Status: 'MS 1'}).fetch();
       var posarray = [];
@@ -3042,7 +3699,7 @@ if (Meteor.isServer) {
     return posarray;
   },
   method_arrayofStatus: function() {
-    statusarray = ["Not assigned","SP 1","SP 2","MS 1"/*,"CUT"*/, "TRASH"];
+    statusarray = ["Not assigned","SP 1","SP 2","SP 3","MS 1"/*,"CUT"*/, "TRASH"];
     return statusarray;
   },
   method_smanjizajedan: function(Position, Status){
@@ -3151,7 +3808,7 @@ if (Meteor.isServer) {
       }
     return "Not found method_loadOrder";
   }, 
-  method_spreadOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperator) {
+  method_spreadOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperatorSpreader) {
     var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
       for (var i = 0; i < order.length; i++) {
         var oreder_id = order[i]._id;
@@ -3217,7 +3874,7 @@ if (Meteor.isServer) {
         var XXL_Cut = XXL;
 
         Order.update({ _id: order[i]._id},
-          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Spread: userEditSpread, SpreadDate: spreadDate, S: S, M: M, L: L, XL: XL, XXL: XXL, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut, XL_Cut: XL_Cut, XXL_Cut: XXL_Cut, SpreadOperator: selectedOperator}},
+          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Spread: userEditSpread, SpreadDate: spreadDate, S: S, M: M, L: L, XL: XL, XXL: XXL, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut, XL_Cut: XL_Cut, XXL_Cut: XXL_Cut, SpreadOperator: selectedOperatorSpreader}},
           //{$inc: {Position: -1}}, 
           {multi: true}
         ); 
@@ -3225,7 +3882,7 @@ if (Meteor.isServer) {
       }
     return "Not found method_spreadOrder";
   },
-  method_cutOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditCut, cutDate) {
+  method_cutOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditCut, cutDate, selectedOperatorCutter) {
     var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
       for (var i = 0; i < order.length; i++) {
         var oreder_id = order[i]._id;
@@ -3233,7 +3890,7 @@ if (Meteor.isServer) {
         var layersactual = order[i].LayersActual;
       
         Order.update({ _id: order[i]._id},
-          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Cut: userEditCut, CutDate: cutDate}},
+          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Cut: userEditCut, CutDate: cutDate, CutOperator: selectedOperatorCutter}},
           //{$inc: {Position: -1}}, 
           {multi: true}
         ); 
@@ -3288,6 +3945,48 @@ if (Meteor.isServer) {
       
       return "LengthSum fields are refreshed!";
    },
+   method_insertOrders: function (no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern) {
+    
+    var order = Order.find({Status: 'Not assigned'}).fetch();
+    var posarray = [];
+    for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+    }
+    if (isNaN(posarray[0])) {
+      var largest =  0;
+    } else {
+      var largest = Math.max.apply(null, posarray);
+      //return largest;
+    }
+
+    //var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
+    var uniquecountPosNA = largest + 1;
+    //Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+    console.log("uniquecountPosNA: " + uniquecountPosNA);
+
+    setPos = uniquecountPosNA;                             
+    status = 'Not assigned';
+
+    Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern}, 
+      function(err, numberAffected, rawResponse) {
+        if (numberAffected == false) {
+
+          //uniquecountPosNA = uniquecountPosNA - 1;                    
+          //Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+          //console.log("a uniquecountPosNA -1 = " + uniquecountPosNA);
+          console.log("a uniquecountPosNA -1 = " + uniquecountPosNA);
+
+        } else {
+
+          //Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+          //console.log("a uniquecountPosNA +1 = " + uniquecountPosNA);
+          console.log("a uniquecountPosNA +1 = " + uniquecountPosNA);
+        }
+      }
+    );
+
+   }
   
   
 });
@@ -3321,6 +4020,10 @@ if (Meteor.isServer) {
     return Order.find({ Status: "SP 2"});
   });
 
+  Meteor.publish("filter_spreader3", function(){
+    return Order.find({ Status: "SP 3"});
+  });
+
   Meteor.publish("filter_spreaderm1", function(){
     return Order.find({ Status: "MS 1"});
   });
@@ -3339,6 +4042,38 @@ if (Meteor.isServer) {
           ]},
       ]
     })*/
+  });
+
+  Meteor.publish("filter_label", function(Daysbefore, Daysafter){
+    return Order.find({
+    $and: [
+      { $or: [
+          { Status: "CUT" },
+          { Status: "Finished" }
+        ]},
+      { $or: [ 
+          { LabelPrinted: false },  
+          { LabelPrinted: { $exists: false }}
+        ]},
+      { $and: [ 
+          {SpreadDate: {$gte: Daysbefore, $lt: Daysafter}}
+        ]},
+      ]
+    })
+  });
+
+  Meteor.publish("filter_cons", function(Daysbefore, Daysafter){
+    return Order.find({
+    $and: [
+      { $or: [
+          { Status: "CUT" },
+          { Status: "Finished" }
+        ]},
+      { $and: [ 
+          {SpreadDate: {$gte: Daysbefore, $lt: Daysafter}}
+        ]},
+      ]
+    })
   });
 
   Meteor.publish("filter_statusfilter", function(status){
@@ -3374,6 +4109,12 @@ if (Meteor.isServer) {
     return Operators.find();
   });
 
+  Operators.allow({   
+    update: function () {
+      return true;
+    }
+  });
+
 
 }
 
@@ -3385,18 +4126,29 @@ var sp13 = "";  // 131313
 var sp21 = "";  // 212121
 var sp22 = "";  // 222222
 var sp23 = "";  // 232323
-var cut1 = "";  // c1c1c1
-var cut2 = "";  // c2c2c2
-var ms1 = "";   // 111111
-var ms11 = "";   // 111111
-var ms12 = "";   // 121212
+var sp31 = "";  // 313131
+var sp32 = "";  // 323232 
+var sp33 = "";  // 333333
+var cut1 = "";  // c1c1c1 //Gordon
+var cut2 = "";  // c2c2c2 //Gordon
+var mor1 = "";  // m1m1m1 //Zalli
+var mor2 = "";  // m2m2m2 //Zalli
+var lec1 = "";  // l1l1l1 //Zalli
+var lec2 = "";  // l2l2l2 //Zalli
+var ms11 = "";  // 111111
+var ms12 = "";  // 121212
 
 
 // kill -9 `ps ax | grep node | grep meteor | awk '{print $1}'`
+
+// Gordon
 // export MONGO_URL=mongodb://172.27.161.216:27017/spread  
 // export MONGO_URL=mongodb://localhost:27017/spread
 
-// STATUS = ['Not assigned','SP 1','SP 2','CUT','Finished']
+// Zalli
+// export MONGO_URL=mongodb://172.27.57.181:27017/spread 
+
+// STATUS = ['Not assigned','SP 1','SP 2','SP 3','CUT','Finished']
 
 // meteor add accounts-base
 // meteor add accounts-password
@@ -3408,6 +4160,7 @@ var ms12 = "";   // 121212
 // meteor add mrt:bootstrap-3  // meteor add bootstrap
 //meteor add mrt:jquery-ui-bootstrap 
 //meteor add mrt:accounts-ui-bootstrap-3
+//meteor add ctjp:meteor-bootstrap-switch
 
 // meteor add mrt:moment
 

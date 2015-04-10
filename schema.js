@@ -34,7 +34,7 @@ Order.attachSchema(new SimpleSchema({
         label: "Status",
         optional: true,
         defaultValue: "Not assigned",
-        allowedValues: ["Not assigned", "SP 1", "SP 2", "MS 1", "CUT", "Finished", "TRASH"]
+        allowedValues: ["Not assigned", "SP 1", "SP 2", "SP 3", "MS 1", "CUT", "Finished", "TRASH"]
     },
     'Date': {
         //blackbox: true, 
@@ -136,6 +136,13 @@ Order.attachSchema(new SimpleSchema({
                 //console.log(result);
                 return result;
         }*/
+    },
+    'PcsBundle': {
+        type: Number,
+        label: "Nr. Pcs Bundle",
+        optional: true,
+        decimal: false, 
+        min: 0
     },
     'Width': {
         type: Number,
@@ -262,16 +269,14 @@ Order.attachSchema(new SimpleSchema({
         label: "Load",
         optional: true,
         defaultValue: "",
-        //allowedValues: ["", "SP 1-1", "SP 1-2", "SP 2-1", "SP 2-2", "MS 1"]
-        allowedValues: ["", "SP 1-1", "SP 1-2", "SP 1-3", "SP 2-1", "SP 2-2", "SP 2-3", "MS 1", "MS 1-1", "MS 1-2"]
+        allowedValues: ["", "SP 1-1", "SP 1-2", "SP 1-3", "SP 2-1", "SP 2-2", "SP 2-3", "SP 3-1", "SP 3-2", "SP 3-3", "MS 1-1", "MS 1-2"]
     },
     'Spread': {
         type: String, 
         label: "Spread",
         optional: true,
         defaultValue: "",
-        //allowedValues: ["", "SP 1-1", "SP 1-2", "SP 2-1", "SP 2-2", "MS 1"]
-        allowedValues: ["", "SP 1-1", "SP 1-2", "SP 1-3", "SP 2-1", "SP 2-2", "SP 2-3", "MS 1", "MS 1-1", "MS 1-2"]
+        allowedValues: ["", "SP 1-1", "SP 1-2", "SP 1-3", "SP 2-1", "SP 2-2", "SP 2-3", "SP 3-1", "SP 3-2", "SP 3-3", "MS 1-1", "MS 1-2"]
     },
     'SpreadDate': {
         type: Date,
@@ -290,12 +295,21 @@ Order.attachSchema(new SimpleSchema({
         label: "Cut",
         optional: true,
         defaultValue: "",
-        allowedValues: ["", "CUT 1", "CUT 2"]
+        //allowedValues: ["", "CUT 1", "CUT 2"] // Gordon
+        //allowedValues: ["", "MOR 1", "MOR 2", "LEC 1", "LEC 2"]  // Zalli
+        allowedValues: ["", "CUT 1", "CUT 2", "MOR 1", "MOR 2", "LEC 1", "LEC 2"] 
     },
     'CutDate': {
         type: Date,
         label: "Cut Date",
         optional: true,
+    },
+    'CutOperator': {
+        type: String,
+        label: "Cut Operator",
+        optional: true,
+        defaultValue: "",
+        max: 50
     },
     'Comment' : {
         type: String,
@@ -308,7 +322,40 @@ Order.attachSchema(new SimpleSchema({
         optional: true,
         defaultValue: false,
     },
-    
+    'SkalaMarker': {
+        type: String,
+        label: "Skala Marker",
+        optional: true,
+        defaultValue: "",
+        max: 20
+    },
+    'Sector': {
+        type: String,
+        label: "Sector",
+        optional: true,
+        defaultValue: "",
+        max: 20
+    },
+    'Pattern': {
+        type: String,
+        label: "Pattern",
+        optional: true,
+        defaultValue: "",
+        max: 10
+    },
+    'Consumption': {
+        type: Number,
+        label: "Tot Consumption",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'LabelPrinted': {
+        type: Boolean,
+        label: "Label Printed",
+        optional: true,
+        defaultValue: false
+    }
 }));
 
 //Order.attachSchema(Schemas.OneOrder);
@@ -334,6 +381,7 @@ LayersActual
 Length
 Extra
 LengthSum
+PcsBundle
 Width
 S
 SonLayer
@@ -352,63 +400,15 @@ SpreadDate
 SpreadOperator
 Cut
 CutDate
+CutOperator
 Comment
 OrderLink 
+SkalaMarker
+Sector
+Pattern
+Consumption
+LabelPrinted
 */
-
-Message = new Meteor.Collection("message");
-Message.attachSchema(new SimpleSchema({
-    'No': {
-        type: Number,
-        unique: true,
-        label: "No",
-        optional: false,
-        decimal: false, 
-        min: 0
-    },
-    'Text': {
-        type: String,
-        label: "Text",
-        optional: true,
-        defaultValue: "" 
-    }, 
-    'Type': {
-        type: String,
-        label: "Type",
-        optional: true,
-        defaultValue: "",
-        allowedValues: ["", "Warning", "Normal"]
-    },
-    'Status': {
-        type: String,
-        label: "Status",
-        optional: true,
-        defaultValue: "Not assigned",
-        allowedValues: ["Not assigned", "SP 1", "SP 2","CUT","Finished"]
-    },
-    'Created': {
-        type: Date,
-        label: "Created",
-         autoValue: function() {
-            if (this.isInsert) {
-                return new Date;
-            } else if (this.isUpsert) {
-                return {$setOnInsert: new Date};
-            } else {
-                this.unset();
-            }
-        }
-    },
-    'Active': {
-        type: Boolean,
-        label: "Active",
-        defaultValue: true,
-
-    }
-
-}));
-
-
 
 Operators = new Meteor.Collection("operators");
 Operators.attachSchema(new SimpleSchema({
