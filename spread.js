@@ -3,6 +3,7 @@ if (Meteor.isClient) {
   //UI.registerHelper("Schemas", Schemas);
 
   Meteor.startup(function () {
+    //console.log("startup");
    
     var todayAt02 = new Date();
     todayAt02.setHours(2,0,0,0);
@@ -35,21 +36,21 @@ if (Meteor.isClient) {
     Session.set("ses_statusfilter", "Not assigned");
 
     Date.prototype.toDateInputValue = (function() {
-        var local = new Date(this);
-        local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
-        return local.toJSON().slice(0,10);
+      var local = new Date(this);
+      local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+      return local.toJSON().slice(0,10);
     });
 
     $('#filterOrderDate').val(new Date().toDateInputValue());
     
     var filterOrderDateBefore = new Date(oneDaybefore).toDateInputValue();
     //filterOrderDateBefore = filterOrderDateBefore.setHours(-70,0,0,0);
-    //console.log(filterOrderDateBefore);
+    //console.log("start: " + filterOrderDateBefore);
     $('#filterOrderDateBefore').val(filterOrderDateBefore);
 
     var filterOrderDateAfter = new Date(oneDayafter).toDateInputValue();
     //filterOrderDateAfter = filterOrderDateAfter.setHours(75,0,0,0);
-    //console.log(filterOrderDateAfter);
+    //console.log("start: " + filterOrderDateAfter);
     $('#filterOrderDateAfter').val(filterOrderDateAfter);
 
     // User auth
@@ -91,11 +92,24 @@ if (Meteor.isClient) {
       $('#selectOperatorCutter').val($('#selectOperatorCutter option:first').val());
       $('#changeOperatorCutter').hide();
     }
+    /*
+    var dateB = $('#filterOrderDateBefore').val();
+    var dateA = $('#filterOrderDateAfter').val();
+
+    if (dateB || dateA) {
+      $('#btnRefresh').hide();  
+      $('#btnfilterOrderDateStart').show(); 
+    } else {
+      $('#btnRefresh').show();
+      $('#btnfilterOrderDateStart').hide(); 
+    }
+    */
 
   })
 
   Meteor.autosubscribe(function () {
     var user = Meteor.user();
+    //console.log("autosubscribe");
     //console.log("user: " + user);
     //console.log("_id: " + user._id );
     //console.log("username: " + user.username );
@@ -121,6 +135,39 @@ if (Meteor.isClient) {
     var ses_allorder_cutdate = Session.get("ses_allorder_cutdate");
     
     var ses_statusfilter = Session.get("ses_statusfilter");
+
+    /*
+    if (ses_DaysBefore) {
+      Date.prototype.toDateInputValue = (function() {
+          var local = new Date(this);
+          local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+          return local.toJSON().slice(0,10);
+      });
+    }
+    */
+    //var filterOrderDateBefore = new Date(ses_DaysBefore).toDateInputValue();
+    //filterOrderDateBefore = filterOrderDateBefore.setHours(-70,0,0,0);
+    //console.log("auto: " + filterOrderDateBefore);
+    //$('#filterOrderDateBefore').val("2015-07-01");
+
+    //var filterOrderDateAfter = new Date(ses_DaysAfter).toDateInputValue();
+    //filterOrderDateAfter = filterOrderDateAfter.setHours(75,0,0,0);
+    //console.log("auto: " + filterOrderDateAfter);
+    //$('#filterOrderDateAfter').val("2015-08-01");
+    
+    /*
+    var dateB = $('#filterOrderDateBefore').val();
+    var dateA = $('#filterOrderDateAfter').val();
+
+    if (dateB) {
+      $('#btnRefresh').hide();  
+      $('#btnfilterOrderDateStart').show(); 
+    } else {
+      $('#btnRefresh').show();
+      $('#btnfilterOrderDateStart').hide(); 
+    }
+    */
+
 
     //console.log("Autosubcribe sesion: " + ses + " , typeof: " + typeof ses);
 
@@ -150,6 +197,8 @@ if (Meteor.isClient) {
       Meteor.subscribe('filter_allOrderswithCutDate', ses_DaysBefore, ses_DaysAfter);
     
     } else if (ses_statusfilter == 'Finished') { 
+      Meteor.subscribe('filter_statusfilterwithCutDate', ses_statusfilter, ses_DaysBefore, ses_DaysAfter);
+    } else if (ses_statusfilter == 'TRASH') { 
       Meteor.subscribe('filter_statusfilterwithDate', ses_statusfilter, ses_DaysBefore, ses_DaysAfter);
     } else if (ses_statusfilter) { 
       Meteor.subscribe('filter_statusfilter', ses_statusfilter);
@@ -4084,11 +4133,20 @@ if (Meteor.isServer) {
     })
   });
 
-  Meteor.publish("filter_statusfilterwithDate", function(status, Daysbefore , Daysafter){
+  Meteor.publish("filter_statusfilterwithCutDate", function(status, Daysbefore , Daysafter){
     return Order.find({ 
       $and: [
       {Status: status},
       {CutDate: {$gte: Daysbefore, $lt: Daysafter}}
+      ]
+    })
+  });
+
+  Meteor.publish("filter_statusfilterwithDate", function(status, Daysbefore , Daysafter){
+    return Order.find({ 
+      $and: [
+      {Status: status},
+      {Date: {$gte: Daysbefore, $lt: Daysafter}}
       ]
     })
   });
