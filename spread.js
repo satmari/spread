@@ -1833,6 +1833,27 @@ if (Meteor.isClient) {
       }*/
   };
 
+  var rm_ImportConsumption = {
+      template: Template.tmp_ImportConsumption, 
+      title: "Import from Consumption CSV file",
+      //modalDialogClass: "modal-dialog", //optional
+      //modalBodyClass: "modal-body", //optional
+      //modalFooterClass: "modal-footer",//optional
+      closable: true,
+      removeOnHide: true,
+      /*buttons: {
+        //"cancel": {
+        //  class: 'btn-danger',
+        //  label: 'Cancel'
+          //},
+          "ok": {
+            closeModalOnClick: true, // if this is false, dialog doesnt close automatically on click
+            class: 'btn-info',
+            label: 'Back'
+          }
+      }*/
+  };
+
   var rm_Statistics = {
      template: Template.tmp_Statistics, 
       title: "Statistic for actual order table",
@@ -2525,6 +2546,14 @@ if (Meteor.isClient) {
       var rd_importPlannedMarkers = ReactiveModal.initDialog(rm_ImportPlannedMarkers);
       // Show rd_addneworder
       rd_importPlannedMarkers.show();
+    },
+
+    'click #import_from_consumption' : function () {
+
+      // Define rd_addneworder
+      var rd_importConsumption = ReactiveModal.initDialog(rm_ImportConsumption);
+      // Show rd_addneworder
+      rd_importConsumption.show();
     },
 
     'click #export_orders' : function () {
@@ -3287,6 +3316,50 @@ if (Meteor.isClient) {
     }
   });
 
+  Template.tmp_ImportConsumption.events({
+    'change #files_consumption': function (e) {
+      //alert("change a")
+      //var files_a = e.target.files || e.dataTransfer.files;
+
+      var files_a = e.target.files;
+      //console.log("files_a:" + files_a);
+      var file_a = files_a[0];           
+      //console.log("file_a:" + file_a);
+
+      var reader = new FileReader();
+
+      reader.onload = function (e) { 
+        //alert("reader.onloadend");
+        var text = e.target.result;
+        //alert(text);
+        //var all = $.csv.toObjects(text);
+        var all = $.csv.toObjects(text, {
+            /*delimiter:"'",
+            separator:';',*/
+            delimiter:";",
+            separator:',',
+        });
+
+          for (var i = 0; i < all.length; i++) {
+            //console.log(all[i]);
+
+            var no  = Number(all[i]['No']);
+            var consumption = Number(all[i]['Total Consumption']);
+
+            //console.log("No: "+ no);
+            //console.log("Total Consumption: "+ consumption);
+
+            Meteor.call('method_updateConsumption', no, consumption, function(err, data) {
+              console.log("method_updateConsumption: Done");
+
+            });
+          }
+      }
+      reader.readAsText(file_a);
+      rm_ImportConsumption.hide();
+    }
+  });
+
   Template.tmp_ImportOrder.events({
     'change #files': function (e) {
       //alert("Ne radi jos")
@@ -4020,21 +4093,34 @@ if (Meteor.isServer) {
     Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern}, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
-
-          //uniquecountPosNA = uniquecountPosNA - 1;                    
-          //Session.set("ses_uniquecountPosNA", uniquecountPosNA);
-          //console.log("a uniquecountPosNA -1 = " + uniquecountPosNA);
-          console.log("a uniquecountPosNA -1 = " + uniquecountPosNA);
-
+          console.log("method_insertOrders = False:  " + no);
         } else {
-
-          //Session.set("ses_uniquecountPosNA", uniquecountPosNA);
-          //console.log("a uniquecountPosNA +1 = " + uniquecountPosNA);
-          console.log("a uniquecountPosNA +1 = " + uniquecountPosNA);
+          console.log("method_insertOrders = True:  " + no);
         }
       }
-    );
+    )
+   },
+   method_updateConsumption: function (no, consumption) {
 
+    var order = Order.find({No: no}).fetch();
+    for (var i = 0; i < order.length; i++) {
+      var id = order[i]._id;
+    }
+
+    Order.update({_id: id},
+      {
+        $set: {Consumption:consumption},
+      }, 
+      function(err, numberAffected, rawResponse) {
+        if (numberAffected == false) {
+
+          console.log("method_updateConsumption = False: " + no );
+        } else {
+
+          console.log("method_updateConsumption = True: " + no );
+        }
+      }
+    )
    }
   
   
