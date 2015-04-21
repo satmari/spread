@@ -367,6 +367,8 @@ Order.attachSchema(new SimpleSchema({
 
 /* Potrebno 
 No
+Position
+Status
 Date
 Created
 Komesa
@@ -392,7 +394,12 @@ M_Cut
 L
 LonLayer
 L_Cut
-Status
+XL
+XLonLayer
+XL_Cut
+XXL
+XXLonLayer
+XXL_Cut
 Priority
 Load
 Spread

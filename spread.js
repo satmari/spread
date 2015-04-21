@@ -632,7 +632,7 @@ if (Meteor.isClient) {
             }
           },
           { key: 'CutOperator', label: 'Cut Operator'},
-          { key: 'Consumption', label: 'Consumption' },
+          { key: 'Consumption', label: 'Total Consumption' },
           { key: 'LabelPrinted', label: 'LabelPrinted', hidden: true},
           { key: 'Comment', label: 'Comment' },
           { key: 'SkalaMarker', label: 'SkalaMarker', hidden: true},
@@ -839,7 +839,7 @@ if (Meteor.isClient) {
           },
           { key: 'CutOperator', label: 'Cut Operator'},
           //{ key: 'OrderLink', label: 'Linked' },
-          { key: 'Consumption', label: 'Consumption' },
+          { key: 'Consumption', label: 'Total Consumption' },
           { key: 'LabelPrinted', label: 'LabelPrinted', hidden: true},
           { key: 'Comment', label: 'Comment' },
           { key: 'SkalaMarker', label: 'SkalaMarker', hidden: true},
@@ -1219,7 +1219,7 @@ if (Meteor.isClient) {
     },
     settingsUserCons: function () {
       return {
-          rowsPerPage: 50,
+          rowsPerPage: 100,
           showFilter: true,
           showNavigation: 'auto',
           fields: [
@@ -1254,7 +1254,7 @@ if (Meteor.isClient) {
             { key: 'ColorCode', label: 'Color Code' },
             { key: 'ColorDesc', label: 'Color Desc' },
             { key: 'Bagno', label: 'Bagno' },
-            //{ key: 'Layers', label: 'Layers' },
+            { key: 'Layers', label: 'Layers' },
             { key: 'LayersActual', label: 'Layers Actual',
               fn: function (value){
                 if (value == 0) {
@@ -1266,22 +1266,22 @@ if (Meteor.isClient) {
             },
             { key: 'Length', label: 'Length(m)' },
             //{ key: 'Extra', label: 'Extra (cm)' },
-            //{ key: 'LengthSum', label: 'Length Sum (m)' },
+            { key: 'LengthSum', label: 'Length Sum (m)' },
             { key: 'Width', label: 'Width (cm)' },
             //{ key: 'S', label: 'S' },
-            { key: 'S_Cut', label: 'S Cut'},
+            //{ key: 'S_Cut', label: 'S Cut'},
             //{ key: 'M', label: 'M' },
-            { key: 'M_Cut', label: 'M Cut'},
+            //{ key: 'M_Cut', label: 'M Cut'},
             //{ key: 'L', label: 'L' },
-            { key: 'L_Cut', label: 'L Cut'},
+            //{ key: 'L_Cut', label: 'L Cut'},
             //{ key: 'XLonLayer', label: 'XL per Layer'},
             //{ key: 'XL', label: 'XL Marker' },
-            { key: 'XL_Cut', label: 'XL Cut'},
+            //{ key: 'XL_Cut', label: 'XL Cut'},
             //{ key: 'XXLonLayer', label: 'XXL per Layer'},
             //{ key: 'XXL', label: 'XXL Marker' },
-            { key: 'XXL_Cut', label: 'XXL Cut'},
+            //{ key: 'XXL_Cut', label: 'XXL Cut'},
             //{ key: 'Status', label: 'Status'},
-            { key: 'Priority', label: 'Priority', 
+            /*{ key: 'Priority', label: 'Priority', 
               fn: function (value){
                 if (value == 2) {
                   return "High";
@@ -1291,7 +1291,7 @@ if (Meteor.isClient) {
                  return "Normal" ;
                 }
               }
-            },
+            },*/
             /*{ key: 'Load', label: 'Load'},*/
             /*{ key: 'Spread', label: 'Spread'},*/
             { key: 'SpreadDate', label: 'Spread Date', sort: 'descending' , 
