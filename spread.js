@@ -3344,14 +3344,14 @@ if (Meteor.isClient) {
             //console.log(all[i]);
 
             var no  = Number(all[i]['No']);
-            var consumption = Number(all[i]['Total Consumption']);
+            var consumption1 = Number(all[i]['Total Consumption']);
+            var consumption = consumption1.toFixed(2);
 
             //console.log("No: "+ no);
             //console.log("Total Consumption: "+ consumption);
 
             Meteor.call('method_updateConsumption', no, consumption, function(err, data) {
-              console.log("method_updateConsumption: Done");
-
+              //console.log("method_updateConsumption: Done");
             });
           }
       }
@@ -4061,6 +4061,13 @@ if (Meteor.isServer) {
           }, 
           {
             multi: true,
+          },
+          function(err, numberAffected, rawResponse) {
+            if (numberAffected == false) {
+              console.log("method_refreshSum = False");
+            } else {
+              console.log("method_refreshSum = True");
+            }
           }
         );
       }
