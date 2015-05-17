@@ -470,6 +470,31 @@ if (Meteor.isClient) {
     filter: function() {
         return ses_statusfilter = Session.get("ses_statusfilter");
     },
+    markersintable: function() {
+        var filter = Session.get("ses_statusfilter");
+        return Order.find({Status: filter}).count();
+    },
+    markersintableuniq: function() {
+        var filter = Session.get("ses_statusfilter");
+        var order = Order.find({Status: filter}).fetch();
+        var posarray = [];
+        for (var i = 0; i < order.length; i++) {
+            pos = order[i].Position;
+            posarray.push(pos);
+        }
+        if (isNaN(posarray[0])) {
+          return 0;
+        } else {
+          //var largest = Math.max.apply(null, posarray);
+          //return posarray.length;
+          var unique = [];
+          $.each(posarray, function(i, el){
+              if($.inArray(el, unique) === -1) unique.push(el);
+          });
+
+          return unique.length;
+        }
+    },
     settingsAdmin: function () {
       return {
         rowsPerPage: 100,
@@ -4266,6 +4291,90 @@ if (Meteor.isServer) {
     }
   });
 
+    var timeLeft = function() {
+    var order = Order.find({Status: "CUT"}).fetch();
+    var posarray = [];
+    for (var i = 0; i < order.length; i++) {
+      pos = order[i].Position;
+      posarray.push(pos);
+    }
+
+    if (isNaN(posarray[0])) {
+      //return 0;
+      //console.log("That's All Folks");
+      //return Meteor.clearInterval(interval);
+      //Meteor.clearInterval(interval);
+
+    } else {
+      //var largest = Math.max.apply(null, posarray);
+      //return posarray.length;
+      //var unique = [];
+      /*$.each(posarray, function(i, el){
+          if($.inArray(el, unique) === -1) unique.push(el);
+      });*/
+      //return posarray.length;
+      //console.log("posarray.length: " + posarray.length);
+      //console.log("unique: " + unique.length);
+    }
+      
+    //console.log("count orders: " + posarray.length);
+
+    function foo(arr) {
+      var a = [], b = [], prev;
+      arr.sort();
+      for ( var i = 0; i < arr.length; i++ ) {
+        if ( arr[i] !== prev ) {
+            a.push(arr[i]);
+            b.push(1);
+        } else {
+            b[b.length-1]++;
+        }
+        prev = arr[i];
+      }
+      return [a, b];
+    }
+    var result = foo(posarray);
+    var unique = result[0].length;
+    //console.log("count unique orders: " + unique);
+
+    Date.prototype.toDateInputValue = (function () {
+      var local = new Date(this);
+      local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+      //return local.toJSON().slice(0,10);
+      return local.toJSON().slice(0,16);
+    });
+
+    var Dates = new Date().toDateInputValue().slice(0,10);
+    var Hours = new Date().toDateInputValue().slice(11,13);
+    var Minutes = new Date().toDateInputValue().slice(14,16);
+
+    var Time = Hours + ":" + Minutes;
+    //console.log("Minutes: " + Minutes);
+    //console.log("Dates: " + Dates + ",Hours: " + Hours + ",Minutes: " + Minutes);
+
+    
+    if ((Minutes == 00) || (Minutes == 15) || (Minutes == 30) || (Minutes == 45)) {
+    //if ((Minutes == 00) || (Minutes == 20) || (Minutes == 40)) {
+
+      //console.log("Dates: " + Dates + ",Hours: " + Hours + ",Minutes: " + Minutes);
+      //console.log("count orders: " + posarray.length);
+      //console.log("count unique orders: " + unique);
+
+      Table_capacity.insert({Date: Dates, Time: Time, SpreadedMarkers: unique, SpreadedOrders: posarray.length}, 
+        function(err, numberAffected, rawResponse) {
+          //if (numberAffected == false) {
+            console.log("INSERTED: Dates: " + Dates + ",Time: " + Time);
+            //console.log("INSERTED: SpreadedOrders: " + posarray.length);
+            console.log("INSERTED: SpreadedMarkers: " + unique);
+          //} else {
+            //console.log("Not inserted");
+          //}
+        }
+      )
+
+    }
+  };
+  var interval = Meteor.setInterval(timeLeft, 1 * 60 * 1000);
 
 }
 

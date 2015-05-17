@@ -461,3 +461,45 @@ Operators.attachSchema(new SimpleSchema({
         }
     }
 }));
+
+Table_capacity = new Meteor.Collection("table_capacity");
+Table_capacity.attachSchema(new SimpleSchema({
+    'Date': {
+        type: String,
+        label: "Date",
+        optional: false,
+    },
+    'Time': {
+        type: String,
+        label: "Time",
+        optional: false,
+    },
+    'SpreadedMarkers': {
+        type: Number,
+        label: "Spreaded Markers",
+        optional: false,
+        decimal: false, 
+        min: 0
+    },
+    'SpreadedOrders': {
+        type: Number,
+        label: "Spreaded Orders",
+        optional: false,
+        decimal: false, 
+        min: 0
+    },
+    'CreationDate': {
+        type: Date,
+        label: "CreationDate",
+        autoValue: function() {
+            if (this.isInsert) {
+                return new Date;
+            } else if (this.isUpsert) {
+                return {$setOnInsert: new Date};
+            } else {
+                this.unset();
+            }
+        }
+    }
+    
+}));

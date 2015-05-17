@@ -315,12 +315,18 @@
 <template name="reactiveTebleList">
   <div>
    {{#if isAdmin}}
-    <h3>Order table - <span style="color: red; font-size: 20px">{{filter}}</span></h3>
+    <h3>Order table - <span style="color: red; font-size: 20px">{{filter}}</span><br />
+    <span style="color: grey; font-size: 16px">Orders (lines): {{markersintable}}</span>
+    <span style="color: grey; font-size: 16px">Markers: {{markersintableuniq}}</span>
+    </h3>
     {{> reactiveTable collection=orders settings=settingsAdmin}}
   {{/if}}
 
   {{#if isUserGuest}}
-    <h3>Order table - <span style="color: red; font-size: 20px">{{filter}}</span></h3>
+    <h3>Order table - <span style="color: red; font-size: 20px">{{filter}}</span><br />
+    <span style="color: grey; font-size: 16px">Orders (lines): {{markersintable}}</span>
+    <span style="color: grey; font-size: 16px">Markers: {{markersintableuniq}}</span>
+    </h3>
     {{> reactiveTable collection=orders settings=settingsGuest}}
   {{/if}}
 
