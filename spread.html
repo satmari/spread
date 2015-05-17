@@ -316,20 +316,29 @@
   <div>
    {{#if isAdmin}}
     <h3>Order table - <span style="color: red; font-size: 20px">{{filter}}</span><br />
-    <span style="color: grey; font-size: 16px">Orders (lines): {{markersintable}}</span>
+    <span style="color: grey; font-size: 16px">Orders (lines): {{markersintable}},</span>
     <span style="color: grey; font-size: 16px">Markers: {{markersintableuniq}}</span>
+    {{#if isStatusFandB}}
+      <br />
+      <span style="color: grey; font-size: 16px">All Orders (lines): {{allmarkersintable}}</span>
+      <span style="color: grey; font-size: 16px">All Markers: {{allmarkersintableuniq}}</span>
+    {{/if}}
     </h3>
     {{> reactiveTable collection=orders settings=settingsAdmin}}
   {{/if}}
 
   {{#if isUserGuest}}
     <h3>Order table - <span style="color: red; font-size: 20px">{{filter}}</span><br />
-    <span style="color: grey; font-size: 16px">Orders (lines): {{markersintable}}</span>
+    <span style="color: grey; font-size: 16px">Orders (lines): {{markersintable}},</span>
     <span style="color: grey; font-size: 16px">Markers: {{markersintableuniq}}</span>
+    {{#if isStatusFandB}}
+      <br />
+      <span style="color: grey; font-size: 16px">All Orders (lines): {{allmarkersintable}}</span>
+      <span style="color: grey; font-size: 16px">All Markers: {{allmarkersintableuniq}}</span>
+    {{/if}}
     </h3>
     {{> reactiveTable collection=orders settings=settingsGuest}}
   {{/if}}
-
   {{#if isUserSp}}
     <!--<h3>Order table</h3>-->
     {{> reactiveTable collection=orders settings=settingsUserSp}}

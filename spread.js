@@ -470,6 +470,14 @@ if (Meteor.isClient) {
     filter: function() {
         return ses_statusfilter = Session.get("ses_statusfilter");
     },
+    isStatusFandB: function() {
+        var ses_statusfilter = Session.get("ses_statusfilter");
+        if ((ses_statusfilter == "Finished") || (ses_statusfilter == "TRASH")) {
+          return false;          
+        } else {
+          return false;
+        }
+    },
     markersintable: function() {
         var filter = Session.get("ses_statusfilter");
         return Order.find({Status: filter}).count();
@@ -495,6 +503,25 @@ if (Meteor.isClient) {
           return unique.length;
         }
     },
+    /*
+    allmarkersintable: function() {
+        var filter = Session.get("ses_statusfilter");
+        //return Order.find({Status: filter}).count();
+        Meteor.call('method_allmarkersintable', filter, function(err, data) {
+          return data;
+        });
+        //return rez;
+    },
+    allmarkersintableuniq: function() {
+        var filter = Session.get("ses_statusfilter");
+        //var order = Order.find({Status: filter}).fetch();
+
+        Meteor.call('method_allmarkersintableuniq', filter, function(err, data) {
+          return data;
+        });
+        //return rez;
+    },
+    */
     settingsAdmin: function () {
       return {
         rowsPerPage: 100,
@@ -4153,8 +4180,35 @@ if (Meteor.isServer) {
         }
       }
     )
-   }
-  
+   },
+   method_allmarkersintable: function (filter) {
+      return Order.find({Status: filter}).count();
+   },
+   method_allmarkersintableuniq: function (filter) {
+      var order = Order.find({Status: filter}).fetch();
+      var posarray = [];
+        for (var i = 0; i < order.length; i++) {
+            pos = order[i].Position;
+            posarray.push(pos);
+        }
+        function foo(arr) {
+          var a = [], b = [], prev;
+          arr.sort();
+          for ( var i = 0; i < arr.length; i++ ) {
+            if ( arr[i] !== prev ) {
+              a.push(arr[i]);
+              b.push(1);
+            } else {
+              b[b.length-1]++;
+            }
+            prev = arr[i];
+          }
+          return [a, b];
+        }
+        var result = foo(posarray);
+        var unique = result[0].length;
+        return unique;
+    }
   
 });
  
