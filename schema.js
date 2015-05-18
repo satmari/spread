@@ -474,16 +474,16 @@ Table_capacity.attachSchema(new SimpleSchema({
         label: "Time",
         optional: false,
     },
-    'SpreadedMarkers': {
+    'Markers': {
         type: Number,
-        label: "Spreaded Markers",
+        label: "Markers",
         optional: false,
         decimal: false, 
         min: 0
     },
-    'SpreadedOrders': {
+    'Orders': {
         type: Number,
-        label: "Spreaded Orders",
+        label: "Orders",
         optional: false,
         decimal: false, 
         min: 0

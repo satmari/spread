@@ -4414,12 +4414,12 @@ if (Meteor.isServer) {
       //console.log("count orders: " + posarray.length);
       //console.log("count unique orders: " + unique);
 
-      Table_capacity.insert({Date: Dates, Time: Time, SpreadedMarkers: unique, SpreadedOrders: posarray.length}, 
+      Table_capacity.insert({Date: Dates, Time: Time, Markers: unique, Orders: posarray.length}, 
         function(err, numberAffected, rawResponse) {
           //if (numberAffected == false) {
             console.log("INSERTED: Dates: " + Dates + ",Time: " + Time);
-            //console.log("INSERTED: SpreadedOrders: " + posarray.length);
-            console.log("INSERTED: SpreadedMarkers: " + unique);
+            //console.log("INSERTED: Orders: " + posarray.length);
+            console.log("INSERTED: Markers: " + unique);
           //} else {
             //console.log("Not inserted");
           //}
