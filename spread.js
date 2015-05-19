@@ -4406,26 +4406,26 @@ if (Meteor.isServer) {
     //console.log("Minutes: " + Minutes);
     //console.log("Dates: " + Dates + ",Hours: " + Hours + ",Minutes: " + Minutes);
 
-    
-    if ((Minutes == 00) || (Minutes == 15) || (Minutes == 30) || (Minutes == 45)) {
-    //if ((Minutes == 00) || (Minutes == 20) || (Minutes == 40)) {
-
-      //console.log("Dates: " + Dates + ",Hours: " + Hours + ",Minutes: " + Minutes);
-      //console.log("count orders: " + posarray.length);
-      //console.log("count unique orders: " + unique);
-
-      Table_capacity.insert({Date: Dates, Time: Time, Markers: unique, Orders: posarray.length}, 
-        function(err, numberAffected, rawResponse) {
-          //if (numberAffected == false) {
-            console.log("INSERTED: Dates: " + Dates + ",Time: " + Time);
-            //console.log("INSERTED: Orders: " + posarray.length);
-            console.log("INSERTED: Markers: " + unique);
-          //} else {
-            //console.log("Not inserted");
-          //}
-        }
-      )
-
+    if ((Hours >= 06) && (Hours <= 22)) {
+      if ((Minutes == 00) || (Minutes == 15) || (Minutes == 30) || (Minutes == 45)) {
+      //if ((Minutes == 00) || (Minutes == 20) || (Minutes == 40)) {
+  
+          //console.log("Dates: " + Dates + ",Hours: " + Hours + ",Minutes: " + Minutes);
+          //console.log("count orders: " + posarray.length);
+          //console.log("count unique orders: " + unique);
+  
+          Table_capacity.insert({Date: Dates, Time: Time, Markers: unique, Orders: posarray.length}, 
+            function(err, numberAffected, rawResponse) {
+              //if (numberAffected == false) {
+                console.log("INSERTED: Dates: " + Dates + ",Time: " + Time);
+                //console.log("INSERTED: Orders: " + posarray.length);
+                console.log("INSERTED: Markers: " + unique);
+              //} else {
+                //console.log("Not inserted");
+              //}
+            }
+          )
+      }
     }
   };
   var interval = Meteor.setInterval(timeLeft, 1 * 60 * 1000);
