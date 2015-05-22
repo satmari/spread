@@ -4345,47 +4345,27 @@ if (Meteor.isServer) {
     }
   });
 
-    var timeLeft = function() {
-    var order = Order.find({Status: "CUT"}).fetch();
-    var posarray = [];
-    for (var i = 0; i < order.length; i++) {
-      pos = order[i].Position;
-      posarray.push(pos);
-    }
+  var timeLeft = function() {
+  var order = Order.find({Status: "CUT"}).fetch();
+  var posarray = [];
+  for (var i = 0; i < order.length; i++) {
+    pos = order[i].Position;
+    posarray.push(pos);
+  }
 
-    if (isNaN(posarray[0])) {
-      //return 0;
-      //console.log("That's All Folks");
-      //return Meteor.clearInterval(interval);
-      //Meteor.clearInterval(interval);
-
-    } else {
-      //var largest = Math.max.apply(null, posarray);
-      //return posarray.length;
-      //var unique = [];
-      /*$.each(posarray, function(i, el){
-          if($.inArray(el, unique) === -1) unique.push(el);
-      });*/
-      //return posarray.length;
-      //console.log("posarray.length: " + posarray.length);
-      //console.log("unique: " + unique.length);
-    }
-      
-    //console.log("count orders: " + posarray.length);
-
-    function foo(arr) {
-      var a = [], b = [], prev;
-      arr.sort();
-      for ( var i = 0; i < arr.length; i++ ) {
-        if ( arr[i] !== prev ) {
-            a.push(arr[i]);
-            b.push(1);
-        } else {
-            b[b.length-1]++;
-        }
-        prev = arr[i];
+  function foo(arr) {
+    var a = [], b = [], prev;
+    arr.sort();
+    for ( var i = 0; i < arr.length; i++ ) {
+      if ( arr[i] !== prev ) {
+          a.push(arr[i]);
+          b.push(1);
+      } else {
+        b[b.length-1]++;
       }
-      return [a, b];
+      prev = arr[i];
+    }
+     return [a, b];
     }
     var result = foo(posarray);
     var unique = result[0].length;
@@ -4406,25 +4386,16 @@ if (Meteor.isServer) {
     //console.log("Minutes: " + Minutes);
     //console.log("Dates: " + Dates + ",Hours: " + Hours + ",Minutes: " + Minutes);
 
-    if ((Hours >= 06) && (Hours <= 22)) {
+    if ( ((Hours >= 06) && (Hours <= 21)) || ((Hours == 22) && (Minutes == 00)) ) {
       if ((Minutes == 00) || (Minutes == 15) || (Minutes == 30) || (Minutes == 45)) {
       //if ((Minutes == 00) || (Minutes == 20) || (Minutes == 40)) {
   
-          //console.log("Dates: " + Dates + ",Hours: " + Hours + ",Minutes: " + Minutes);
-          //console.log("count orders: " + posarray.length);
-          //console.log("count unique orders: " + unique);
-  
-          Table_capacity.insert({Date: Dates, Time: Time, Markers: unique, Orders: posarray.length}, 
-            function(err, numberAffected, rawResponse) {
-              //if (numberAffected == false) {
-                console.log("INSERTED: Dates: " + Dates + ",Time: " + Time);
-                //console.log("INSERTED: Orders: " + posarray.length);
-                console.log("INSERTED: Markers: " + unique);
-              //} else {
-                //console.log("Not inserted");
-              //}
-            }
-          )
+        Table_capacity.insert({Date: Dates, Time: Time, Markers: unique, Orders: posarray.length}, 
+          function(err, numberAffected, rawResponse) {
+            console.log("INSERTED: Dates: " + Dates + ",Time: " + Time);
+            console.log("INSERTED: Markers: " + unique);
+          }
+        )
       }
     }
   };
