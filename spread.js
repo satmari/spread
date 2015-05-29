@@ -1148,18 +1148,21 @@ if (Meteor.isClient) {
             //{ key: 'Extra', label: 'Extra (cm)' },
             //{ key: 'LengthSum', label: 'Length Sum (m)' },
             { key: 'Width', label: 'Width (cm)' },
-            //{ key: 'S', label: 'S' },
-            { key: 'S_Cut', label: 'S Cut'},
-            //{ key: 'M', label: 'M' },
-            { key: 'M_Cut', label: 'M Cut'},
-            //{ key: 'L', label: 'L' },
-            { key: 'L_Cut', label: 'L Cut'},
-            //{ key: 'XLonLayer', label: 'XL per Layer'},
-            //{ key: 'XL', label: 'XL Marker' },
-            { key: 'XL_Cut', label: 'XL Cut'},
-            //{ key: 'XXLonLayer', label: 'XXL per Layer'},
-            //{ key: 'XXL', label: 'XXL Marker' },
-            { key: 'XXL_Cut', label: 'XXL Cut'},
+            { key: 'SonLayer', label: 'S per Layer'},
+            //{ key: 'S', label: 'S Tot' },
+            //{ key: 'S_Cut', label: 'S Cut'},
+            { key: 'MonLayer', label: 'M per Layer'},
+            //{ key: 'M', label: 'M Tot' },
+            //{ key: 'M_Cut', label: 'M Cut'},
+            { key: 'LonLayer', label: 'L per Layer'},
+            //{ key: 'L', label: 'L Tot' },
+            //{ key: 'L_Cut', label: 'L Cut'},
+            { key: 'XLonLayer', label: 'XL per Layer'},
+            //{ key: 'XL', label: 'XL Tot' },
+            //{ key: 'XL_Cut', label: 'XL Cut'},
+            { key: 'XXLonLayer', label: 'XXL per Layer'},
+            //{ key: 'XXL', label: 'XXL Tot' },
+            //{ key: 'XXL_Cut', label: 'XXL Cut'},
             //{ key: 'Status', label: 'Status'},
             { key: 'Priority', label: 'Priority',  
               fn: function (value){
@@ -1185,9 +1188,11 @@ if (Meteor.isClient) {
           },
             //{ key: 'Cut', label: 'Cut' },
             //{ key: 'OrderLink', label: 'Linked' },
-            //{ key: 'Comment', label: 'Comment' },
+           
             //{ key: 'Consumption', label: 'Consumption' },
             { key: 'LabelPrinted', label: 'LabelPrinted' },
+            { key: 'Sector', label: 'Sector'},
+            { key: 'Comment', label: 'Comment' },
           ],
             //useFontAwesome: true,
             //group: 'Komesa', 
@@ -3072,7 +3077,7 @@ if (Meteor.isClient) {
         }
 
       var selectedStatus = $('.in #selectStatus').find(":selected").text();
-      console.log("selectedStatus: " + selectedStatus); 
+      //console.log("selectedStatus: " + selectedStatus); 
 
       if (selectedStatus == "SP 1"){
         var uniquecountPosSp1 = Session.get("ses_uniquecountPosSp1");
@@ -4014,7 +4019,7 @@ if (Meteor.isServer) {
     //var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
     var uniquecountPosNA = largest + 1;
     //Session.set("ses_uniquecountPosNA", uniquecountPosNA);
-    console.log("uniquecountPosNA: " + uniquecountPosNA);
+    //console.log("uniquecountPosNA: " + uniquecountPosNA);
 
     setPos = uniquecountPosNA;                             
     status = 'Not assigned';
@@ -4026,13 +4031,13 @@ if (Meteor.isServer) {
           //uniquecountPosNA = uniquecountPosNA - 1;                    
           //Session.set("ses_uniquecountPosNA", uniquecountPosNA);
           //console.log("a uniquecountPosNA -1 = " + uniquecountPosNA);
-          console.log("a uniquecountPosNA -1 = " + uniquecountPosNA);
+          //console.log("a uniquecountPosNA -1 = " + uniquecountPosNA);
 
         } else {
 
           //Session.set("ses_uniquecountPosNA", uniquecountPosNA);
           //console.log("a uniquecountPosNA +1 = " + uniquecountPosNA);
-          console.log("a uniquecountPosNA +1 = " + uniquecountPosNA);
+          //console.log("a uniquecountPosNA +1 = " + uniquecountPosNA);
         }
       }
     );
