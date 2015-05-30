@@ -188,6 +188,8 @@ if (Meteor.isClient) {
       Meteor.subscribe('filter_label', ses_DaysBefore, ses_DaysAfter);
     } else if (ses_loggedUserName == "cons"){
       Meteor.subscribe('filter_cons', ses_DaysBefore, ses_DaysAfter);
+    } else if (ses_loggedUserName == "diba"){
+      //Meteor.subscribe('filter_diba');       
 
     } else if (ses_allorder_date) {
       Meteor.subscribe('filter_allOrderswithDate', ses_DaysBefore, ses_DaysAfter);
@@ -213,6 +215,7 @@ if (Meteor.isClient) {
 
     // Operators
     Meteor.subscribe('filter_allOperators');
+    Meteor.subscribe('filter_diba');
 
     var selectOperatorSpreader = Session.get("ses_selectOperatorSpreader");
     var selectOperatorCutter = Session.get("ses_selectOperatorCutter");
@@ -270,6 +273,7 @@ if (Meteor.isClient) {
     
   });
 
+  // Navigation helpers
   Template.nav.helpers ({
     isAdminOrGuest: function() {
       //var loggedUserName = Session.get("loggedUserName");
@@ -323,6 +327,17 @@ if (Meteor.isClient) {
       if (userId) {
         var User = Meteor.users.findOne({_id: userId});
         if (User.username == "cons") {
+          return true;
+        } else {
+          return false;  
+        }
+      }
+    },
+    isDiba: function() {
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if (User.username == "diba") {
           return true;
         } else {
           return false;  
@@ -386,11 +401,246 @@ if (Meteor.isClient) {
       var operator = Session.get("ses_selectOperatorCutter");
       return operator;
     }
+  
   });
 
+  // Navigation events
+  Template.nav.events({
+
+    'click #btnfilterOrderDateStart' : function (e, t) {
+
+      var dateselBefore = $('#filterOrderDateBefore').val();
+      var dateselBefore1 = new Date(dateselBefore);
+      dateselBefore1.setHours(1,0,0,0);
+      //console.log(dateselBefore1);
+
+      Session.set("ses_DaysBefore", dateselBefore1);
+      Session.set("ses_datefilter", dateselBefore1); //just to skip all
+      dateselBefore1 = "";
+
+      var dateselAfter = $('#filterOrderDateAfter').val();
+      var dateselAfter1 = new Date(dateselAfter);
+      dateselAfter1.setHours(3,0,0,0);
+      //console.log(dateselAfter1);
+
+      Session.set("ses_DaysAfter", dateselAfter1);
+      Session.set("ses_datefilter", dateselAfter1); //just to skip all
+      dateselAfter1 = "";
+    },
+
+    /*'click #new_order': function (e, t) {
+      console.log("new_order - click");
+
+      var rd_addneworder = ReactiveModal.initDialog(rm_AddNewOrder);
+      rd_addneworder.show();
+    },*/
+
+    'click #import_from_planned_markers' : function () {
+      //console.log('import from planned markers - click')
+
+      Meteor.call('method_uniquecountPosNA', function(err, data) {
+        Session.set("ses_uniquecountPosNA", data);
+        //console.log("method_uniquecountPosNA: " + data);
+      });
+      Meteor.call('method_uniquecountPosSp1', function(err, data) {
+        Session.set("ses_uniquecountPosSp1", data);
+        //console.log("method_uniquecountPosSp1: " + data);
+      });
+      Meteor.call('method_uniquecountPosSp2', function(err, data) {
+        Session.set("ses_uniquecountPosSp2", data);
+        //console.log("method_uniquecountPosSp2: " + data);
+      });
+       Meteor.call('method_uniquecountPosSp3', function(err, data) {
+        Session.set("ses_uniquecountPosSp3", data);
+        //console.log("method_uniquecountPosSp3: " + data);
+      });
+      Meteor.call('method_uniquecountPosMs1', function(err, data) {
+        Session.set("ses_uniquecountPosMs1", data);
+        //console.log("method_uniquecountPosMs1: " + data);
+      });
+      Meteor.call('method_uniquecountPosCUT', function(err, data) {
+        Session.set("ses_uniquecountPosCUT", data);
+        //console.log("method_uniquecountPosCUT: " + data);
+      });
+      Meteor.call('method_uniquecountPosF', function(err, data) {
+        Session.set("ses_uniquecountPosF", data);
+        //console.log("method_uniquecountPosF: " + data);
+      });
+      Meteor.call('method_uniquecountPosTRASH', function(err, data) {
+        Session.set("ses_uniquecountPosTRASH", data);
+        //console.log("method_uniquecountPosTRASH: " + data);
+      });
+      
+      // Define rd_addneworder
+      var rd_importPlannedMarkers = ReactiveModal.initDialog(rm_ImportPlannedMarkers);
+      // Show rd_addneworder
+      rd_importPlannedMarkers.show();
+    },
+
+    'click #import_from_consumption' : function () {
+
+      // Define rd_addneworder
+      var rd_importConsumption = ReactiveModal.initDialog(rm_ImportConsumption);
+      // Show rd_addneworder
+      rd_importConsumption.show();
+    },
+
+    'click #export_orders' : function () {
+      //console.log('export orders - click')
+
+      // Define rd_addneworder
+      var rd_exportOrder = ReactiveModal.initDialog(rm_ExportOrder);
+      // Show rd_addneworder
+      rd_exportOrder.show();
+    },
+
+    'click #import_orders' : function () {
+      //console.log('import orders - click')
+
+      // Define rd_addneworder
+      var rd_importOrder = ReactiveModal.initDialog(rm_ImportOrder);
+      // Show rd_addneworder
+      rd_importOrder.show();
+    },
+
+    'click #refresh_sum' : function () {
+      //console.log('refresh_sum - click')
+
+      Meteor.call('method_refreshSum',function(err, data) {
+        //console.log("method_refreshSum: " + data);
+      });
+    
+    },
+
+    'click #statistics' : function (e, t) {
+      var rd_statistics = ReactiveModal.initDialog(rm_Statistics);
+      rd_statistics.show();
+    },
+
+    'click #operators' : function (e, t) {
+      var rd_operators = ReactiveModal.initDialog(rm_Operators);
+      rd_operators.show();
+    },
+
+    'change #allorder_date': function (e, t) {
+      if ($('#allorder_date').prop('checked')){
+        //console.log("allorder_date: checked");
+        Session.set("ses_allorder_date", true);
+      } else {
+        //console.log("allorder_date: unchecked");
+        Session.set("ses_allorder_date", false);
+      }
+    },
+
+    'change #allorder_spreaddate': function (e, t) {
+      if ($('#allorder_spreaddate').prop('checked')){
+        //console.log("allorder_spreaddate: checked");
+        Session.set("ses_allorder_spreaddate", true);
+      } else {
+        //console.log("allorder_spreaddate: unchecked");
+        Session.set("ses_allorder_spreaddate", false);
+      }
+    },
+
+    'change #allorder_cutdate': function (e, t) {
+      if ($('#allorder_cutdate').prop('checked')){
+        //console.log("allorder_cutdate: checked");
+        Session.set("ses_allorder_cutdate", true);
+      } else {
+        //console.log("allorder_cutdate: unchecked");
+        Session.set("ses_allorder_cutdate", false);
+      }
+    },
+
+    'change #not_assigned': function  (e, t) {
+      Session.set("ses_statusfilter", "Not assigned");
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+    },
+
+    'change #sp1': function  (e, t) {
+      Session.set("ses_statusfilter", "SP 1");
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+    },
+
+    'change #sp2': function  (e, t) {
+      Session.set("ses_statusfilter", "SP 2");
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+    },
+
+    'change #sp3': function  (e, t) {
+      Session.set("ses_statusfilter", "SP 3");
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+    },
+
+    'change #ms1': function  (e, t) {
+      Session.set("ses_statusfilter", "MS 1");
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+    },
+
+    'change #cut': function  (e, t) {
+      Session.set("ses_statusfilter", "CUT");
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+    },
+
+    'change #finished': function  (e, t) {
+      Session.set("ses_statusfilter", "Finished");
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+    },
+
+    'click #trash_orders': function  (e, t) {
+      Session.set("ses_statusfilter", "TRASH");
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+
+      $( ".btn-group label" ).removeClass( "active" );
+    },
+
+    'change #selectOperatorSpreader': function (e, t) {
+      var selectOperatorSpreader = $('#selectOperatorSpreader').find(":selected").text();
+      Session.set("ses_selectOperatorSpreader", selectOperatorSpreader);
+      $('.select_operator_spreader').hide();
+      $('#changeOperatorSpreader').show();
+    },
+
+    'change #selectOperatorCutter': function (e, t) {
+      var selectOperatorCutter = $('#selectOperatorCutter').find(":selected").text();
+      Session.set("ses_selectOperatorCutter", selectOperatorCutter);
+      $('.select_operator_cutter').hide();
+      $('#changeOperatorCutter').show();
+    },
+
+    'click #changeOperatorSpreader' : function (e, t) {
+      Session.set("ses_selectOperatorSpreader", "");
+      $('.select_operator_spreader').show();
+      $('#selectOperatorSpreader').val($('#selectOperatorSpreader option:first').val());
+      $('#changeOperatorSpreader').hide();
+    },
+
+    'click #changeOperatorCutter' : function (e, t) {
+      Session.set("ses_selectOperatorCutter", "");
+      $('.select_operator_cutter').show();
+      $('#selectOperatorCutter').val($('#selectOperatorCutter option:first').val());
+      $('#changeOperatorCutter').hide();
+    },
+
+    'click #login-buttons-logout': function (e, t) {
+      Session.set("ses_selectOperatorSpreader", "");
+      Session.set("ses_selectOperatorCutter", "");
+    },
+
+    'click #newcommessa' : function (e, t) {
+      var rd_newcommessa = ReactiveModal.initDialog(rm_NewCommessa);
+      rd_newcommessa.show();
+    }
+
+  });
+
+  // Reactive Table helpers
   Template.reactiveTebleList.helpers({
     orders: function () {
       return Order.find();
+    },
+    bom: function () {
+      return Bom.find();
     },
     isAdmin: function() {
         //var loggedUserName = Session.get("loggedUserName");
@@ -461,6 +711,17 @@ if (Meteor.isClient) {
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
           if (User.username == "cons") {
+            return true;
+          } else {
+            return false;  
+          }
+        }
+    },
+    isUserDiba: function() {
+        var userId = Meteor.userId();
+        if (userId) {
+            var User = Meteor.users.findOne({_id: userId});
+          if (User.username == "diba") {
             return true;
           } else {
             return false;  
@@ -690,6 +951,11 @@ if (Meteor.isClient) {
           { key: 'SkalaMarker', label: 'SkalaMarker', hidden: true},
           { key: 'Sector', label: 'Sector', hidden: true},
           { key: 'Pattern', label: 'Pattern', hidden: true},
+          { key: 'BomConsPerPCS', label: 'BOM Cons. [mt/pcs]'},
+          { key: 'MaterialAllowance', label: 'Material Allowance (DiBa) [%]'},
+          { key: 'BomConsPerPCSwithAll', label: 'BOM Cons. Per PCS with All. [mt/pcs]'},
+          { key: 'BomCons', label: 'BOM Cons. [mt]'},
+          { key: 'BomConswithAll', label: 'BOM Cons. with All [mt]'},
         ],
           //useFontAwesome: true,
           //group: 'orderExtra'
@@ -897,6 +1163,11 @@ if (Meteor.isClient) {
           { key: 'SkalaMarker', label: 'SkalaMarker', hidden: true},
           { key: 'Sector', label: 'Sector', hidden: true},
           { key: 'Pattern', label: 'Pattern', hidden: true},
+          { key: 'BomConsPerPCS', label: 'BOM Cons. [mt/pcs]'},
+          { key: 'MaterialAllowance', label: 'Material Allowance (DiBa) [%]'},
+          { key: 'BomConsPerPCSwithAll', label: 'BOM Cons. Per PCS with All. [mt/pcs]'},
+          { key: 'BomCons', label: 'BOM Cons. [mt]'},
+          { key: 'BomConswithAll', label: 'BOM Cons. with All [mt]'},
         ],
 
           //useFontAwesome: true,
@@ -1391,6 +1662,47 @@ if (Meteor.isClient) {
           },
       };
     },
+    settingsUserDiba:function () {
+      return {
+          rowsPerPage: 1000,
+          showFilter: true,
+          showNavigation: 'auto',
+          fields: [
+            { key: 'Commessa', label: 'Komesa' },
+            { key: 'BomConsPerPCS', label: 'BOM Cons. [mt/pcs]' },
+            { key: 'MaterialAllowance', label: 'Material Allowance (DiBa) [%]' },
+            
+          ],
+            //useFontAwesome: true,
+            //group: 'Komesa', 
+            //rowClass: "warning", //warning, danger
+          //rowClass: function(item) {
+            //var priority = item.Priority;
+            //var load = item.Load;
+            //var spread = item.Spread;
+            //var status = item.Status;
+
+            //if (status == "Finished")  {
+              //return 'success'; // green
+            /*
+            } else if (priority == 2) {
+              return 'warning'; // orange
+            } else if (priority == 3) {
+              return 'danger';  // red
+              //active, success, info, warning, danger
+            */
+            //} else if (status == 'CUT') {
+              //return 'info';    // dark blue
+            //} else if (load) {
+              //return 'load';    // greey
+            //} else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
+              //return 'active';  // light blue
+            //} else {
+
+            //}
+          //},
+      };
+    }
 
   });
 
@@ -1405,50 +1717,62 @@ if (Meteor.isClient) {
 
         var click_id_pos = this.Position;
         //console.log("click_id_pos: " + click_id_pos );
-        var click_id_status = this.Status;
+        var click_id_status = this.Status;       
         //console.log("click_id_status: " + click_id_status );
         //var statusfilter = Session.get("ses_statusfilter");
         Session.set('click_id_status', click_id_status); 
 
-        Meteor.call('method_uniquecountPosNA', function(err, data) {
-          //console.log("method_uniquecountPosNA: " + data);
-          Session.set("ses_uniquecountPosNA", data);
-        });
-        Meteor.call('method_uniquecountPosSp1', function(err, data) {
-          //console.log("method_uniquecountPosSp1: " + data);
-          Session.set("ses_uniquecountPosSp1", data);
-        });
-        Meteor.call('method_uniquecountPosSp2', function(err, data) {
-          //console.log("method_uniquecountPosSp2: " + data);
-          Session.set("ses_uniquecountPosSp2", data);
-        });
-        Meteor.call('method_uniquecountPosMs1', function(err, data) {
-          //console.log("method_uniquecountPosMs1: " + data);
-          Session.set("ses_uniquecountPosMs1", data);
-        });
-        Meteor.call('method_uniquecountPosCUT', function(err, data) {
-          //console.log("method_uniquecountPosCUT: " + data);
-          Session.set("ses_uniquecountPosCUT", data);
-        });
-        Meteor.call('method_uniquecountPosF', function(err, data) {
-          //console.log("method_uniquecountPosF: " + data);
-          Session.set("ses_uniquecountPosF", data);
-        });
-        Meteor.call('method_uniquecountPosTRASH', function(err, data) {
-          //console.log("method_uniquecountPosTRASH: " + data);
-          Session.set("ses_uniquecountPosTRASH", data);
-        });
+        var click_id_commessa = this.Commessa;       
 
-        // Define rd_editorder
-        var rd_editorder = ReactiveModal.initDialog(rm_EditOrder);
+        if ((click_id_pos) || (click_id_status)) {
 
-        // show rd_editorder
-        rd_editorder.show();
+          Meteor.call('method_uniquecountPosNA', function(err, data) {
+            //console.log("method_uniquecountPosNA: " + data);
+            Session.set("ses_uniquecountPosNA", data);
+          });
+          Meteor.call('method_uniquecountPosSp1', function(err, data) {
+            //console.log("method_uniquecountPosSp1: " + data);
+            Session.set("ses_uniquecountPosSp1", data);
+          });
+          Meteor.call('method_uniquecountPosSp2', function(err, data) {
+            //console.log("method_uniquecountPosSp2: " + data);
+            Session.set("ses_uniquecountPosSp2", data);
+          });
+          Meteor.call('method_uniquecountPosMs1', function(err, data) {
+            //console.log("method_uniquecountPosMs1: " + data);
+            Session.set("ses_uniquecountPosMs1", data);
+          });
+          Meteor.call('method_uniquecountPosCUT', function(err, data) {
+            //console.log("method_uniquecountPosCUT: " + data);
+            Session.set("ses_uniquecountPosCUT", data);
+          });
+          Meteor.call('method_uniquecountPosF', function(err, data) {
+            //console.log("method_uniquecountPosF: " + data);
+            Session.set("ses_uniquecountPosF", data);
+          });
+          Meteor.call('method_uniquecountPosTRASH', function(err, data) {
+            //console.log("method_uniquecountPosTRASH: " + data);
+            Session.set("ses_uniquecountPosTRASH", data);
+          });
+  
+          // Define rd_editorder
+          var rd_editorder = ReactiveModal.initDialog(rm_EditOrder);
+          // show rd_editorder
+          rd_editorder.show();
+       
+        } else if (click_id_commessa) {
+
+
+          var rd_editcommessa = ReactiveModal.initDialog(rm_EditCommessa);
+          rd_editcommessa.show();
+        }
+
       }
+  
   });
 
   // Edit Order on click (in table) - Reactive Modal
-    var rm_EditOrder = {
+  var rm_EditOrder = {
       type: 'type-default',   //type-default, type-info, type-primary, 'type-success', 'type-warning' , 'type-danger' 
       //size: '',
       template: Template.tmp_EditOrder, 
@@ -1470,12 +1794,39 @@ if (Meteor.isClient) {
             label: 'Back',
           }
       }*/
-    };
+  };
 
-    /*rd_editorder.buttons.ok.on('click', function(button){
-      // rd_editorder is not defined
-        rd_editorder.show();
-    });*/
+  // Edit Order on click (in table) - Reactive Modal
+  var rm_EditCommessa = {
+      type: 'type-default',   //type-default, type-info, type-primary, 'type-success', 'type-warning' , 'type-danger' 
+      //size: '',
+      template: Template.tmp_EditCommessa, 
+      title: "Edit Commessa",
+      //modalBody: "Helll0",
+      //modalDialogClass: "modal-dialog", //optional
+      //modalBodyClass: "modal-body", //optional
+      //modalFooterClass: "modal-footer",//optional
+      removeOnHide: true,
+      closable: true,
+      /*buttons: {
+          "cancel": {
+            class: 'btn-danger',
+            label: 'Cancel'
+          },
+          "ok": {
+            closeModalOnClick: true, // if this is false, dialog doesnt close automatically on click
+            class: 'btn-info',
+            label: 'Back',
+          }
+      }*/
+  };
+
+  Template.tmp_EditCommessa.helpers({
+    editingDoc: function editingDocHelper() {
+        return Bom.findOne({_id: Session.get("selectedDocId")});   
+    }
+
+  })
 
   // Reactive table helper (for update/edit orders)
   Template.tmp_EditOrder.helpers({
@@ -1930,6 +2281,27 @@ if (Meteor.isClient) {
   var rm_Operators = {
      template: Template.tmp_Operators, 
       title: "Operators table",
+      //modalDialogClass: "modal-dialog", //optional
+      //modalBodyClass: "modal-body", //optional
+      //modalFooterClass: "modal-footer",//optional
+      closable: true,
+      removeOnHide: true,
+      /*buttons: {
+        //"cancel": {
+        //  class: 'btn-danger',
+        //  label: 'Cancel'
+          //},
+          "ok": {
+            closeModalOnClick: true, // if this is false, dialog doesnt close automatically on click
+            class: 'btn-info',
+            label: 'Back'
+          }
+      }*/
+  };
+
+  var rm_NewCommessa = {
+     template: Template.tmp_NewCommessa, 
+      title: "New Commessa",
       //modalDialogClass: "modal-dialog", //optional
       //modalBodyClass: "modal-body", //optional
       //modalFooterClass: "modal-footer",//optional
@@ -2459,300 +2831,7 @@ if (Meteor.isClient) {
     },
 
   });
-
-  // Accounts base - Only Username and pass requered
-  Accounts.ui.config({
-    passwordSignupFields: 'USERNAME_ONLY'
-  });
-
-  // Formating Dates (moment)
-  var DateFormats = {
-       //short: "DD MMMM YYYY",
-       //long:  "DD-MM-YYYY HH:mm"
-       short: "DD.MM.YYYY",
-       long:  "DD.MM.YYYY HH:mm"
-  };
-  // Use UI.registerHelper..
-  UI.registerHelper("formatDate", function(datetime, format) {
-      if (moment) {
-        f = DateFormats[format];
-      return moment(datetime).format(f);
-      }
-      else {
-        return datetime;
-      }
-  });
-
-  // Formating Numbers in Templates
-  UI.registerHelper("formatNumber", function(number) {
-    var a = Number(number);
-    a = a.toFixed(3).toString().replace(".", ",")
-    return a;
-  });
-
-  UI.registerHelper("formaColorDesc", function(b) {
-  b = b.toString();
-    return b;
-  });
-
-  // Navigation events
-  Template.nav.events({
-    /*
-    'change #filterOrderDate': function (e, t) {
-      var datesel = $('#filterOrderDate').val();
-      var datesel1 = new Date(datesel); 
-      
-      Session.set("ses_datefilter", datesel1);
-      datesel1 = "";
-      //console.log("Set-ses_datefilter: " + Session.get("ses_datefilter"));
-    },
-    */
-    /*
-    'change #filterOrderDateBefore': function (e, t) {
-      var datesel = $('#filterOrderDateBefore').val();
-      var datesel1 = new Date(datesel);
-      datesel1.setHours(1,0,0,0);
-
-      Session.set("ses_DaysBefore1", datesel1);
-      Session.set("ses_datefilter1", datesel1); //just to skip all
-      datesel1 = "";
-      //console.log("Set-ses_DaysBefore: " + Session.get("ses_DaysBefore"));
-    },
-
-    'change #filterOrderDateAfter': function (e, t) {
-      var datesel = $('#filterOrderDateAfter').val();
-      var datesel1 = new Date(datesel);
-      datesel1.setHours(3,0,0,0);
-
-      Session.set("ses_DaysAfter1", datesel1);
-      Session.set("ses_datefilter1", datesel1); //just to skip all
-      datesel1 = "";
-      //console.log("Set-ses_DaysAfter: " + Session.get("ses_DaysAfter"));
-    },
-    */
-    'click #btnfilterOrderDateStart' : function (e, t) {
-
-      var dateselBefore = $('#filterOrderDateBefore').val();
-      var dateselBefore1 = new Date(dateselBefore);
-      dateselBefore1.setHours(1,0,0,0);
-      //console.log(dateselBefore1);
-
-      Session.set("ses_DaysBefore", dateselBefore1);
-      Session.set("ses_datefilter", dateselBefore1); //just to skip all
-      dateselBefore1 = "";
-
-      var dateselAfter = $('#filterOrderDateAfter').val();
-      var dateselAfter1 = new Date(dateselAfter);
-      dateselAfter1.setHours(3,0,0,0);
-      //console.log(dateselAfter1);
-
-      Session.set("ses_DaysAfter", dateselAfter1);
-      Session.set("ses_datefilter", dateselAfter1); //just to skip all
-      dateselAfter1 = "";
-    },
-
-    /*'click #new_order': function (e, t) {
-      console.log("new_order - click");
-
-      var rd_addneworder = ReactiveModal.initDialog(rm_AddNewOrder);
-      rd_addneworder.show();
-    },*/
-
-    'click #import_from_planned_markers' : function () {
-      //console.log('import from planned markers - click')
-
-      Meteor.call('method_uniquecountPosNA', function(err, data) {
-        Session.set("ses_uniquecountPosNA", data);
-        //console.log("method_uniquecountPosNA: " + data);
-      });
-      Meteor.call('method_uniquecountPosSp1', function(err, data) {
-        Session.set("ses_uniquecountPosSp1", data);
-        //console.log("method_uniquecountPosSp1: " + data);
-      });
-      Meteor.call('method_uniquecountPosSp2', function(err, data) {
-        Session.set("ses_uniquecountPosSp2", data);
-        //console.log("method_uniquecountPosSp2: " + data);
-      });
-       Meteor.call('method_uniquecountPosSp3', function(err, data) {
-        Session.set("ses_uniquecountPosSp3", data);
-        //console.log("method_uniquecountPosSp3: " + data);
-      });
-      Meteor.call('method_uniquecountPosMs1', function(err, data) {
-        Session.set("ses_uniquecountPosMs1", data);
-        //console.log("method_uniquecountPosMs1: " + data);
-      });
-      Meteor.call('method_uniquecountPosCUT', function(err, data) {
-        Session.set("ses_uniquecountPosCUT", data);
-        //console.log("method_uniquecountPosCUT: " + data);
-      });
-      Meteor.call('method_uniquecountPosF', function(err, data) {
-        Session.set("ses_uniquecountPosF", data);
-        //console.log("method_uniquecountPosF: " + data);
-      });
-      Meteor.call('method_uniquecountPosTRASH', function(err, data) {
-        Session.set("ses_uniquecountPosTRASH", data);
-        //console.log("method_uniquecountPosTRASH: " + data);
-      });
-      
-      // Define rd_addneworder
-      var rd_importPlannedMarkers = ReactiveModal.initDialog(rm_ImportPlannedMarkers);
-      // Show rd_addneworder
-      rd_importPlannedMarkers.show();
-    },
-
-    'click #import_from_consumption' : function () {
-
-      // Define rd_addneworder
-      var rd_importConsumption = ReactiveModal.initDialog(rm_ImportConsumption);
-      // Show rd_addneworder
-      rd_importConsumption.show();
-    },
-
-    'click #export_orders' : function () {
-      //console.log('export orders - click')
-
-      // Define rd_addneworder
-      var rd_exportOrder = ReactiveModal.initDialog(rm_ExportOrder);
-      // Show rd_addneworder
-      rd_exportOrder.show();
-    },
-
-    'click #import_orders' : function () {
-      //console.log('import orders - click')
-
-      // Define rd_addneworder
-      var rd_importOrder = ReactiveModal.initDialog(rm_ImportOrder);
-      // Show rd_addneworder
-      rd_importOrder.show();
-    },
-
-    'click #refresh_sum' : function () {
-      //console.log('refresh_sum - click')
-
-      Meteor.call('method_refreshSum',function(err, data) {
-        //console.log("method_refreshSum: " + data);
-      });
-    
-    },
-
-    'click #statistics' : function (e, t) {
-      var rd_statistics = ReactiveModal.initDialog(rm_Statistics);
-      rd_statistics.show();
-    },
-
-    'click #operators' : function (e, t) {
-      var rd_operators = ReactiveModal.initDialog(rm_Operators);
-      rd_operators.show();
-    },
-
-    'change #allorder_date': function (e, t) {
-      if ($('#allorder_date').prop('checked')){
-        //console.log("allorder_date: checked");
-        Session.set("ses_allorder_date", true);
-      } else {
-        //console.log("allorder_date: unchecked");
-        Session.set("ses_allorder_date", false);
-      }
-    },
-
-    'change #allorder_spreaddate': function (e, t) {
-      if ($('#allorder_spreaddate').prop('checked')){
-        //console.log("allorder_spreaddate: checked");
-        Session.set("ses_allorder_spreaddate", true);
-      } else {
-        //console.log("allorder_spreaddate: unchecked");
-        Session.set("ses_allorder_spreaddate", false);
-      }
-    },
-
-    'change #allorder_cutdate': function (e, t) {
-      if ($('#allorder_cutdate').prop('checked')){
-        //console.log("allorder_cutdate: checked");
-        Session.set("ses_allorder_cutdate", true);
-      } else {
-        //console.log("allorder_cutdate: unchecked");
-        Session.set("ses_allorder_cutdate", false);
-      }
-    },
-
-    'change #not_assigned': function  (e, t) {
-      Session.set("ses_statusfilter", "Not assigned");
-      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-    },
-
-    'change #sp1': function  (e, t) {
-      Session.set("ses_statusfilter", "SP 1");
-      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-    },
-
-    'change #sp2': function  (e, t) {
-      Session.set("ses_statusfilter", "SP 2");
-      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-    },
-
-    'change #sp3': function  (e, t) {
-      Session.set("ses_statusfilter", "SP 3");
-      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-    },
-
-    'change #ms1': function  (e, t) {
-      Session.set("ses_statusfilter", "MS 1");
-      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-    },
-
-    'change #cut': function  (e, t) {
-      Session.set("ses_statusfilter", "CUT");
-      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-    },
-
-    'change #finished': function  (e, t) {
-      Session.set("ses_statusfilter", "Finished");
-      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-    },
-
-    'click #trash_orders': function  (e, t) {
-      Session.set("ses_statusfilter", "TRASH");
-      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-
-      $( ".btn-group label" ).removeClass( "active" );
-    },
-
-    'change #selectOperatorSpreader': function (e, t) {
-      var selectOperatorSpreader = $('#selectOperatorSpreader').find(":selected").text();
-      Session.set("ses_selectOperatorSpreader", selectOperatorSpreader);
-      $('.select_operator_spreader').hide();
-      $('#changeOperatorSpreader').show();
-    },
-
-    'change #selectOperatorCutter': function (e, t) {
-      var selectOperatorCutter = $('#selectOperatorCutter').find(":selected").text();
-      Session.set("ses_selectOperatorCutter", selectOperatorCutter);
-      $('.select_operator_cutter').hide();
-      $('#changeOperatorCutter').show();
-    },
-
-    'click #changeOperatorSpreader' : function (e, t) {
-      Session.set("ses_selectOperatorSpreader", "");
-      $('.select_operator_spreader').show();
-      $('#selectOperatorSpreader').val($('#selectOperatorSpreader option:first').val());
-      $('#changeOperatorSpreader').hide();
-    },
-
-    'click #changeOperatorCutter' : function (e, t) {
-      Session.set("ses_selectOperatorCutter", "");
-      $('.select_operator_cutter').show();
-      $('#selectOperatorCutter').val($('#selectOperatorCutter option:first').val());
-      $('#changeOperatorCutter').hide();
-    },
-
-    'click #login-buttons-logout': function (e, t) {
-      Session.set("ses_selectOperatorSpreader", "");
-      Session.set("ses_selectOperatorCutter", "");
-    }
-
-  });
-
-
+  
   Template.tmp_EditOrder.events({
     'click #deleteOrder': function (e, t) {
       var orderToDelete = Session.get("selectedDocId");
@@ -3311,7 +3390,6 @@ if (Meteor.isClient) {
               //setPos = 999;
             /*}*/
 
-            
             Meteor.call('method_insertOrders', no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, function(err, data) {
               console.log("method_insertOrders: " + data);
 
@@ -3366,6 +3444,7 @@ if (Meteor.isClient) {
       reader.readAsText(file_a);
       rm_ImportPlannedMarkers.hide();
     }
+  
   });
 
   Template.tmp_ImportConsumption.events({
@@ -3410,6 +3489,7 @@ if (Meteor.isClient) {
       reader.readAsText(file_a);
       rm_ImportConsumption.hide();
     }
+  
   });
 
   Template.tmp_ImportOrder.events({
@@ -3533,65 +3613,14 @@ if (Meteor.isClient) {
       reader.readAsText(file_a);
       rm_ImportOrder.hide();
     }
+  
   });
 
   Template.tmp_ExportOrder.helpers({
     order: function() {
       return Order.find(); // orders form subscribe
     }
-  });
 
-  Template.tmp_Operators.helpers({
-    operators: function() {
-      return Operators.find(); // operators form subscribe                                       
-    },
-    makeUniqueID: function  () {
-      return "update-each-" + this._id;_
-    },
-    options: function () {
-      return  [
-            {label: "Active", value: "Active"},
-            {label: "Not active", value: "Not active"}
-            ]
-    },
-    isAdmin: function() {
-      var userId = Meteor.userId();
-      if (userId) {
-        var User = Meteor.users.findOne({_id: userId});
-        if (User.username == "admin") {
-          return true;
-        } else {
-          return false;  
-        }
-      }
-    },
-    /*
-    options: function () {
-    return [
-      {
-        optgroup: "Fun Years",
-        options: [
-          {label: "Active", value: "Active"},
-          {label: "Not active", value: "Not active"}
-        ]
-      },
-      {
-        optgroup: "Boring Years",
-        options: [
-          {label: "2011", value: 2011},
-          {label: "2010", value: 2010},
-          {label: "2009", value: 2009}
-        ]
-      }
-    ];
-    }*/
-  });
-
-  Template.tmp_Operators.events({
-    'click #newoperators' : function (e, t) {
-      var rd_newoperators = ReactiveModal.initDialog(rm_NewOperators);
-      rd_newoperators.show();
-    }
   });
 
   Template.tmp_ExportOrder.events({
@@ -3641,6 +3670,98 @@ if (Meteor.isClient) {
           }
         */
       }
+  
+  });
+
+  Template.tmp_Operators.helpers({
+    operators: function() {
+      return Operators.find(); // operators form subscribe                                       
+    },
+    makeUniqueID: function  () {
+      return "update-each-" + this._id;_
+    },
+    options: function () {
+      return  [
+            {label: "Active", value: "Active"},
+            {label: "Not active", value: "Not active"}
+            ]
+    },
+    isAdmin: function() {
+      var userId = Meteor.userId();
+      if (userId) {
+        var User = Meteor.users.findOne({_id: userId});
+        if (User.username == "admin") {
+          return true;
+        } else {
+          return false;  
+        }
+      }
+    },
+    /*
+    options: function () {
+    return [
+      {
+        optgroup: "Fun Years",
+        options: [
+          {label: "Active", value: "Active"},
+          {label: "Not active", value: "Not active"}
+        ]
+      },
+      {
+        optgroup: "Boring Years",
+        options: [
+          {label: "2011", value: 2011},
+          {label: "2010", value: 2010},
+          {label: "2009", value: 2009}
+        ]
+      }
+    ];
+    }*/
+  
+  });
+
+  Template.tmp_Operators.events({
+    'click #newoperators' : function (e, t) {
+      var rd_newoperators = ReactiveModal.initDialog(rm_NewOperators);
+      rd_newoperators.show();
+    }
+  
+  });
+
+  // Base config
+  // Accounts base - Only Username and pass requered
+  Accounts.ui.config({
+    passwordSignupFields: 'USERNAME_ONLY'
+  });
+
+  // Formating Dates (moment)
+  var DateFormats = {
+       //short: "DD MMMM YYYY",
+       //long:  "DD-MM-YYYY HH:mm"
+       short: "DD.MM.YYYY",
+       long:  "DD.MM.YYYY HH:mm"
+  };
+  // Use UI.registerHelper..
+  UI.registerHelper("formatDate", function(datetime, format) {
+      if (moment) {
+        f = DateFormats[format];
+      return moment(datetime).format(f);
+      }
+      else {
+        return datetime;
+      }
+  });
+
+  // Formating Numbers in Templates
+  UI.registerHelper("formatNumber", function(number) {
+    var a = Number(number);
+    a = a.toFixed(3).toString().replace(".", ",")
+    return a;
+  });
+
+  UI.registerHelper("formaColorDesc", function(b) {
+  b = b.toString();
+    return b;
   });
 
   function JSON2CSV(objArray) {
@@ -4062,9 +4183,28 @@ if (Meteor.isServer) {
         var oreder_id = order[i]._id;
         var layers = order[i].Layers;
         var layersactual = order[i].LayersActual;
-      
+
+        var Scut = order[i].S_Cut;
+        var Mcut = order[i].M_Cut;
+        var Lcut = order[i].L_Cut;
+        var XLcut = order[i].XL_Cut;
+        var XXLcut = order[i].XXL_Cut;
+        var bomconsperpcs = order[i].BomConsPerPCS;
+        bomconsperpcs = Number(bomconsperpcs).toFixed(3);
+
+        var bomconsperpcswithall = order[i].BomConsPerPCSwithAll;
+        bomconsperpcswithall = Number(bomconsperpcswithall).toFixed(3);
+
+        var bomcons = Number(bomconsperpcs) * (Number(Scut) + Number(Mcut) + Number(Lcut) + Number(XLcut) + Number(XXLcut));
+        bomcons = Number(bomcons).toFixed(3);
+        //console.log("bomcons: "+bomcons);
+
+        var bomconsperpcswithall = Number(bomconsperpcswithall) * (Number(Scut) + Number(Mcut) + Number(Lcut) + Number(XLcut) + Number(XXLcut));
+        bomconsperpcswithall = Number(bomconsperpcswithall).toFixed(3);
+        //console.log("bomconsperpcswithall: "+bomconsperpcswithall);
+
         Order.update({ _id: order[i]._id},
-          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Cut: userEditCut, CutDate: cutDate, CutOperator: selectedOperatorCutter}},
+          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Cut: userEditCut, CutDate: cutDate, CutOperator: selectedOperatorCutter, BomCons: bomcons, BomConswithAll: bomconsperpcswithall}},
           //{$inc: {Position: -1}}, 
           {multi: true}
         ); 
@@ -4125,8 +4265,8 @@ if (Meteor.isServer) {
       }
       
       return "LengthSum fields are refreshed!";
-   },
-   method_insertOrders: function (no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern) {
+  },
+  method_insertOrders: function (no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern) {
     
     var order = Order.find({Status: 'Not assigned'}).fetch();
     var posarray = [];
@@ -4144,12 +4284,27 @@ if (Meteor.isServer) {
     //var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
     var uniquecountPosNA = largest + 1;
     //Session.set("ses_uniquecountPosNA", uniquecountPosNA);
-    console.log("uniquecountPosNA: " + uniquecountPosNA);
+    //console.log("uniquecountPosNA: " + uniquecountPosNA);
 
     setPos = uniquecountPosNA;                             
     status = 'Not assigned';
 
-    Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern}, 
+    var bom = Bom.find({Commessa: komesa}).fetch();
+    for (var i = 0; i < bom.length; i++) {
+      var bomconsperpcs = bom[i].BomConsPerPCS;
+      bomconsperpcs = Number(bomconsperpcs).toFixed(3);
+      //console.log("bomconsperpcs: "+ bomconsperpcs);
+
+      var bommatall = bom[i].MaterialAllowance;
+      bommatall = Number(bommatall).toFixed(0);
+      //console.log("bommatall: "+ bommatall);
+    }            
+
+    var bomconsperpcswithall = Number(bomconsperpcs) * ( 1 + (Number(bommatall)/100));
+    bomconsperpcswithall = Number(bomconsperpcswithall).toFixed(3);
+    //console.log("bomconsperpcswithall: "+ bomconsperpcswithall);
+    
+    Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern, BomConsPerPCS: bomconsperpcs, MaterialAllowance: bommatall, BomConsPerPCSwithAll: bomconsperpcswithall}, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
           console.log("method_insertOrders = False:  " + no);
@@ -4158,8 +4313,8 @@ if (Meteor.isServer) {
         }
       }
     )
-   },
-   method_updateConsumption: function (no, consumption) {
+  },
+  method_updateConsumption: function (no, consumption) {
 
     var order = Order.find({No: no}).fetch();
     for (var i = 0; i < order.length; i++) {
@@ -4180,11 +4335,11 @@ if (Meteor.isServer) {
         }
       }
     )
-   },
-   method_allmarkersintable: function (filter) {
+  },
+  method_allmarkersintable: function (filter) {
       return Order.find({Status: filter}).count();
-   },
-   method_allmarkersintableuniq: function (filter) {
+  },
+  method_allmarkersintableuniq: function (filter) {
       var order = Order.find({Status: filter}).fetch();
       var posarray = [];
         for (var i = 0; i < order.length; i++) {
@@ -4208,7 +4363,7 @@ if (Meteor.isServer) {
         var result = foo(posarray);
         var unique = result[0].length;
         return unique;
-    }
+  }
   
 });
  
@@ -4297,6 +4452,10 @@ if (Meteor.isServer) {
     })
   });
 
+  Meteor.publish("filter_diba", function(){
+    return Bom.find();
+  });
+
   Meteor.publish("filter_statusfilter", function(status){
     return Order.find({ 
       $and: [
@@ -4340,6 +4499,12 @@ if (Meteor.isServer) {
   });
 
   Operators.allow({   
+    update: function () {
+      return true;
+    }
+  });
+
+  Bom.allow({   
     update: function () {
       return true;
     }

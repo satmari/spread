@@ -355,10 +355,44 @@ Order.attachSchema(new SimpleSchema({
         label: "Label Printed",
         optional: true,
         defaultValue: false
+    },
+    'BomConsPerPCS': {
+        type: Number,
+        label: "BOM Cons. [mt/pcs]",
+        optional: true,
+        decimal: true,
+        //min: 0,
+    },
+    'MaterialAllowance': {
+        type: Number,
+        label: "Material Allowance (DiBa) [%]",
+        optional: true,
+        decimal: false,
+        //min: 0
+    },
+    'BomConsPerPCSwithAll': {
+        type: Number,
+        label: "BOM Cons. Per PCS with All. [mt/pcs]",
+        optional: true,
+        decimal: true,
+        //min: 0,
+    },
+    'BomCons': {
+        type: Number,
+        label: "BOM Cons. [mt]",
+        optional: true,
+        decimal: true,
+        //min: 0
+    },
+    'BomConswithAll': {
+        type: Number,
+        label: "BOM Cons. with All [mt]",
+        optional: true,
+        decimal: true,
+        //min: 0
     }
+    
 }));
-
-//Order.attachSchema(Schemas.OneOrder);
 
 //If this is not possible or you don't care to validate the object's properties, use the 
 //blackbox: true
@@ -415,6 +449,11 @@ Sector
 Pattern
 Consumption
 LabelPrinted
+BomConsPerPCS
+MaterialAllowance
+BomConsPerPCSwithAll
+BomCons
+BomConswithAll
 */
 
 Operators = new Meteor.Collection("operators");
@@ -491,6 +530,43 @@ Table_capacity.attachSchema(new SimpleSchema({
     'CreationDate': {
         type: Date,
         label: "CreationDate",
+        autoValue: function() {
+            if (this.isInsert) {
+                return new Date;
+            } else if (this.isUpsert) {
+                return {$setOnInsert: new Date};
+            } else {
+                this.unset();
+            }
+        }
+    }
+    
+}));
+
+Bom = new Meteor.Collection("bom");
+Bom.attachSchema(new SimpleSchema({
+    'Commessa': {
+        type: String,
+        label: "Commessa",
+        optional: false,
+    },
+    'BomConsPerPCS': {
+        type: Number,
+        label: "BOM Cons. [mt/pcs]",
+        optional: false,
+        decimal: true,
+        min: 0,
+    },
+    'MaterialAllowance': {
+        type: Number,
+        label: "Material Allowance (DiBa) [%]",
+        optional: false,
+        decimal: true,
+        min: 0
+    },
+    'CreationDate': {
+        type: Date,
+        label: "Creation/Update Date",
         autoValue: function() {
             if (this.isInsert) {
                 return new Date;

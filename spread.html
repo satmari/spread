@@ -262,6 +262,28 @@
     </ul>
   {{/if}}
 
+  {{#if isDiba}}
+    <ul class="nav navbar-nav">
+      <div class="navbar-form">
+      <div class="form-group" style="border: 1px solid #000; border-radius: 5px; margin-left: 10px;">
+        <button id="import_from_diba" class="btn btn-default">Import from DiBa</button>
+        <button id="newcommessa" class="btn btn-default">Add New Commessa</button>
+        <!--
+        <span style="color: white; margin-left: 10px; margin-right: 10px;">Filter Order Range (Spread Date): </span>
+        <input type="date" id="filterOrderDateBefore" class="form-control" /> <span style="color: white"> - </span>
+        <input type="date" id="filterOrderDateAfter" class="form-control" />
+        <button id="btnfilterOrderDateStart" class="btn btn-default">
+          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+        </button>
+        <button id="btnRefresh" class="btn btn-default">
+          <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+        </button>
+        -->
+      </div>
+      </div>  
+    </ul>
+  {{/if}}
+
 
   {{#if isAdminOrGuest}}
       <ul class="nav navbar-nav navbar-right">
@@ -314,7 +336,7 @@
 
 <template name="reactiveTebleList">
   <div>
-   {{#if isAdmin}}
+  {{#if isAdmin}}
     <h3>Order table - <span style="color: red; font-size: 20px">{{filter}}</span><br />
     <span style="color: grey; font-size: 16px">Orders (lines): {{markersintable}},</span>
     <span style="color: grey; font-size: 16px">Markers: {{markersintableuniq}}</span>
@@ -357,6 +379,11 @@
   {{#if isUserCons}}
     <h3>Order table</h3>
     {{> reactiveTable collection=orders settings=settingsUserCons}}
+  {{/if}}
+
+  {{#if isUserDiba}}
+    <h3>Commessa table</h3>
+    {{> reactiveTable collection=bom settings=settingsUserDiba}}
   {{/if}}
 
   </div>
@@ -974,4 +1001,24 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
 
 <template name="tmp_NewOperators">
   {{> quickForm collection="Operators" id="insertOperatorsForm" type="insert" buttonContent="Add Operator" omitFields="Created"}}
+</template>
+
+<template name="tmp_NewCommessa">
+  {{> quickForm collection="Bom" id="insertBomForm" type="insert" buttonContent="Add Commessa" omitFields="CreationDate"}}
+</template>
+
+<template name="tmp_EditCommessa">
+ <div class="container">
+      <div class="row" style="width:550px">
+          <div>
+          {{#autoForm collection="Bom" id="editBomForm" type="update" autosave=true doc=editingDoc }}
+              <fieldset>
+               {{> afQuickField name='Commessa'}} 
+               {{> afQuickField name='BomConsPerPCS'}}
+               {{> afQuickField name='MaterialAllowance'}}
+              </fieldset>
+          {{/autoForm}}
+          </div>
+      </div>
+ </div>
 </template>
