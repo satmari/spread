@@ -4191,7 +4191,6 @@ if (Meteor.isServer) {
         var XXLcut = order[i].XXL_Cut;
         var bomconsperpcs = order[i].BomConsPerPCS;
         bomconsperpcs = Number(bomconsperpcs).toFixed(3);
-
         var bomconsperpcswithall = order[i].BomConsPerPCSwithAll;
         bomconsperpcswithall = Number(bomconsperpcswithall).toFixed(3);
 
@@ -4203,6 +4202,13 @@ if (Meteor.isServer) {
         bomconsperpcswithall = Number(bomconsperpcswithall).toFixed(3);
         //console.log("bomconsperpcswithall: "+bomconsperpcswithall);
 
+        if (isNaN(bomcons)){
+          bomcons = 0;
+        }
+        if (isNaN(bomconsperpcswithall)){
+          bomconsperpcswithall = 0;
+        }
+    
         Order.update({ _id: order[i]._id},
           {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Cut: userEditCut, CutDate: cutDate, CutOperator: selectedOperatorCutter, BomCons: bomcons, BomConswithAll: bomconsperpcswithall}},
           //{$inc: {Position: -1}}, 
@@ -4303,7 +4309,17 @@ if (Meteor.isServer) {
     var bomconsperpcswithall = Number(bomconsperpcs) * ( 1 + (Number(bommatall)/100));
     bomconsperpcswithall = Number(bomconsperpcswithall).toFixed(3);
     //console.log("bomconsperpcswithall: "+ bomconsperpcswithall);
-    
+
+    if (isNaN(bomconsperpcs)){
+      bomconsperpcs = 0;
+    }
+    if (isNaN(bommatall)){
+      bommatall = 0;
+    }
+    if (isNaN(bomconsperpcswithall)){
+      bomconsperpcswithall = 0;
+    }
+
     Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern, BomConsPerPCS: bomconsperpcs, MaterialAllowance: bommatall, BomConsPerPCSwithAll: bomconsperpcswithall}, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
