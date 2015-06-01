@@ -266,7 +266,7 @@
     <ul class="nav navbar-nav">
       <div class="navbar-form">
       <div class="form-group" style="border: 1px solid #000; border-radius: 5px; margin-left: 10px;">
-        <button id="import_from_diba" class="btn btn-default">Import from DiBa</button>
+        <button id="update_order_and_bom" class="btn btn-default">Import/Update form CSV file</button>
         <button id="newcommessa" class="btn btn-default">Add New Commessa</button>
         <!--
         <span style="color: white; margin-left: 10px; margin-right: 10px;">Filter Order Range (Spread Date): </span>
@@ -667,6 +667,27 @@
   </div>
 </template>
 
+<template name="tmp_UpdateOrderandBOM">
+  <div>
+    <p>Import BOM from CSV file (ONLY FIRST TIME):</p> 
+    <input type="file" id="filesOrder" name="files[]" enctype="multipart/form-data" />
+    <br />
+    <!--<button id="insert-csv-from-code">Import from CSV file</button>-->
+    <br />
+    <hr />
+  </div>
+
+  <div>
+    <p>Update Oredrs form CSV file:</p> 
+    <input type="file" id="filesBOM" name="files[]" enctype="multipart/form-data" />
+    <br />
+    <!--<button id="insert-csv-from-code">Import from CSV file</button>-->
+    <br />
+    <hr />
+  </div>
+  
+</template>
+
 <template name="tmp_ExportOrder">
     <div>
       <p>Download CSV file (Order list): </p>
@@ -678,8 +699,8 @@
     <div>
       <p>Copy CSV code (Order list): </p>
       <textarea id="textarea_json" class="text" style="width:100%; height:200px;">
-_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;PcsBundle;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;XL;XLonLayer;XL_Cut;XXL;XXLonLayer;XXL_Cut;Priority;Load;Spread;SpreadDate;SpreadOperator;Cut;CutDate;CutOperator;Comment;OrderLink;SkalaMarker;Sector;Pattern;Consumption;LabelPrinted
-{{#each order}}{{_id}};{{No}};{{Position}};{{Status}};{{formatDate Date "short"}};{{formatDate Created "long"}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{formaColorDesc ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{formatNumber Length}};{{Extra}};{{formatNumber LengthSum}};{{PcsBundle}};{{Width}};{{S}};{{SonLayer}};{{S_Cut}};{{M}};{{MonLayer}};{{M_Cut}};{{L}};{{LonLayer}};{{L_Cut}};{{XL}};{{XLonLayer}};{{XL_Cut}};{{XXL}};{{XXLonLayer}};{{XXL_Cut}};{{Priority}};{{Load}};{{Spread}};{{formatDate SpreadDate "short"}};{{SpreadOperator}};{{Cut}};{{formatDate CutDate "short"}};{{CutOperator}};{{Comment}};{{OrderLink}};{{SkalaMarker}};{{Sector}};{{Pattern}};{{Consumption}};{{LabelPrinted}}
+_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;PcsBundle;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;XL;XLonLayer;XL_Cut;XXL;XXLonLayer;XXL_Cut;Priority;Load;Spread;SpreadDate;SpreadOperator;Cut;CutDate;CutOperator;Comment;OrderLink;SkalaMarker;Sector;Pattern;Consumption;LabelPrinted;BomConsPerPCS;MaterialAllowance;BomConsPerPCSwithAll;BomCons;BomConswithAll
+{{#each order}}{{_id}};{{No}};{{Position}};{{Status}};{{formatDate Date "short"}};{{formatDate Created "long"}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{formaColorDesc ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{formatNumber Length}};{{Extra}};{{formatNumber LengthSum}};{{PcsBundle}};{{Width}};{{S}};{{SonLayer}};{{S_Cut}};{{M}};{{MonLayer}};{{M_Cut}};{{L}};{{LonLayer}};{{L_Cut}};{{XL}};{{XLonLayer}};{{XL_Cut}};{{XXL}};{{XXLonLayer}};{{XXL_Cut}};{{Priority}};{{Load}};{{Spread}};{{formatDate SpreadDate "short"}};{{SpreadOperator}};{{Cut}};{{formatDate CutDate "short"}};{{CutOperator}};{{Comment}};{{OrderLink}};{{SkalaMarker}};{{Sector}};{{Pattern}};{{Consumption}};{{LabelPrinted}};{{BomConsPerPCS}};{{MaterialAllowance}};{{BomConsPerPCSwithAll}};{{BomCons}};{{BomConswithAll}}
 {{/each}}</textarea>
       <!--<textarea id="textarea_json" class="text" style="width:100%; height:200px;">
 _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink

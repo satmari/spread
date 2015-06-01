@@ -503,6 +503,15 @@ if (Meteor.isClient) {
       rd_importOrder.show();
     },
 
+    'click #update_order_and_bom' : function () {
+      //console.log('import orders - click')
+
+      // Define rd_addneworder
+      var rd_UpdateOrderandBOM = ReactiveModal.initDialog(rm_UpdateOrderandBOM);
+      // Show rd_addneworder
+      rd_UpdateOrderandBOM.show();
+    },
+
     'click #refresh_sum' : function () {
       //console.log('refresh_sum - click')
 
@@ -2214,6 +2223,28 @@ if (Meteor.isClient) {
       }*/
   };
 
+  // Import Order on click (in nav button) - Reactive Modal
+  var rm_UpdateOrderandBOM = {
+      template: Template.tmp_UpdateOrderandBOM, 
+      title: "Import BOM and update Orders",
+      //modalDialogClass: "modal-dialog", //optional
+      //modalBodyClass: "modal-body", //optional
+      //modalFooterClass: "modal-footer",//optional
+      closable: true,
+      removeOnHide: true,
+      /*buttons: {
+        //"cancel": {
+        //  class: 'btn-danger',
+        //  label: 'Cancel'
+          //},
+          "ok": {
+            closeModalOnClick: true, // if this is false, dialog doesnt close automatically on click
+            class: 'btn-info',
+            label: 'Back'
+          }
+      }*/
+  };
+
   // Import Order from Planned Markers file (in nav button) - Reactive Modal Dialog
   var rm_ImportPlannedMarkers = {
       template: Template.tmp_ImportPlannedMarkers, 
@@ -3603,10 +3634,16 @@ if (Meteor.isClient) {
             var label = all[i]['LabelPrinted'];
             var cons = all[i]['Consumption'];
 
+            var BomConsPerPCS = all[i]['BomConsPerPCS'];
+            var MaterialAllowance = all[i]['MaterialAllowance'];
+            var BomConsPerPCSwithAll = all[i]['BomConsPerPCSwithAll'];
+            var BomCons = all[i]['BomCons'];
+            var BomConswithAll = all[i]['BomConswithAll'];
+
             //One by One
             //Order.insert({No: no, Date: orderDate, Created: orderCreated, Komesa: all[i]['Komesa'], Marker: all[i]['Marker'], Style: all[i]['Style'], Fabric: all[i]['Fabric'], ColorCode: all[i]['ColorCode'], ColorDesc: all[i]['ColorDesc'], Bagno: all[i]['Bagno'], Layers: layers, Length: length, Extra: extra, LengthSum: lengthsum, Width: width, S: s, M: m, L: l ,Status: all[i]['Status'], Priority: priority});    
             
-            Order.insert({No: no, Position: position, Status: status, Date: orderDate2, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: layersactual, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, S_Cut: s_cut, M: m, MonLayer: monlayer, M_Cut: m_cut, L: l, LonLayer: lonlayer, L_Cut: l_cut, XL: xl, XLonLayer: xlonlayer, XL_Cut: xl_cut, XXL: xxl, XXLonLayer: xxlonlayer, XXL_Cut: xxl_cut, Load: load, Spread: spread, SpreadDate: spreaddate2, SpreadOperator: spreadoperator ,Cut: cut, CutDate: cutdate2, CutOperator: cutoperator,Comment: comment, OrderLink: orderlink, SkalaMarker: skala, Sector: sektor, Pattern: pattern, LabelPrinted: label, Consumption: cons});
+            //Order.insert({No:no, Position:position, Status:status, Date:orderDate2, Komesa:komesa, Marker:marker, Style:style, Fabric:fabric, ColorCode:colorcode, ColorDesc:colordesc, Bagno:bagno, Layers:layers, LayersActual:layersactual, Length:length, Extra:extra, LengthSum:lengthsum, PcsBundle:pcsbundle, Width:width, S:s, SonLayer:sonlayer, S_Cut:s_cut, M:m, MonLayer:monlayer, M_Cut:m_cut, L:l, LonLayer:lonlayer, L_Cut:l_cut, XL:xl, XLonLayer:xlonlayer, XL_Cut:xl_cut, XXL:xxl, XXLonLayer:xxlonlayer, XXL_Cut:xxl_cut, Load:load, Spread:spread, SpreadDate:spreaddate2, SpreadOperator:spreadoperator, Cut:cut, CutDate:cutdate2, CutOperator:cutoperator,Comment:comment, OrderLink:orderlink, SkalaMarker:skala, Sector:sektor, Pattern:pattern, LabelPrinted:label, Consumption:cons, BomConsPerPCS:bomconsperpcs, MaterialAllowance:materialallowance, BomConsPerPCSwithAll:bomconsperpcswithall, BomCons:bomcons, BomConswithAll:bomconswithall });
             // Can not insert order created and _id , this values is automaticali created
           } 
       }
@@ -3616,11 +3653,87 @@ if (Meteor.isClient) {
   
   });
 
+  Template.tmp_UpdateOrderandBOM.events({
+    'change #filesOrder': function (e) {
+      //alert("Ne radi jos")
+      //var files = e.target.files || e.dataTransfer.files;
+
+      var files_a = e.target.files;
+      //console.log("files_a:" + files_a);
+      var file_a = files_a[0];           
+      //console.log("file_a:" + file_a);
+
+      var reader = new FileReader();
+
+      reader.onload = function (e) { 
+        //alert("reader.onloadend");
+        var text = e.target.result;
+        //alert(text);
+        //var all = $.csv.toObjects(text);
+        var all = $.csv.toObjects(text, {
+            delimiter:"'",
+            separator:';',
+        });
+
+          for (var i = 0; i < all.length; i++) {
+            //console.log(all[i]);
+
+            
+            var no  = Number(all[i]['No']);
+            var bomconsperpcs = all[i]['BomConsPerPCS'];
+            var materialallowance = all[i]['MaterialAllowance'];
+            var bomconsperpcswithall = all[i]['BomConsPerPCSwithAll'];
+            var bomcons = all[i]['BomCons'];
+            var bomconswithall = all[i]['BomConswithAll'];
+
+            Meteor.call('method_updateOrders', no, bomconsperpcs, materialallowance, bomconsperpcswithall, bomcons, bomconswithall, function(err, data) {
+              console.log("method_updateOrders: Done");
+            });
+            
+          } 
+      }
+      reader.readAsText(file_a);
+      rm_UpdateOrderandBOM.hide();
+    },
+    'change #filesBOM': function (e) {
+
+      var files_a = e.target.files;
+      var file_a = files_a[0];           
+      var reader = new FileReader();
+
+      reader.onload = function (e) { 
+        //alert("reader.onloadend");
+        var text = e.target.result;
+        //alert(text);
+        //var all = $.csv.toObjects(text);
+        var all = $.csv.toObjects(text, {
+            delimiter:"'",
+            separator:';',
+        });
+
+          for (var i = 0; i < all.length; i++) {
+            //console.log(all[i]);
+
+            var commessa = all[i]['Commessa'];
+            var bomconsperpcs  = Number(all[i]['BomConsPerPCS']);
+            var materialallowance = Number(all[i]['MaterialAllowance']);
+
+            Meteor.call('method_insertBOM', commessa, bomconsperpcs, materialallowance, function(err, data) {
+              console.log("method_insertBOM: Done");
+            });
+          } 
+      }
+      reader.readAsText(file_a);
+      rm_UpdateOrderandBOM.hide();
+    }
+
+
+  });
+
   Template.tmp_ExportOrder.helpers({
     order: function() {
       return Order.find(); // orders form subscribe
     }
-
   });
 
   Template.tmp_ExportOrder.events({
@@ -4326,6 +4439,45 @@ if (Meteor.isServer) {
           console.log("method_insertOrders = False:  " + no);
         } else {
           console.log("method_insertOrders = True:  " + no);
+        }
+      }
+    )
+  },
+  method_updateOrders: function (no, bomconsperpcs, materialallowance, bomconsperpcswithall, bomcons, bomconswithall) {
+    
+    var order = Order.find({No: no}).fetch();
+    for (var i = 0; i < order.length; i++) {
+      var id = order[i]._id;
+    }
+
+    Order.update({_id: id},
+      {
+        $set: {BomConsPerPCS:bomconsperpcs , MaterialAllowance:materialallowance, BomConsPerPCSwithAll:bomconsperpcswithall, BomCons:bomcons, BomConswithAll:bomconswithall },
+      }, 
+      function(err, numberAffected, rawResponse) {
+        if (numberAffected == false) {
+
+          console.log("method_updateOrders = False: " + no );
+        } else {
+
+          console.log("method_updateOrders = True: " + no );
+        }
+      }
+    )
+  },
+  method_insertBOM: function (commessa, bomconsperpcs, materialallowance) {
+    
+    var order = Order.find({No: no}).fetch();
+    for (var i = 0; i < order.length; i++) {
+      var id = order[i]._id;
+    }
+
+    BOM.insert({Commessa: commessa, BomConsPerPCS: bomconsperpcs , MaterialAllowance: materialallowance}, 
+      function(err, numberAffected, rawResponse) {
+        if (numberAffected == false) {
+          console.log("method_insertBOM = False:  " + no);
+        } else {
+          console.log("method_insertBOM = True:  " + no);
         }
       }
     )
