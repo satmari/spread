@@ -3671,8 +3671,8 @@ if (Meteor.isClient) {
         //alert(text);
         //var all = $.csv.toObjects(text);
         var all = $.csv.toObjects(text, {
-            delimiter:"'",
-            separator:';',
+            delimiter:";",
+            separator:',',
         });
 
           for (var i = 0; i < all.length; i++) {
@@ -3685,6 +3685,8 @@ if (Meteor.isClient) {
             var bomconsperpcswithall = all[i]['BomConsPerPCSwithAll'];
             var bomcons = all[i]['BomCons'];
             var bomconswithall = all[i]['BomConswithAll'];
+
+            //console.log("No: "+ no + ",bomconsperpcs: "+ bomconsperpcs + ",materialallowance: "+ materialallowance + " , bomconsperpcswithall: " + bomconsperpcswithall + " , bomcons:" + bomcons + ", bomconswithall: " + bomconswithall);
 
             Meteor.call('method_updateOrders', no, bomconsperpcs, materialallowance, bomconsperpcswithall, bomcons, bomconswithall, function(err, data) {
               console.log("method_updateOrders: Done");
@@ -3707,8 +3709,8 @@ if (Meteor.isClient) {
         //alert(text);
         //var all = $.csv.toObjects(text);
         var all = $.csv.toObjects(text, {
-            delimiter:"'",
-            separator:';',
+            delimiter:";",
+            separator:',',
         });
 
           for (var i = 0; i < all.length; i++) {
@@ -3717,6 +3719,8 @@ if (Meteor.isClient) {
             var commessa = all[i]['Commessa'];
             var bomconsperpcs  = Number(all[i]['BomConsPerPCS']);
             var materialallowance = Number(all[i]['MaterialAllowance']);
+
+            console.log("commessa: "+ commessa+ ", bomconsperpcs: "+ bomconsperpcs+ ", materialallowance: "+ materialallowance);
 
             Meteor.call('method_insertBOM', commessa, bomconsperpcs, materialallowance, function(err, data) {
               console.log("method_insertBOM: Done");
@@ -4450,6 +4454,8 @@ if (Meteor.isServer) {
       var id = order[i]._id;
     }
 
+    //console.log("ID: " + id + ", No: "+ no + ",bomconsperpcs: "+ bomconsperpcs + ",materialallowance: "+ materialallowance + " , bomconsperpcswithall: " + bomconsperpcswithall + " , bomcons:" + bomcons + ", bomconswithall: " + bomconswithall);
+
     Order.update({_id: id},
       {
         $set: {BomConsPerPCS:bomconsperpcs , MaterialAllowance:materialallowance, BomConsPerPCSwithAll:bomconsperpcswithall, BomCons:bomcons, BomConswithAll:bomconswithall },
@@ -4467,17 +4473,19 @@ if (Meteor.isServer) {
   },
   method_insertBOM: function (commessa, bomconsperpcs, materialallowance) {
     
-    var order = Order.find({No: no}).fetch();
+    /*var order = Order.find({No: no}).fetch();
     for (var i = 0; i < order.length; i++) {
       var id = order[i]._id;
-    }
+    }*/
 
-    BOM.insert({Commessa: commessa, BomConsPerPCS: bomconsperpcs , MaterialAllowance: materialallowance}, 
+    console.log("commessa: "+ commessa+ ", bomconsperpcs: "+ bomconsperpcs+ ", materialallowance: "+ materialallowance);
+
+    Bom.insert({Commessa: commessa, BomConsPerPCS: bomconsperpcs , MaterialAllowance: materialallowance}, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
-          console.log("method_insertBOM = False:  " + no);
+          console.log("method_insertBOM = False:  " + commessa);
         } else {
-          console.log("method_insertBOM = True:  " + no);
+          console.log("method_insertBOM = True:  " + commessa);
         }
       }
     )
