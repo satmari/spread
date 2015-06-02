@@ -3720,7 +3720,7 @@ if (Meteor.isClient) {
             var bomconsperpcs  = Number(all[i]['BomConsPerPCS']);
             var materialallowance = Number(all[i]['MaterialAllowance']);
 
-            console.log("commessa: "+ commessa+ ", bomconsperpcs: "+ bomconsperpcs+ ", materialallowance: "+ materialallowance);
+            //console.log("commessa: "+ commessa+ ", bomconsperpcs: "+ bomconsperpcs+ ", materialallowance: "+ materialallowance);
 
             Meteor.call('method_insertBOM', commessa, bomconsperpcs, materialallowance, function(err, data) {
               console.log("method_insertBOM: Done");
@@ -4478,7 +4478,7 @@ if (Meteor.isServer) {
       var id = order[i]._id;
     }*/
 
-    console.log("commessa: "+ commessa+ ", bomconsperpcs: "+ bomconsperpcs+ ", materialallowance: "+ materialallowance);
+    //console.log("commessa: "+ commessa+ ", bomconsperpcs: "+ bomconsperpcs+ ", materialallowance: "+ materialallowance);
 
     Bom.insert({Commessa: commessa, BomConsPerPCS: bomconsperpcs , MaterialAllowance: materialallowance}, 
       function(err, numberAffected, rawResponse) {
@@ -4765,6 +4765,7 @@ var ms11 = "";  // 111111
 var ms12 = "";  // 121212
 var label = ""; // llllll
 var cons = "";  // cccccc
+var diba = "";  // dddddd
 
 // kill -9 `ps ax | grep node | grep meteor | awk '{print $1}'`
 
