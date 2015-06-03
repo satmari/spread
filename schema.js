@@ -548,6 +548,7 @@ Bom.attachSchema(new SimpleSchema({
     'Commessa': {
         type: String,
         label: "Commessa",
+        unique: true,
         optional: false,
     },
     'BomConsPerPCS': {
