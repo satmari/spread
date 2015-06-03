@@ -3452,8 +3452,6 @@ if (Meteor.isClient) {
               //setPos = 999;
             /*}*/
 
-            var error;
-
             Meteor.call('method_insertOrders', no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, function(err, data) {
               console.log("method_insertOrders: " + data);
               //console.log("err: " + err);
