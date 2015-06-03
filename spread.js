@@ -3455,7 +3455,7 @@ if (Meteor.isClient) {
             var error;
 
             Meteor.call('method_insertOrders', no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, function(err, data) {
-              //console.log("data: " + data);
+              console.log("method_insertOrders: " + data);
               //console.log("err: " + err);
               
             });
@@ -3509,7 +3509,6 @@ if (Meteor.isClient) {
       reader.readAsText(file_a);
       rm_ImportPlannedMarkers.hide();
     }
-  
   });
 
   Template.tmp_ImportConsumption.events({
@@ -3554,7 +3553,6 @@ if (Meteor.isClient) {
       reader.readAsText(file_a);
       rm_ImportConsumption.hide();
     }
-  
   });
 
   Template.tmp_ImportOrder.events({
@@ -3684,7 +3682,6 @@ if (Meteor.isClient) {
       reader.readAsText(file_a);
       rm_ImportOrder.hide();
     }
-  
   });
 
   Template.tmp_UpdateOrderandBOM.events({
@@ -3754,7 +3751,7 @@ if (Meteor.isClient) {
             var bomconsperpcs  = Number(all[i]['BomConsPerPCS']);
             var materialallowance = Number(all[i]['MaterialAllowance']);
 
-            console.log("commessa: "+ commessa+ ", bomconsperpcs: "+ bomconsperpcs+ ", materialallowance: "+ materialallowance);
+            //console.log("commessa: "+ commessa+ ", bomconsperpcs: "+ bomconsperpcs+ ", materialallowance: "+ materialallowance);
 
             Meteor.call('method_insertBOM', commessa, bomconsperpcs, materialallowance, function(err, data) {
               console.log("method_insertBOM: Done");
@@ -3819,7 +3816,6 @@ if (Meteor.isClient) {
           }
         */
       }
-  
   });
 
   Template.tmp_Operators.helpers({
@@ -3866,7 +3862,6 @@ if (Meteor.isClient) {
       }
     ];
     }*/
-  
   });
 
   Template.tmp_Operators.events({
@@ -3874,7 +3869,6 @@ if (Meteor.isClient) {
       var rd_newoperators = ReactiveModal.initDialog(rm_NewOperators);
       rd_newoperators.show();
     }
-  
   });
 
   // Base config
@@ -4573,6 +4567,7 @@ if (Meteor.isServer) {
       var order = Order.find({_id: orderToEdit}).fetch();
         for (var i = 0; i < order.length; i++) {
           var actual_id = order[i]._id;
+          var actual_no = order[i].No;
           var actualCommessa = order[i].Komesa;
           var actualScut = order[i].S_Cut;
           var actualScut = (actualScut) ? actualScut : 0;
@@ -4611,9 +4606,9 @@ if (Meteor.isServer) {
         }, 
           function(err, numberAffected, rawResponse) {
             if (numberAffected == false) {
-              console.log("method_refreshConsOrder (first) = False: " + actual_id );
+              console.log("method_refreshConsOrder (first) = False: " + actual_id + " , No: " + actual_no);
             } else {
-              console.log("method_refreshConsOrder (first) = True: " + actual_id );
+              console.log("method_refreshConsOrder (first) = True: " + actual_id + " , No: " + actual_no);
             }
           }
       )
@@ -4658,7 +4653,7 @@ if (Meteor.isServer) {
           var actualBomCons = order[i].BomCons;
           var actualBomConswithAll = order[i].BomConswithAll;
 
-          console.log("actual_id: " + actual_id + " ,actualCommessa: " + actualCommessa + " , actualScut: " + actualScut + " , actualMcut: " + actualMcut + " , actualLcut: " + actualLcut + " , actualXLcut: " + actualXLcut + " , actualXXLcut: " + actualXXLcut);
+          //console.log("actual_id: " + actual_id + " ,actualCommessa: " + actualCommessa + " , actualScut: " + actualScut + " , actualMcut: " + actualMcut + " , actualLcut: " + actualLcut + " , actualXLcut: " + actualXLcut + " , actualXXLcut: " + actualXXLcut);
 
           if ((bomBomConsPerPCS != actualBomConsPerPCS) || (bomMaterialAllowance != actualBomMaterialAllowance) || (bomconsperpcswithall != actualBomConsPerPCSwithAll) || (bomcons != actualBomCons) || (bomconswithall != actualBomConswithAll)) {
             Order.update({_id: actual_id},
@@ -4718,18 +4713,6 @@ if (Meteor.isServer) {
 
   Meteor.publish("filter_cutter", function(){
     return Order.find({ Status: "CUT"});
-    /*return Order.find({
-    $and: [
-       { $or: [
-          { Status: "CUT" }
-        ]},
-
-       /*{ $or: [ 
-          { Cut : "" },
-          { Cut : { $exists: false }}
-          ]},
-      ]
-    })*/
   });
 
   Meteor.publish("filter_label", function(Daysbefore, Daysafter){
@@ -4869,8 +4852,7 @@ if (Meteor.isServer) {
   
         Table_capacity.insert({Date: Dates, Time: Time, Markers: unique, Orders: posarray.length}, 
           function(err, numberAffected, rawResponse) {
-            console.log("INSERTED: Dates: " + Dates + ",Time: " + Time);
-            console.log("INSERTED: Markers: " + unique);
+            console.log("INSERTED: Dates: " + Dates + " ,Time: " + Time + " , number of markers: " + unique);
           }
         )
       }
@@ -4901,6 +4883,7 @@ var ms11 = "";  // 111111
 var ms12 = "";  // 121212
 var label = ""; // llllll
 var cons = "";  // cccccc
+var diba = "";  // dddddd
 
 // kill -9 `ps ax | grep node | grep meteor | awk '{print $1}'`
 
