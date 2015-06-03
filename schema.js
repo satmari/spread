@@ -499,6 +499,7 @@ Operators.attachSchema(new SimpleSchema({
             }
         }
     }
+
 }));
 
 Table_capacity = new Meteor.Collection("table_capacity");
@@ -548,6 +549,7 @@ Bom.attachSchema(new SimpleSchema({
     'Commessa': {
         type: String,
         label: "Commessa",
+        unique: true,
         optional: false,
     },
     'BomConsPerPCS': {

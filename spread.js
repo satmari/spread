@@ -1834,8 +1834,28 @@ if (Meteor.isClient) {
     editingDoc: function editingDocHelper() {
         return Bom.findOne({_id: Session.get("selectedDocId")});   
     }
-
   })
+
+  Template.tmp_EditCommessa.events({
+    'click #refreshConsCommessa': function(e){
+      
+      var commessaToEdit = Session.get("selectedDocId");
+      console.log("commessaToEdit: " + commessaToEdit);
+
+      var a = Bom.find({_id: commessaToEdit}).fetch();
+        for (var i = 0; i < a.length; i++) {
+          var commessa = a[i].Commessa;       
+        }
+
+
+      Meteor.call('method_refreshConsCommessa', commessa, function(err, data) {
+        //console.log("method_refreshConsCommessa: " + data);
+      });
+
+      rm_EditCommessa.hide()
+    }
+  })
+  
 
   // Reactive table helper (for update/edit orders)
   Template.tmp_EditOrder.helpers({
@@ -3261,7 +3281,7 @@ if (Meteor.isClient) {
         }
 
       var selectedStatus = $('.in #selectStatus').find(":selected").text();
-      console.log("selectedStatus: " + selectedStatus); 
+      //console.log("selectedStatus: " + selectedStatus); 
 
       if (selectedStatus == "SP 1"){
         var uniquecountPosSp1 = Session.get("ses_uniquecountPosSp1");
@@ -3305,6 +3325,17 @@ if (Meteor.isClient) {
       Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
         //console.log("method_smanjizajedan: " + data);
       });  
+      
+      rm_EditOrder.hide();
+    },
+
+    'click #refreshConsOrder': function(e){
+      //console.log("refreshCons");
+      var orderToEdit = Session.get("selectedDocId");
+
+      Meteor.call('method_refreshConsOrder', orderToEdit, function(err, data) {
+        console.log("method_refreshConsOrder: " + data);
+      });
       
       rm_EditOrder.hide();
     },
@@ -3421,9 +3452,12 @@ if (Meteor.isClient) {
               //setPos = 999;
             /*}*/
 
-            Meteor.call('method_insertOrders', no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, function(err, data) {
-              console.log("method_insertOrders: " + data);
+            var error;
 
+            Meteor.call('method_insertOrders', no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, function(err, data) {
+              //console.log("data: " + data);
+              //console.log("err: " + err);
+              
             });
 
            //One by One
@@ -3470,7 +3504,7 @@ if (Meteor.isClient) {
             }
             */
           }
-
+          
       }
       reader.readAsText(file_a);
       rm_ImportPlannedMarkers.hide();
@@ -3730,8 +3764,6 @@ if (Meteor.isClient) {
       reader.readAsText(file_a);
       rm_UpdateOrderandBOM.hide();
     }
-
-
   });
 
   Template.tmp_ExportOrder.helpers({
@@ -4315,19 +4347,19 @@ if (Meteor.isServer) {
         bomcons = Number(bomcons).toFixed(3);
         //console.log("bomcons: "+bomcons);
 
-        var bomconsperpcswithall = Number(bomconsperpcswithall) * (Number(Scut) + Number(Mcut) + Number(Lcut) + Number(XLcut) + Number(XXLcut));
-        bomconsperpcswithall = Number(bomconsperpcswithall).toFixed(3);
-        //console.log("bomconsperpcswithall: "+bomconsperpcswithall);
+        var bomconswithall = Number(bomconsperpcswithall) * (Number(Scut) + Number(Mcut) + Number(Lcut) + Number(XLcut) + Number(XXLcut));
+        bomconswithall = Number(bomconswithall).toFixed(3);
+        //console.log("bomconswithall: "+bomconswithall);
 
         if (isNaN(bomcons)){
           bomcons = 0;
         }
-        if (isNaN(bomconsperpcswithall)){
-          bomconsperpcswithall = 0;
+        if (isNaN(bomconswithall)){
+          bomconswithall = 0;
         }
     
         Order.update({ _id: order[i]._id},
-          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Cut: userEditCut, CutDate: cutDate, CutOperator: selectedOperatorCutter, BomCons: bomcons, BomConswithAll: bomconsperpcswithall}},
+          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Cut: userEditCut, CutDate: cutDate, CutOperator: selectedOperatorCutter, BomCons: bomcons, BomConswithAll: bomconswithall}},
           //{$inc: {Position: -1}}, 
           {multi: true}
         ); 
@@ -4429,6 +4461,7 @@ if (Meteor.isServer) {
 
     if (isNaN(bomconsperpcs)){
       bomconsperpcs = 0;
+      
     }
     if (isNaN(bommatall)){
       bommatall = 0;
@@ -4447,14 +4480,13 @@ if (Meteor.isServer) {
       }
     )
   },
+  // update Order Consumption (5 fields) only first time 
   method_updateOrders: function (no, bomconsperpcs, materialallowance, bomconsperpcswithall, bomcons, bomconswithall) {
     
     var order = Order.find({No: no}).fetch();
     for (var i = 0; i < order.length; i++) {
       var id = order[i]._id;
     }
-
-    //console.log("ID: " + id + ", No: "+ no + ",bomconsperpcs: "+ bomconsperpcs + ",materialallowance: "+ materialallowance + " , bomconsperpcswithall: " + bomconsperpcswithall + " , bomcons:" + bomcons + ", bomconswithall: " + bomconswithall);
 
     Order.update({_id: id},
       {
@@ -4471,12 +4503,8 @@ if (Meteor.isServer) {
       }
     )
   },
+  // insert in Bom table only first time
   method_insertBOM: function (commessa, bomconsperpcs, materialallowance) {
-    
-    /*var order = Order.find({No: no}).fetch();
-    for (var i = 0; i < order.length; i++) {
-      var id = order[i]._id;
-    }*/
 
     console.log("commessa: "+ commessa+ ", bomconsperpcs: "+ bomconsperpcs+ ", materialallowance: "+ materialallowance);
 
@@ -4539,7 +4567,115 @@ if (Meteor.isServer) {
         var result = foo(posarray);
         var unique = result[0].length;
         return unique;
-  }
+  },
+  method_refreshConsOrder: function (orderToEdit) {
+
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var actual_id = order[i]._id;
+          var actualCommessa = order[i].Komesa;
+          var actualScut = order[i].S_Cut;
+          var actualScut = (actualScut) ? actualScut : 0;
+          var actualMcut = order[i].M_Cut;
+          var actualMcut = (actualMcut) ? actualMcut : 0;
+          var actualLcut = order[i].L_Cut;
+          var actualLcut = (actualLcut) ? actualLcut : 0;
+          var actualXLcut = order[i].XL_Cut;
+          var actualXLcut = (actualXLcut) ? actualXLcut : 0;
+          var actualXXLcut = order[i].XXL_Cut;
+          var actualXXLcut = (actualXXLcut) ? actualXXLcut : 0;
+        }
+
+      var bom = Bom.find({Commessa: actualCommessa}).fetch();
+        for (var i = 0; i < bom.length; i++) {
+          var bomBomConsPerPCS = bom[i].BomConsPerPCS;
+          var bomBomConsPerPCS = (bomBomConsPerPCS) ? bomBomConsPerPCS : 0;
+          var bomMaterialAllowance = bom[i].MaterialAllowance;
+          var bomMaterialAllowance = (bomMaterialAllowance) ? bomMaterialAllowance : 0;
+        }
+
+      var bomconsperpcswithall = Number(bomBomConsPerPCS) * ( 1 + (Number(bomMaterialAllowance)/100));
+      bomconsperpcswithall = Number(bomconsperpcswithall).toFixed(3);
+
+      var bomcons = Number(bomBomConsPerPCS) * (Number(actualScut) + Number(actualMcut) + Number(actualLcut) + Number(actualXLcut) + Number(actualXXLcut));
+      bomcons = Number(bomcons).toFixed(3);
+
+      var bomconswithall = Number(bomconsperpcswithall) * (Number(actualScut) + Number(actualMcut) + Number(actualLcut) + Number(actualXLcut) + Number(actualXXLcut));
+      bomconswithall = Number(bomconswithall).toFixed(3); 
+
+      //console.log("actual_id: " + actual_id + " ,actualCommessa: " + actualCommessa + " , actualScut: " + actualScut + " , actualMcut: " + actualMcut + " , actualLcut: " + actualLcut + " , actualXLcut: " + actualXLcut + " , actualXXLcut: " + actualXXLcut);
+
+      Order.update({_id: actual_id},
+        {
+          $set: {BomConsPerPCS:bomBomConsPerPCS , MaterialAllowance:bomMaterialAllowance, BomConsPerPCSwithAll:bomconsperpcswithall, BomCons:bomcons , BomConswithAll:bomconswithall},
+        }, 
+          function(err, numberAffected, rawResponse) {
+            if (numberAffected == false) {
+              console.log("method_refreshConsOrder (first) = False: " + actual_id );
+            } else {
+              console.log("method_refreshConsOrder (first) = True: " + actual_id );
+            }
+          }
+      )
+  },
+  method_refreshConsCommessa: function (commessaToEdit) {
+
+      var bom = Bom.find({Commessa: commessaToEdit}).fetch();
+        for (var i = 0; i < bom.length; i++) {
+          var bomBomConsPerPCS = bom[i].BomConsPerPCS;
+          var bomBomConsPerPCS = (bomBomConsPerPCS) ? bomBomConsPerPCS : 0;
+          var bomMaterialAllowance = bom[i].MaterialAllowance;
+          var bomMaterialAllowance = (bomMaterialAllowance) ? bomMaterialAllowance : 0;
+        }
+
+      var order = Order.find({Komesa: commessaToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var actual_id = order[i]._id;
+          var actualCommessa = order[i].Komesa;
+          var actualScut = order[i].S_Cut;
+          var actualScut = (actualScut) ? actualScut : 0;
+          var actualMcut = order[i].M_Cut;
+          var actualMcut = (actualMcut) ? actualMcut : 0;
+          var actualLcut = order[i].L_Cut;
+          var actualLcut = (actualLcut) ? actualLcut : 0;
+          var actualXLcut = order[i].XL_Cut;
+          var actualXLcut = (actualXLcut) ? actualXLcut : 0;
+          var actualXXLcut = order[i].XXL_Cut;
+          var actualXXLcut = (actualXXLcut) ? actualXXLcut : 0;
+
+          var bomconsperpcswithall = Number(bomBomConsPerPCS) * ( 1 + (Number(bomMaterialAllowance)/100));
+          bomconsperpcswithall = Number(bomconsperpcswithall).toFixed(3);
+
+          var bomcons = Number(bomBomConsPerPCS) * (Number(actualScut) + Number(actualMcut) + Number(actualLcut) + Number(actualXLcut) + Number(actualXXLcut));
+          bomcons = Number(bomcons).toFixed(3);
+
+          var bomconswithall = Number(bomconsperpcswithall) * (Number(actualScut) + Number(actualMcut) + Number(actualLcut) + Number(actualXLcut) + Number(actualXXLcut));
+          bomconswithall = Number(bomconswithall).toFixed(3);
+
+          var actualBomConsPerPCS = order[i].BomConsPerPCS;
+          var actualBomMaterialAllowance = order[i].MaterialAllowance;
+          var actualBomConsPerPCSwithAll = order[i].BomConsPerPCSwithAll;
+          var actualBomCons = order[i].BomCons;
+          var actualBomConswithAll = order[i].BomConswithAll;
+
+          console.log("actual_id: " + actual_id + " ,actualCommessa: " + actualCommessa + " , actualScut: " + actualScut + " , actualMcut: " + actualMcut + " , actualLcut: " + actualLcut + " , actualXLcut: " + actualXLcut + " , actualXXLcut: " + actualXXLcut);
+
+          if ((bomBomConsPerPCS != actualBomConsPerPCS) || (bomMaterialAllowance != actualBomMaterialAllowance) || (bomconsperpcswithall != actualBomConsPerPCSwithAll) || (bomcons != actualBomCons) || (bomconswithall != actualBomConswithAll)) {
+            Order.update({_id: actual_id},
+                {
+                  $set: {BomConsPerPCS:bomBomConsPerPCS , MaterialAllowance:bomMaterialAllowance, BomConsPerPCSwithAll:bomconsperpcswithall, BomCons :bomcons, BomConswithAll :bomconswithall},
+                }, 
+                function(err, numberAffected, rawResponse) {
+                  if (numberAffected == false) {
+                    console.log("method_refreshConsOrder = False: " + actual_id + " , komesa: " +  commessaToEdit);
+                  } else {
+                    console.log("method_refreshConsOrder = True: " + actual_id + " , komesa: " +  commessaToEdit);
+                  }
+                }
+            )
+          }
+        } 
+  },
   
 });
  

@@ -447,6 +447,13 @@
                       <div>
                         <button type="submit" id="changestatus" class="btn btn-info btn-sm">Change Status</button>  
                       </div>
+
+                      <br />
+                       <hr />
+
+                      <div>
+                        <button type="submit" id="refreshConsOrder" class="btn btn-default btn-sm">Refresh Consumption fields for Order</button>  
+                      </div>
               <hr />
               <big><b>Order Information</b></big><br />
               {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" autosave=true doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,XL,XXL,SpreadDate,SpreadOperator,CutDate,CutOperator,Status,Position,OrderLink"}}
@@ -1032,6 +1039,12 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
  <div class="container">
       <div class="row" style="width:550px">
           <div>
+            <button type="submit" id="refreshConsCommessa" class="btn btn-info btn-sm">Refresh all Markers with this Commessa</button>  
+          </div>
+          <br />
+          <hr >
+          <br />
+          <div>
           {{#autoForm collection="Bom" id="editBomForm" type="update" autosave=true doc=editingDoc }}
               <fieldset>
                {{> afQuickField name='Commessa'}} 
@@ -1040,6 +1053,7 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
               </fieldset>
           {{/autoForm}}
           </div>
+
       </div>
  </div>
 </template>
