@@ -390,8 +390,15 @@ Order.attachSchema(new SimpleSchema({
         optional: true,
         decimal: true,
         //min: 0
+    },
+    'Season': {
+        type: String,
+        label: "Season",
+        optional: true,
+        defaultValue: "",
+        max: 10
     }
-    
+
 }));
 
 //If this is not possible or you don't care to validate the object's properties, use the 
@@ -454,6 +461,7 @@ MaterialAllowance
 BomConsPerPCSwithAll
 BomCons
 BomConswithAll
+Season
 */
 
 Operators = new Meteor.Collection("operators");

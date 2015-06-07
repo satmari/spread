@@ -823,6 +823,7 @@ if (Meteor.isClient) {
           },*/
           //{ key: 'Created', label: 'Created' },
           { key: 'Komesa', label: 'Komesa' },
+          { key: 'Season', label: 'Season' },
           { key: 'Marker', label: 'Marker' },
           //{ key: 'Style', label: 'Style' },
           { key: 'Fabric', label: 'Fabric' },
@@ -1034,6 +1035,7 @@ if (Meteor.isClient) {
           },*/
           //{ key: 'Created', label: 'Created' },
           { key: 'Komesa', label: 'Komesa' },
+          { key: 'Season', label: 'Season' },
           { key: 'Marker', label: 'Marker' },
           //{ key: 'Style', label: 'Style' },
           { key: 'Fabric', label: 'Fabric' },
@@ -3413,7 +3415,9 @@ if (Meteor.isClient) {
             var skala = all[i]['SKALA marker'];
             var sektor = all[i]['Sector'];
             var pattern = all[i]['Pattern'];
-              
+
+            var season = all[i]['Season'];
+               
             /*
             if (status == "1" ){
               status = 'SP 1';
@@ -3452,7 +3456,7 @@ if (Meteor.isClient) {
               //setPos = 999;
             /*}*/
 
-            Meteor.call('method_insertOrders', no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, function(err, data) {
+            Meteor.call('method_insertOrders', no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, season, function(err, data) {
               console.log("method_insertOrders: " + data);
               //console.log("err: " + err);
               
@@ -3709,15 +3713,17 @@ if (Meteor.isClient) {
 
             
             var no  = Number(all[i]['No']);
-            var bomconsperpcs = all[i]['BomConsPerPCS'];
-            var materialallowance = all[i]['MaterialAllowance'];
-            var bomconsperpcswithall = all[i]['BomConsPerPCSwithAll'];
-            var bomcons = all[i]['BomCons'];
-            var bomconswithall = all[i]['BomConswithAll'];
+            //var bomconsperpcs = all[i]['BomConsPerPCS'];
+            //var materialallowance = all[i]['MaterialAllowance'];
+            //var bomconsperpcswithall = all[i]['BomConsPerPCSwithAll'];
+            //var bomcons = all[i]['BomCons'];
+            //var bomconswithall = all[i]['BomConswithAll'];
+            var  season = all[i]['Season'];
 
+            //console .log("No: "+ no + ", Season: " + season);
             //console.log("No: "+ no + ",bomconsperpcs: "+ bomconsperpcs + ",materialallowance: "+ materialallowance + " , bomconsperpcswithall: " + bomconsperpcswithall + " , bomcons:" + bomcons + ", bomconswithall: " + bomconswithall);
 
-            Meteor.call('method_updateOrders', no, bomconsperpcs, materialallowance, bomconsperpcswithall, bomcons, bomconswithall, function(err, data) {
+            Meteor.call('method_updateOrders', no, season /*, bomconsperpcs, materialallowance, bomconsperpcswithall, bomcons, bomconswithall*/, function(err, data) {
               console.log("method_updateOrders: Done");
             });
             
@@ -4413,7 +4419,7 @@ if (Meteor.isServer) {
       
       return "LengthSum fields are refreshed!";
   },
-  method_insertOrders: function (no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern) {
+  method_insertOrders: function (no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, season) {
     
     var order = Order.find({Status: 'Not assigned'}).fetch();
     var posarray = [];
@@ -4462,7 +4468,7 @@ if (Meteor.isServer) {
       bomconsperpcswithall = 0;
     }
 
-    Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern, BomConsPerPCS: bomconsperpcs, MaterialAllowance: bommatall, BomConsPerPCSwithAll: bomconsperpcswithall}, 
+    Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern, BomConsPerPCS: bomconsperpcs, MaterialAllowance: bommatall, BomConsPerPCSwithAll: bomconsperpcswithall, Season: season}, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
           console.log("method_insertOrders = False:  " + no);
@@ -4472,8 +4478,9 @@ if (Meteor.isServer) {
       }
     )
   },
-  // update Order Consumption (5 fields) only first time 
-  method_updateOrders: function (no, bomconsperpcs, materialallowance, bomconsperpcswithall, bomcons, bomconswithall) {
+  // update Order (Only first time)
+  //method_updateOrders: function (no, bomconsperpcs, materialallowance, bomconsperpcswithall, bomcons, bomconswithall) {
+  method_updateOrders: function (no, season) {
     
     var order = Order.find({No: no}).fetch();
     for (var i = 0; i < order.length; i++) {
@@ -4482,7 +4489,8 @@ if (Meteor.isServer) {
 
     Order.update({_id: id},
       {
-        $set: {BomConsPerPCS:bomconsperpcs , MaterialAllowance:materialallowance, BomConsPerPCSwithAll:bomconsperpcswithall, BomCons:bomcons, BomConswithAll:bomconswithall },
+        //$set: {BomConsPerPCS:bomconsperpcs , MaterialAllowance:materialallowance, BomConsPerPCSwithAll:bomconsperpcswithall, BomCons:bomcons, BomConswithAll:bomconswithall },
+        $set: {Season: season},
       }, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
