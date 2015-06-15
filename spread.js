@@ -136,6 +136,9 @@ if (Meteor.isClient) {
     
     var ses_statusfilter = Session.get("ses_statusfilter");
 
+    var ses_komesa_src = Session.get("ses_komesa_src");
+    var komesa_src_btn_cancel = Session.get("ses_komesa_src_btn_cancel");
+
     /*
     if (ses_DaysBefore) {
       Date.prototype.toDateInputValue = (function() {
@@ -390,7 +393,17 @@ if (Meteor.isClient) {
 
   Template.reactiveTebleList.helpers({
     orders: function () {
-      return Order.find();
+      var komesa_src = Session.get("ses_komesa_src");
+
+      if (komesa_src) {
+        return Order.find({Komesa: komesa_src});
+      } else {
+        // Gordon
+        //return Order.find();
+        // Zalli
+        return Order.find({Komesa: ' '});
+      }
+
     },
     isAdmin: function() {
         //var loggedUserName = Session.get("loggedUserName");
@@ -441,7 +454,7 @@ if (Meteor.isClient) {
           if ((User.username == "cut1") || (User.username == "cut2") || (User.username == "mor1") || (User.username == "mor2") || (User.username == "lec1") || (User.username == "lec2")) {
             return true;
           } else {
-            return false;  
+            return false;
           }
         }
     },
@@ -469,6 +482,93 @@ if (Meteor.isClient) {
     },
     filter: function() {
         return ses_statusfilter = Session.get("ses_statusfilter");
+    },
+    isStatusFandB: function() {
+        var ses_statusfilter = Session.get("ses_statusfilter");
+        if ((ses_statusfilter == "Finished") || (ses_statusfilter == "TRASH")) {
+          return false;          
+        } else {
+          return false;
+        }
+    },
+    isStatusNotAssigned: function() {
+        var ses_statusfilter = Session.get("ses_statusfilter");
+        if (ses_statusfilter == "Not assigned") {
+          return true;          
+        } else {
+          return false;
+        }
+    },
+    markersintable: function() {
+        var filter = Session.get("ses_statusfilter");
+        return Order.find({Status: filter}).count();
+    },
+    markersintableuniq: function() {
+        var filter = Session.get("ses_statusfilter");
+        var order = Order.find({Status: filter}).fetch();
+        var posarray = [];
+        for (var i = 0; i < order.length; i++) {
+            pos = order[i].Position;
+            posarray.push(pos);
+        }
+        if (isNaN(posarray[0])) {
+          return 0;
+        } else {
+          //var largest = Math.max.apply(null, posarray);
+          //return posarray.length;
+          var unique = [];
+          $.each(posarray, function(i, el){
+              if($.inArray(el, unique) === -1) unique.push(el);
+          });
+
+          return unique.length;
+        }
+    },
+    allmarkersintable: function() {
+        var filter = Session.get("ses_statusfilter");
+        var komesa_src = Session.get("ses_komesa_src");
+        //return Order.find({Status: filter}).count();
+
+        return Order.find({$and: [
+          {Status: filter},
+          {Komesa: komesa_src}
+          ]
+        }).count();
+        //return rez;
+    },
+    allmarkersintableuniq: function() {
+        var filter = Session.get("ses_statusfilter");
+        var komesa_src = Session.get("ses_komesa_src");
+
+        var order = Order.find({$and: [
+          {Status: filter},
+          {Komesa: komesa_src}
+          ]
+        }).fetch();
+
+        var posarray = [];
+        for (var i = 0; i < order.length; i++) {
+            pos = order[i].Position;
+            posarray.push(pos);
+        }
+        function foo(arr) {
+          var a = [], b = [], prev;
+          arr.sort();
+          for ( var i = 0; i < arr.length; i++ ) {
+            if ( arr[i] !== prev ) {
+              a.push(arr[i]);
+              b.push(1);
+            } else {
+              b[b.length-1]++;
+            }
+            prev = arr[i];
+          }
+          return [a, b];
+        }
+        var result = foo(posarray);
+        var unique = result[0].length;
+        return unique;
+
     },
     settingsAdmin: function () {
       return {
@@ -1399,6 +1499,18 @@ if (Meteor.isClient) {
 
         // show rd_editorder
         rd_editorder.show();
+      },
+      'click #komesa_src_btn': function  (e) {
+        var searchkomesa = $('#komesa_src_val').val();
+        console.log("ses_komesa_src: " + searchkomesa);
+        Session.set("ses_komesa_src", searchkomesa);
+      
+      },
+      'click #komesa_src_btn_cancel': function  (e) {
+        //var searchkomesa = $('#komesa_src_val').val();
+        console.log("ses_komesa_src_btn_cancel");
+        //Session.set("ses_komesa_src_btn_cancel", false);
+      
       }
   });
 
@@ -3006,7 +3118,7 @@ if (Meteor.isClient) {
       });       
 
       Meteor.call('method_linkpoz', actualStatus, selectedPositionN, function(err, data) {
-        console.log("method_linkpoz: " + data);
+        //console.log("method_linkpoz: " + data);
       }); 
       
       }
@@ -3239,7 +3351,7 @@ if (Meteor.isClient) {
 
             
             Meteor.call('method_insertOrders', no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, function(err, data) {
-              console.log("method_insertOrders: " + data);
+              //console.log("method_insertOrders: " + data);
 
             });
 
@@ -3812,7 +3924,7 @@ if (Meteor.isServer) {
         ); 
         
       }
-    return "Not found method_linkpoz";
+    //return "Not found method_linkpoz";
   },
   method_unlinkpoz: function (actualStatus, selectedPosition){
     var order = Order.find({Position: selectedPosition, Status: actualStatus }).fetch();
@@ -3824,7 +3936,7 @@ if (Meteor.isServer) {
         ); 
         
       }
-    return "Not found method_unlinkpoz";
+    //return "Not found method_unlinkpoz";
   },
   method_ubacinapozVise: function (actualPosition, actualStatus, selectedPosition){
     var order = Order.find({Position: 0, Status: actualStatus }).fetch();
