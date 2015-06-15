@@ -2716,31 +2716,37 @@ if (Meteor.isClient) {
     'change #not_assigned': function  (e, t) {
       Session.set("ses_statusfilter", "Not assigned");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", "");
     },
 
     'change #sp1': function  (e, t) {
       Session.set("ses_statusfilter", "SP 1");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", "");
     },
 
     'change #sp2': function  (e, t) {
       Session.set("ses_statusfilter", "SP 2");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", "");
     },
 
     'change #sp3': function  (e, t) {
       Session.set("ses_statusfilter", "SP 3");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", "");
     },
 
     'change #ms1': function  (e, t) {
       Session.set("ses_statusfilter", "MS 1");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", "");
     },
 
     'change #cut': function  (e, t) {
       Session.set("ses_statusfilter", "CUT");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", "");
     },
 
     'change #finished': function  (e, t) {
@@ -2751,6 +2757,7 @@ if (Meteor.isClient) {
     'click #trash_orders': function  (e, t) {
       Session.set("ses_statusfilter", "TRASH");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", "");
 
       $( ".btn-group label" ).removeClass( "active" );
     },
