@@ -139,6 +139,7 @@ if (Meteor.isClient) {
     var ses_komesa_src = Session.get("ses_komesa_src");
     var komesa_src_btn_cancel = Session.get("ses_komesa_src_btn_cancel");
 
+
     /*
     if (ses_DaysBefore) {
       Date.prototype.toDateInputValue = (function() {
@@ -176,21 +177,30 @@ if (Meteor.isClient) {
 
     if ((ses_loggedUserName == "cut1") || (ses_loggedUserName == "cut2") || (ses_loggedUserName == "mor1") || (ses_loggedUserName == "mor2") || (ses_loggedUserName == "lec1") || (ses_loggedUserName == "lec2")){
       Meteor.subscribe('filter_cutter');
+      Session.set("ses_komesa_src", false);
     } else if ((ses_loggedUserName == "sp11") || (ses_loggedUserName == "sp12") || (ses_loggedUserName == "sp13")){
       //Meteor.subscribe('spreader1', Session.get("ses_datefilter"));
       Meteor.subscribe('filter_spreader1');
+      Session.set("ses_komesa_src", false);
     } else if ((ses_loggedUserName == "sp21") || (ses_loggedUserName == "sp22") || (ses_loggedUserName == "sp23")){
       //Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
       Meteor.subscribe('filter_spreader2');
+      Session.set("ses_komesa_src", false);
     } else if ((ses_loggedUserName == "sp31") || (ses_loggedUserName == "sp32") || (ses_loggedUserName == "sp33")){
       //Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
       Meteor.subscribe('filter_spreader3');
+      Session.set("ses_komesa_src", false);
     } else if ((ses_loggedUserName == "ms11") || (ses_loggedUserName == "ms12")){
       Meteor.subscribe('filter_spreaderm1');
+      Session.set("ses_komesa_src", false);
     } else if (ses_loggedUserName == "label"){
       Meteor.subscribe('filter_label', ses_DaysBefore, ses_DaysAfter);
+      Session.set("ses_komesa_src", false);
     } else if (ses_loggedUserName == "cons"){
       Meteor.subscribe('filter_cons', ses_DaysBefore, ses_DaysAfter);
+      Session.set("ses_komesa_src", false);
+    /*} else if (ses_loggedUserName == "admin"){
+      Session.set("ses_komesa_src", "empty");*/
 
     } else if (ses_allorder_date) {
       Meteor.subscribe('filter_allOrderswithDate', ses_DaysBefore, ses_DaysAfter);
@@ -395,13 +405,15 @@ if (Meteor.isClient) {
     orders: function () {
       var komesa_src = Session.get("ses_komesa_src");
 
-      if (komesa_src) {
-        return Order.find({Komesa: komesa_src});
+      if (komesa_src == false) {       
+        return Order.find();
+
+      } else if (komesa_src == "empty") {
+        return Order.find({Komesa: " "});
+
       } else {
-        // Gordon
-        //return Order.find();
-        // Zalli
-        return Order.find({Komesa: ' '});
+        return Order.find({Komesa: komesa_src});
+        
       }
 
     },
@@ -1502,13 +1514,17 @@ if (Meteor.isClient) {
       },
       'click #komesa_src_btn': function  (e) {
         var searchkomesa = $('#komesa_src_val').val();
-        console.log("ses_komesa_src: " + searchkomesa);
-        Session.set("ses_komesa_src", searchkomesa);
+        //console.log("ses_komesa_src: " + searchkomesa);
+        if (searchkomesa == '') {
+          Session.set("ses_komesa_src", "empty");
+        } else {
+          Session.set("ses_komesa_src", searchkomesa);
+        }
       
       },
       'click #komesa_src_btn_cancel': function  (e) {
         //var searchkomesa = $('#komesa_src_val').val();
-        console.log("ses_komesa_src_btn_cancel");
+        //console.log("ses_komesa_src_btn_cancel");
         //Session.set("ses_komesa_src_btn_cancel", false);
       
       }
@@ -2716,48 +2732,49 @@ if (Meteor.isClient) {
     'change #not_assigned': function  (e, t) {
       Session.set("ses_statusfilter", "Not assigned");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-      Session.set("ses_komesa_src", "");
+      Session.set("ses_komesa_src", "empty");
     },
 
     'change #sp1': function  (e, t) {
       Session.set("ses_statusfilter", "SP 1");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-      Session.set("ses_komesa_src", "");
+      Session.set("ses_komesa_src", false);
     },
 
     'change #sp2': function  (e, t) {
       Session.set("ses_statusfilter", "SP 2");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-      Session.set("ses_komesa_src", "");
+      Session.set("ses_komesa_src", false);
     },
 
     'change #sp3': function  (e, t) {
       Session.set("ses_statusfilter", "SP 3");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-      Session.set("ses_komesa_src", "");
+      Session.set("ses_komesa_src", false);
     },
 
     'change #ms1': function  (e, t) {
       Session.set("ses_statusfilter", "MS 1");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-      Session.set("ses_komesa_src", "");
+      Session.set("ses_komesa_src", false);
     },
 
     'change #cut': function  (e, t) {
       Session.set("ses_statusfilter", "CUT");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-      Session.set("ses_komesa_src", "");
+      Session.set("ses_komesa_src", false);
     },
 
     'change #finished': function  (e, t) {
       Session.set("ses_statusfilter", "Finished");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", false);
     },
 
     'click #trash_orders': function  (e, t) {
       Session.set("ses_statusfilter", "TRASH");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
-      Session.set("ses_komesa_src", "");
+      Session.set("ses_komesa_src", false);
 
       $( ".btn-group label" ).removeClass( "active" );
     },
