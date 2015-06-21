@@ -338,29 +338,52 @@
   <div>
   {{#if isAdmin}}
     <h3>Order table - <span style="color: red; font-size: 20px">{{filter}}</span><br />
-    <span style="color: grey; font-size: 16px">Orders (lines): {{markersintable}},</span>
-    <span style="color: grey; font-size: 16px">Markers: {{markersintableuniq}}</span>
-    {{#if isStatusFandB}}
+    <span style="color: grey; font-size: 16px">Orders (lines): {{markersintable}}</span>
+    <span style="color: grey; font-size: 16px">, Markers: {{markersintableuniq}}</span>
+    
+    <!--{{#if isStatusFandB}}
       <br />
       <span style="color: grey; font-size: 16px">All Orders (lines): {{allmarkersintable}}</span>
       <span style="color: grey; font-size: 16px">All Markers: {{allmarkersintableuniq}}</span>
+    {{/if}}-->
+
+    {{#if isStatusNotAssigned}}
+    <br />
+      <span style="color: grey; font-size: 16px"> Find Orders (lines): {{allmarkersintable}}</span>
+      <!--<span style="color: grey; font-size: 16px"> , Find Markers: {{allmarkersintableuniq}}</span>-->
+    <br />
+    <div class="input-group" style="width:500px">
+      <!--<span class="input-group-addon">Search Commesa</span>-->
+      <!--<span class="input-group-btn cancel">
+        <button class="btn btn-info" type="submit" id="komesa_src_btn_cancel">Show all</button>
+      </span>-->
+      <input type="text" class="form-control" id="komesa_src_val" placeholder="Search komesa">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="submit" id="komesa_src_btn">Search</button>
+      </span>
+    </div>
+    
     {{/if}}
+
     </h3>
     {{> reactiveTable collection=orders settings=settingsAdmin}}
   {{/if}}
 
   {{#if isUserGuest}}
     <h3>Order table - <span style="color: red; font-size: 20px">{{filter}}</span><br />
-    <span style="color: grey; font-size: 16px">Orders (lines): {{markersintable}},</span>
-    <span style="color: grey; font-size: 16px">Markers: {{markersintableuniq}}</span>
-    {{#if isStatusFandB}}
+    <span style="color: grey; font-size: 16px">Orders (lines): {{markersintable}}</span>
+    <span style="color: grey; font-size: 16px">, Markers: {{markersintableuniq}}</span>
+
+    <!--{{#if isStatusFandB}}
       <br />
       <span style="color: grey; font-size: 16px">All Orders (lines): {{allmarkersintable}}</span>
       <span style="color: grey; font-size: 16px">All Markers: {{allmarkersintableuniq}}</span>
-    {{/if}}
+    {{/if}}-->
+
     </h3>
     {{> reactiveTable collection=orders settings=settingsGuest}}
   {{/if}}
+  
   {{#if isUserSp}}
     <!--<h3>Order table</h3>-->
     {{> reactiveTable collection=orders settings=settingsUserSp}}

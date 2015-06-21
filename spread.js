@@ -173,23 +173,31 @@ if (Meteor.isClient) {
 
     if ((ses_loggedUserName == "cut1") || (ses_loggedUserName == "cut2") || (ses_loggedUserName == "mor1") || (ses_loggedUserName == "mor2") || (ses_loggedUserName == "lec1") || (ses_loggedUserName == "lec2")){
       Meteor.subscribe('filter_cutter');
+      Session.set("ses_komesa_src", false);
     } else if ((ses_loggedUserName == "sp11") || (ses_loggedUserName == "sp12") || (ses_loggedUserName == "sp13")){
       //Meteor.subscribe('spreader1', Session.get("ses_datefilter"));
       Meteor.subscribe('filter_spreader1');
+      Session.set("ses_komesa_src", false);
     } else if ((ses_loggedUserName == "sp21") || (ses_loggedUserName == "sp22") || (ses_loggedUserName == "sp23")){
       //Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
       Meteor.subscribe('filter_spreader2');
+      Session.set("ses_komesa_src", false);
     } else if ((ses_loggedUserName == "sp31") || (ses_loggedUserName == "sp32") || (ses_loggedUserName == "sp33")){
       //Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
       Meteor.subscribe('filter_spreader3');
+      Session.set("ses_komesa_src", false);
     } else if ((ses_loggedUserName == "ms11") || (ses_loggedUserName == "ms12")){
       Meteor.subscribe('filter_spreaderm1');
+      Session.set("ses_komesa_src", false);
     } else if (ses_loggedUserName == "label"){
       Meteor.subscribe('filter_label', ses_DaysBefore, ses_DaysAfter);
+      Session.set("ses_komesa_src", false);
     } else if (ses_loggedUserName == "cons"){
       Meteor.subscribe('filter_cons', ses_DaysBefore, ses_DaysAfter);
+      Session.set("ses_komesa_src", false);
     } else if (ses_loggedUserName == "diba"){
-      //Meteor.subscribe('filter_diba');       
+      Session.set("ses_komesa_src", false);
+      //Meteor.subscribe('filter_diba');  
 
     } else if (ses_allorder_date) {
       Meteor.subscribe('filter_allOrderswithDate', ses_DaysBefore, ses_DaysAfter);
@@ -211,6 +219,7 @@ if (Meteor.isClient) {
       Meteor.subscribe('filter_orderWithDateRange', ses_DaysBefore, ses_DaysAfter);
     } else {
       Meteor.subscribe('filter_orderWithDate', ses_datefilter);
+      Session.set("ses_komesa_src", false);
     }
 
     // Operators
@@ -251,7 +260,7 @@ if (Meteor.isClient) {
         Session.set("ses_uniquecountPosSp2", data);
       });
       Meteor.call('method_uniquecountPosSp3', function(err, data) {
-        //console.log("method_uniquecountPosSp2: " + data);
+        //console.log("method_uniquecountPosSp3: " + data);
         Session.set("ses_uniquecountPosSp3", data);
       });
       Meteor.call('method_uniquecountPosMs1', function(err, data) {
@@ -564,41 +573,51 @@ if (Meteor.isClient) {
     'change #not_assigned': function  (e, t) {
       Session.set("ses_statusfilter", "Not assigned");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+
+      //Session.set("ses_komesa_src", "empty");
+      Session.set("ses_komesa_src", false);
     },
 
     'change #sp1': function  (e, t) {
       Session.set("ses_statusfilter", "SP 1");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", false);
     },
 
     'change #sp2': function  (e, t) {
       Session.set("ses_statusfilter", "SP 2");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", false);
     },
 
     'change #sp3': function  (e, t) {
       Session.set("ses_statusfilter", "SP 3");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", false);
     },
 
     'change #ms1': function  (e, t) {
       Session.set("ses_statusfilter", "MS 1");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", false);
     },
 
     'change #cut': function  (e, t) {
       Session.set("ses_statusfilter", "CUT");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", false);
     },
 
     'change #finished': function  (e, t) {
       Session.set("ses_statusfilter", "Finished");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", false);
     },
 
     'click #trash_orders': function  (e, t) {
       Session.set("ses_statusfilter", "TRASH");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", false);
 
       $( ".btn-group label" ).removeClass( "active" );
     },
@@ -646,7 +665,18 @@ if (Meteor.isClient) {
   // Reactive Table helpers
   Template.reactiveTebleList.helpers({
     orders: function () {
-      return Order.find();
+      var komesa_src = Session.get("ses_komesa_src");
+
+      if (komesa_src == false) {       
+        return Order.find();
+
+      } else if (komesa_src == "empty") {
+        return Order.find({Komesa: " "});
+
+      } else {
+        return Order.find({Komesa: komesa_src});
+        
+      }
     },
     bom: function () {
       return Bom.find();
@@ -748,6 +778,14 @@ if (Meteor.isClient) {
           return false;
         }
     },
+    isStatusNotAssigned: function() {
+        var ses_statusfilter = Session.get("ses_statusfilter");
+        if (ses_statusfilter == "Not assigned") {
+          return true;          
+        } else {
+          return false;
+        }
+    },
     markersintable: function() {
         var filter = Session.get("ses_statusfilter");
         return Order.find({Status: filter}).count();
@@ -792,6 +830,52 @@ if (Meteor.isClient) {
         //return rez;
     },
     */
+    allmarkersintable: function() {
+        var filter = Session.get("ses_statusfilter");
+        var komesa_src = Session.get("ses_komesa_src");
+        //return Order.find({Status: filter}).count();
+
+        return Order.find({$and: [
+          {Status: filter},
+          {Komesa: komesa_src}
+          ]
+        }).count();
+        //return rez;
+    },
+    allmarkersintableuniq: function() {
+        var filter = Session.get("ses_statusfilter");
+        var komesa_src = Session.get("ses_komesa_src");
+
+        var order = Order.find({$and: [
+          {Status: filter},
+          {Komesa: komesa_src}
+          ]
+        }).fetch();
+
+        var posarray = [];
+        for (var i = 0; i < order.length; i++) {
+            pos = order[i].Position;
+            posarray.push(pos);
+        }
+        function foo(arr) {
+          var a = [], b = [], prev;
+          arr.sort();
+          for ( var i = 0; i < arr.length; i++ ) {
+            if ( arr[i] !== prev ) {
+              a.push(arr[i]);
+              b.push(1);
+            } else {
+              b[b.length-1]++;
+            }
+            prev = arr[i];
+          }
+          return [a, b];
+        }
+        var result = foo(posarray);
+        var unique = result[0].length;
+        return unique;
+
+    },
     settingsAdmin: function () {
       return {
         rowsPerPage: 100,
@@ -1749,6 +1833,10 @@ if (Meteor.isClient) {
             //console.log("method_uniquecountPosSp2: " + data);
             Session.set("ses_uniquecountPosSp2", data);
           });
+          Meteor.call('method_uniquecountPosSp3', function(err, data) {
+            //console.log("method_uniquecountPosSp3: " + data);
+            Session.set("ses_uniquecountPosSp3", data);
+          });
           Meteor.call('method_uniquecountPosMs1', function(err, data) {
             //console.log("method_uniquecountPosMs1: " + data);
             Session.set("ses_uniquecountPosMs1", data);
@@ -1772,12 +1860,29 @@ if (Meteor.isClient) {
           rd_editorder.show();
        
         } else if (click_id_commessa) {
-
-
+          // Define rd_editcommessa
           var rd_editcommessa = ReactiveModal.initDialog(rm_EditCommessa);
+          // show rd_editcommessa
           rd_editcommessa.show();
-        }
 
+        }
+      },
+      'click #komesa_src_btn': function  (e) {
+        var searchkomesa = $('#komesa_src_val').val();
+        //console.log("ses_komesa_src: " + searchkomesa);
+
+        if (searchkomesa == '') {
+          Session.set("ses_komesa_src", "empty");
+        } else {
+          Session.set("ses_komesa_src", searchkomesa);
+        }
+      
+      },
+      'click #komesa_src_btn_cancel': function  (e) {
+        //var searchkomesa = $('#komesa_src_val').val();
+        //console.log("ses_komesa_src_btn_cancel");
+        //Session.set("ses_komesa_src_btn_cancel", false);
+      
       }
   
   });
@@ -1859,7 +1964,7 @@ if (Meteor.isClient) {
   })
   
 
-  // Reactive table helper (for update/edit orders)
+  // Edit order helper (for update/edit orders)
   Template.tmp_EditOrder.helpers({
       editingDoc: function editingDocHelper() {
         return Order.findOne({_id: Session.get("selectedDocId")});
@@ -3952,12 +4057,128 @@ if (Meteor.isClient) {
       }
       return str;
   }
+
+  Meteor.methods({ 
+
+    method_smanjizajedan: function(Position, Status){
+      var order = Order.find({Position: {$gt: Position}, Status: Status }).fetch();
+      for (var i = 0; i < order.length; i++) {
+          Order.update({ _id: order[i]._id},
+            {$inc: {Position: -1}}, 
+            {multi: true}
+          );
+      }
+      return "Done";
+      },
+    method_stavipozna0: function (actualPosition, actualStatus){
+      var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+        for (var i = 0; i < order.length; i++) {
+          Order.update({ _id: order[i]._id},
+            {$set: {Position: 0}},
+            
+            {multi: true}
+          ); 
+          
+        }
+      return "Not found method_stavipozna0";
+    },
+    method_spreadOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperatorSpreader) {
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        var oreder_id = order[i]._id;
+        var layers = order[i].Layers;
+        var layersactual = order[i].LayersActual;
+
+        if (layersactual) {
+          var LayersToCount = layersactual;
+        } else {
+          var LayersToCount = layers;
+        }
+
+        if (order[i].SonLayer) {
+          var SonLayer = order[i].SonLayer;
+        } else {
+          var SonLayer = 0;
+          Order.update({ _id: order[i]._id, No: order[i].No}, 
+            {$set: {SonLayer: 0}}
+          );
+        }
+        if (order[i].MonLayer) {
+          var MonLayer = order[i].MonLayer;
+        } else {
+          var MonLayer = 0;
+          Order.update({ _id: order[i]._id, No: order[i].No}, 
+            {$set: {MonLayer: 0}}
+          );
+        }
+        if (order[i].LonLayer) {
+          var LonLayer = order[i].LonLayer;  
+        } else  {
+          var LonLayer = 0;
+          Order.update({ _id: order[i]._id, No: order[i].No}, 
+            {$set: {LonLayer: 0}}
+          );
+        }
+        if (order[i].XLonLayer) {
+          var XLonLayer = order[i].XLonLayer;  
+        } else {
+          var XLonLayer = 0;
+          Order.update({ _id: order[i]._id, No: order[i].No}, 
+            {$set: {XLonLayer: 0}}
+          );
+        }
+        if (order[i].XXLonLayer) {
+          var XXLonLayer = order[i].XXLonLayer;  
+        } else {
+          var XXLonLayer = 0;
+          Order.update({ _id: order[i]._id, No: order[i].No}, 
+            {$set: {XXLonLayer: 0}}
+          );
+        }
+
+        var S = LayersToCount * SonLayer;
+        var M = LayersToCount * MonLayer;
+        var L = LayersToCount * LonLayer;
+        var XL = LayersToCount * XLonLayer;
+        var XXL = LayersToCount * XXLonLayer;
+        var S_Cut = S;
+        var M_Cut = M;
+        var L_Cut = L;
+        var XL_Cut = XL;
+        var XXL_Cut = XXL;
+
+        Order.update({ _id: order[i]._id},
+          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Spread: userEditSpread, SpreadDate: spreadDate, S: S, M: M, L: L, XL: XL, XXL: XXL, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut, XL_Cut: XL_Cut, XXL_Cut: XXL_Cut, SpreadOperator: selectedOperatorSpreader}},
+          //{$inc: {Position: -1}}, 
+          {multi: true}
+        ); 
+        //return order[i].No;
+     }
+      return "method_spreadOrder: Done";
+    },
+    method_changeStatus: function(actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition){
+    var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$set: {Status: selectedStatus, Position: uniquecountSelectedPosition}},
+          
+          {multi: true}
+        ); 
+        
+      }
+    return "Not found method_changeStatus";
+    },
+
+  })
+
+
 }
 
 // Meteor Server side
 if (Meteor.isServer) {
 
-  Meteor.methods({ 
+Meteor.methods({ 
+
   method_countPosSp1: function() {
     return Order.find({Status: 'SP 1'}).count();
   },
