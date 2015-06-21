@@ -1887,7 +1887,23 @@ if (Meteor.isClient) {
         //console.log("ses_komesa_src_btn_cancel");
         //Session.set("ses_komesa_src_btn_cancel", false);
       
-      }
+      },
+      'keypress input#komesa_src_val': function (evt, template) {
+        if (evt.which === 13) {
+          var searchkomesa = $('#komesa_src_val').val();
+          //console.log("ses_komesa_src: " + searchkomesa);
+
+          if (searchkomesa == '') {
+            //Zalli
+            //Session.set("ses_komesa_src", "empty");
+            //Gordon
+            Session.set("ses_komesa_src", false);
+          } else {
+            Session.set("ses_komesa_src", searchkomesa);
+          }  
+        }
+      },
+  
   
   });
 
