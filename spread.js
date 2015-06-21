@@ -219,6 +219,7 @@ if (Meteor.isClient) {
       Meteor.subscribe('filter_orderWithDateRange', ses_DaysBefore, ses_DaysAfter);
     } else {
       Meteor.subscribe('filter_orderWithDate', ses_datefilter);
+      //Gordon vs Zalli
       Session.set("ses_komesa_src", false);
     }
 
@@ -1872,7 +1873,10 @@ if (Meteor.isClient) {
         //console.log("ses_komesa_src: " + searchkomesa);
 
         if (searchkomesa == '') {
-          Session.set("ses_komesa_src", "empty");
+          //Zalli
+          //Session.set("ses_komesa_src", "empty");
+          //Gordon
+          Session.set("ses_komesa_src", false);
         } else {
           Session.set("ses_komesa_src", searchkomesa);
         }
