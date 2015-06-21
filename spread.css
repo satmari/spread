@@ -16,6 +16,14 @@ html {
   overflow-x: auto;
 }
 
+tbody .No {
+  /*border-left: 1px solid #fff !important;
+  border-right: 1px solid #fff !important;
+  background-color: #2E6A91 !important;*/
+  font-size: 16px;
+  font-weight: bold;
+}
+
 body {
   /*background: url("/background/subtle_white_feathers.png") repeat;*/
   background: url("/background/gord3.jpg") no-repeat center center fixed; 
