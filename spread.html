@@ -316,19 +316,19 @@
   
       <h3>Order table - <span style="color: red; font-size: 20px">{{filter}}</span><br />
       <span style="color: grey; font-size: 16px">Orders (lines): {{markersintable}}</span>
-      <span style="color: grey; font-size: 16px"> , Markers: {{markersintableuniq}}</span>
+      <!--<span style="color: grey; font-size: 16px"> , Markers: {{markersintableuniq}}</span>-->
     
 
     {{#if isStatusFandB}}
       <br />
       <span style="color: grey; font-size: 16px">All Orders (lines): {{allmarkersintable}}</span>
-      <span style="color: grey; font-size: 16px"> , All Markers: {{allmarkersintableuniq}}</span>
+      <!--<span style="color: grey; font-size: 16px"> , All Markers: {{allmarkersintableuniq}}</span>-->
     {{/if}}
     
     {{#if isStatusNotAssigned}}
     <br />
       <span style="color: grey; font-size: 16px"> Find Orders (lines): {{allmarkersintable}}</span>
-      <span style="color: grey; font-size: 16px"> , Find Markers: {{allmarkersintableuniq}}</span>
+      <!--<span style="color: grey; font-size: 16px"> , Find Markers: {{allmarkersintableuniq}}</span>-->
     <br />
     <div class="input-group" style="width:500px">
       <!--<span class="input-group-addon">Search Commesa</span>-->
@@ -395,6 +395,7 @@
             {{#if isUserAdmin}}
 
                     {{#if isSPfilter}}
+                      <!--
                       <big><b>Change Position</b></big><br />
                       <big>{{CurrentPosition}}</big>
                       
@@ -412,7 +413,7 @@
                       </div>
                       <br />
                       <hr />
-                    
+                    -->
                     {{/if}}
                                             
                       <big><b>Change Status</b></big><br />
