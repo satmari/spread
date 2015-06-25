@@ -4529,8 +4529,187 @@ Meteor.methods({
         var unique = result[0].length;
         return unique;
   },
+  method_insertOrders: function (no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, season) {
+    
+    var order = Order.find({Status: 'Not assigned'}).fetch();
+    var posarray = [];
+    for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+    }
+    if (isNaN(posarray[0])) {
+      var largest =  0;
+    } else {
+      var largest = Math.max.apply(null, posarray);
+      //return largest;
+    }
+    
+    //var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
+    var uniquecountPosNA = largest + 1;
+    //Session.set("ses_uniquecountPosNA", uniquecountPosNA);
+    //console.log("uniquecountPosNA: " + uniquecountPosNA);
+
+    setPos = uniquecountPosNA;                             
+    status = 'Not assigned';
+
+    var bom = Bom.find({Commessa: komesa}).fetch();
+    for (var i = 0; i < bom.length; i++) {
+      var bomconsperpcs = bom[i].BomConsPerPCS;
+      bomconsperpcs = Number(bomconsperpcs).toFixed(3);
+      //console.log("bomconsperpcs: "+ bomconsperpcs);
+
+      var bommatall = bom[i].MaterialAllowance;
+      bommatall = Number(bommatall).toFixed(0);
+      //console.log("bommatall: "+ bommatall);
+    }            
+
+    var bomconsperpcswithall = Number(bomconsperpcs) * ( 1 + (Number(bommatall)/100));
+    bomconsperpcswithall = Number(bomconsperpcswithall).toFixed(3);
+    //console.log("bomconsperpcswithall: "+ bomconsperpcswithall);
+
+    if (isNaN(bomconsperpcs)){
+      bomconsperpcs = 0;
+    }
+    if (isNaN(bommatall)){
+      bommatall = 0;
+    }
+    if (isNaN(bomconsperpcswithall)){
+      bomconsperpcswithall = 0;
+    }
+
+    Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern, BomConsPerPCS: bomconsperpcs, MaterialAllowance: bommatall, BomConsPerPCSwithAll: bomconsperpcswithall, Season: season}, 
+      function(err, numberAffected, rawResponse) {
+        if (numberAffected == false) {
+          //console.log("method_insertOrders = False:  " + no);
+        } else {
+          //console.log("method_insertOrders = True:  " + no);
+        }
+      }
+    )
+  },
 
 });
+
+// Publish Client side
+  Meteor.publish("filter_orderAll", function(){
+    return Order.find();
+  });
+
+  Meteor.publish("filter_orderWithDate", function(dateFilter){
+    return Order.find({ Date: dateFilter});
+  });
+
+  Meteor.publish("filter_orderWithDateRange", function(Daysbefore , Daysafter) {
+    //return Order.find({ Date: {$gte: ISODate(Daysbefore), $lt: ISODate(Daysafter)} });
+    return Order.find({ Date: {$gte: Daysbefore, $lt: Daysafter} });
+  });
+
+  Meteor.publish("filter_orderWithoutDate", function(){
+    return Order.find({ Date: { $exists: false }});
+  });
+
+  Meteor.publish("filter_orderWithoutJob", function(){
+    return Order.find({ Status: "Not assigned"});
+  });
+
+  Meteor.publish("filter_spreader1", function(){
+    return Order.find({ Status: "SP 1"});
+  });
+
+  Meteor.publish("filter_spreader2", function(){
+    return Order.find({ Status: "SP 2"});
+  });
+
+  Meteor.publish("filter_spreader3", function(){
+    return Order.find({ Status: "SP 3"});
+  });
+
+  Meteor.publish("filter_spreaderm1", function(){
+    return Order.find({ Status: "MS 1"});
+  });
+
+  Meteor.publish("filter_cutter", function(){
+    return Order.find({ Status: "CUT"});
+  });
+
+  Meteor.publish("filter_label", function(Daysbefore, Daysafter){
+    return Order.find({
+    $and: [
+      { $or: [
+          { Status: "CUT" },
+          { Status: "Finished" }
+        ]},
+      { $or: [ 
+          { LabelPrinted: false },  
+          { LabelPrinted: { $exists: false }}
+        ]},
+      { $and: [ 
+          {SpreadDate: {$gte: Daysbefore, $lt: Daysafter}}
+        ]},
+      ]
+    })
+  });
+
+  Meteor.publish("filter_cons", function(Daysbefore, Daysafter){
+    return Order.find({
+    $and: [
+      { $or: [
+          { Status: "CUT" },
+          { Status: "Finished" }
+        ]},
+      { $and: [ 
+          {SpreadDate: {$gte: Daysbefore, $lt: Daysafter}}
+        ]},
+      ]
+    })
+  });
+
+  Meteor.publish("filter_diba", function(){
+    return Bom.find();
+  });
+
+  Meteor.publish("filter_statusfilter", function(status){
+    return Order.find({ 
+      $and: [
+      {Status: status},
+      ]
+    })
+  });
+
+  Meteor.publish("filter_statusfilterwithCutDate", function(status, Daysbefore , Daysafter){
+    return Order.find({ 
+      $and: [
+      {Status: status},
+      {CutDate: {$gte: Daysbefore, $lt: Daysafter}}
+      ]
+    })
+  });
+
+  Meteor.publish("filter_statusfilterwithDate", function(status, Daysbefore , Daysafter){
+    return Order.find({ 
+      $and: [
+      {Status: status},
+      {Date: {$gte: Daysbefore, $lt: Daysafter}}
+      ]
+    })
+  });
+
+  Meteor.publish("filter_allOrderswithDate", function(Daysbefore , Daysafter){
+    return Order.find({Date: {$gte: Daysbefore, $lt: Daysafter}})
+  });
+
+  Meteor.publish("filter_allOrderswithSpreadDate", function(Daysbefore , Daysafter){
+    return Order.find({SpreadDate: {$gte: Daysbefore, $lt: Daysafter}})  
+  });
+
+  Meteor.publish("filter_allOrderswithCutDate", function(Daysbefore , Daysafter){
+    return Order.find({CutDate: {$gte: Daysbefore, $lt: Daysafter}})
+  });
+
+  Meteor.publish("filter_allOperators", function(){
+    return Operators.find();
+});
+
 
 // Meteor Server side
 if (Meteor.isServer) {
@@ -4591,64 +4770,6 @@ Meteor.methods({
       }
       
       return "LengthSum fields are refreshed!";
-  },
-  method_insertOrders: function (no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, season) {
-    
-    var order = Order.find({Status: 'Not assigned'}).fetch();
-    var posarray = [];
-    for (var i = 0; i < order.length; i++) {
-        pos = order[i].Position;
-        posarray.push(pos);
-    }
-    if (isNaN(posarray[0])) {
-      var largest =  0;
-    } else {
-      var largest = Math.max.apply(null, posarray);
-      //return largest;
-    }
-
-    //var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
-    var uniquecountPosNA = largest + 1;
-    //Session.set("ses_uniquecountPosNA", uniquecountPosNA);
-    //console.log("uniquecountPosNA: " + uniquecountPosNA);
-
-    setPos = uniquecountPosNA;                             
-    status = 'Not assigned';
-
-    var bom = Bom.find({Commessa: komesa}).fetch();
-    for (var i = 0; i < bom.length; i++) {
-      var bomconsperpcs = bom[i].BomConsPerPCS;
-      bomconsperpcs = Number(bomconsperpcs).toFixed(3);
-      //console.log("bomconsperpcs: "+ bomconsperpcs);
-
-      var bommatall = bom[i].MaterialAllowance;
-      bommatall = Number(bommatall).toFixed(0);
-      //console.log("bommatall: "+ bommatall);
-    }            
-
-    var bomconsperpcswithall = Number(bomconsperpcs) * ( 1 + (Number(bommatall)/100));
-    bomconsperpcswithall = Number(bomconsperpcswithall).toFixed(3);
-    //console.log("bomconsperpcswithall: "+ bomconsperpcswithall);
-
-    if (isNaN(bomconsperpcs)){
-      bomconsperpcs = 0;
-    }
-    if (isNaN(bommatall)){
-      bommatall = 0;
-    }
-    if (isNaN(bomconsperpcswithall)){
-      bomconsperpcswithall = 0;
-    }
-
-    Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern, BomConsPerPCS: bomconsperpcs, MaterialAllowance: bommatall, BomConsPerPCSwithAll: bomconsperpcswithall, Season: season}, 
-      function(err, numberAffected, rawResponse) {
-        if (numberAffected == false) {
-          console.log("method_insertOrders = False:  " + no);
-        } else {
-          console.log("method_insertOrders = True:  " + no);
-        }
-      }
-    )
   },
   // update Order (Only first time)
   method_updateOrders: function (no, season) {
@@ -4819,8 +4940,8 @@ Meteor.methods({
   
 });
  
-//Meteor Publish 
-
+// Publish Server side 
+  /*
   Meteor.publish("filter_orderAll", function(){
     return Order.find();
   });
@@ -4939,6 +5060,7 @@ Meteor.methods({
   Meteor.publish("filter_allOperators", function(){
     return Operators.find();
   });
+  */
 
   Operators.allow({   
     update: function () {
