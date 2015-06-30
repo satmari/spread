@@ -355,6 +355,13 @@ Order.attachSchema(new SimpleSchema({
         label: "Label Printed",
         optional: true,
         defaultValue: false
+    },
+    'Season': {
+        type: String,
+        label: "Season",
+        optional: true,
+        defaultValue: "",
+        max: 10
     }
 }));
 

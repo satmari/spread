@@ -588,9 +588,9 @@ if (Meteor.isClient) {
         showColumnToggles: true,
         fields: [
           //{ key: '_id', label: '_ID' },
-          //{ key: 'Position', label: 'Pos' , sort: 'ascending'},
+          { key: 'Position', label: 'Pos' , sort: 'ascending'},
           { key: 'No', label: 'No', /*sort: 'descending' */},
-          /*{ key: 'OrderLink', label: 'Linked',
+          { key: 'OrderLink', label: 'Linked',
            fn: function (value){
               if (value == true) {
                 return "Linked";
@@ -598,7 +598,7 @@ if (Meteor.isClient) {
                 return "" ;
               };
             }
-          },*/
+          },
           /*{ key: 'Date', label: 'Date',
             fn: function (value) {
               if (value){
@@ -611,6 +611,7 @@ if (Meteor.isClient) {
           },*/
           //{ key: 'Created', label: 'Created' },
           { key: 'Komesa', label: 'Komesa' },
+          { key: 'Season', label: 'Season' },
           { key: 'Marker', label: 'Marker' },
           //{ key: 'Style', label: 'Style' },
           { key: 'Fabric', label: 'Fabric' },
@@ -795,9 +796,9 @@ if (Meteor.isClient) {
         showColumnToggles: true,
         fields: [
           //{ key: '_id', label: '_ID' },
-          //{ key: 'Position', label: 'Pos' , sort: 'ascending'},
+          { key: 'Position', label: 'Pos' , sort: 'ascending'},
           { key: 'No', label: 'No', /*sort: 'descending' */},
-          /*{ key: 'OrderLink', label: 'Linked',
+          { key: 'OrderLink', label: 'Linked',
            fn: function (value){
               if (value == true) {
                 return "Linked";
@@ -805,7 +806,7 @@ if (Meteor.isClient) {
                 return "" ;
               };
             }
-          },*/
+          },
           /*{ key: 'Date', label: 'Date',
             fn: function (value) {
               if (value){
@@ -818,6 +819,7 @@ if (Meteor.isClient) {
           },*/
           //{ key: 'Created', label: 'Created' },
           { key: 'Komesa', label: 'Komesa' },
+          { key: 'Season', label: 'Season' },
           { key: 'Marker', label: 'Marker' },
           //{ key: 'Style', label: 'Style' },
           { key: 'Fabric', label: 'Fabric' },
@@ -995,9 +997,9 @@ if (Meteor.isClient) {
           showNavigation: 'auto',
           fields: [
             //{ key: '_id', label: '_ID' },
-            //{ key: 'Position', label: 'Pos' , sort: 'ascending'},
+            { key: 'Position', label: 'Pos' , sort: 'ascending'},
             { key: 'No', label: 'No' },
-            /*{ key: 'OrderLink', label: 'Linked',
+            { key: 'OrderLink', label: 'Linked',
               fn: function (value){
                 if (value == true) {
                   return "Linked";
@@ -1005,7 +1007,7 @@ if (Meteor.isClient) {
                   return "" ;
                 };
               }
-            },*/
+            },
             /*{ key: 'Date', label: 'Date',
               fn: function (value) {
                 if (value){
@@ -1018,6 +1020,7 @@ if (Meteor.isClient) {
             },*/
             //{ key: 'Created', label: 'Created' },
             { key: 'Komesa', label: 'Komesa' },
+            { key: 'Season', label: 'Season' },
             { key: 'Marker', label: 'Marker' },
             /*{ key: 'Style', label: 'Style' },*/
             { key: 'Fabric', label: 'Fabric' },
@@ -1095,8 +1098,8 @@ if (Meteor.isClient) {
           fields: [
             //{ key: '_id', label: '_ID' },
             { key: 'No', label: 'No'},
-            //{ key: 'Position', label: 'Pos'},
-            /*{ key: 'OrderLink', label: 'Linked',
+            { key: 'Position', label: 'Pos'},
+            { key: 'OrderLink', label: 'Linked',
               fn: function (value){
                 if (value == true) {
                   return "Linked";
@@ -1104,7 +1107,7 @@ if (Meteor.isClient) {
                   return "" ;
                 };
               }
-            },*/
+            },
             /*{ key: 'Date', label: 'Date',
               fn: function (value) {
                 if (value){
@@ -1118,6 +1121,7 @@ if (Meteor.isClient) {
             
             //{ key: 'Created', label: 'Created' },
             { key: 'Komesa', label: 'Komesa' },
+            { key: 'Season', label: 'Season' },
             { key: 'Marker', label: 'Marker' },
             { key: 'Style', label: 'Style' },
             { key: 'Fabric', label: 'Fabric' },
@@ -1216,7 +1220,7 @@ if (Meteor.isClient) {
             //{ key: '_id', label: '_ID' },
             { key: 'No', label: 'No'},
             /*{ key: 'Position', label: 'Pos'},*/
-            /*{ key: 'OrderLink', label: 'Linked',
+            { key: 'OrderLink', label: 'Linked',
               fn: function (value){
                 if (value == true) {
                   return "Linked";
@@ -1224,7 +1228,7 @@ if (Meteor.isClient) {
                   return "" ;
                 };
               }
-            },*/
+            },
             /*{ key: 'Date', label: 'Date',
               fn: function (value) {
                 if (value){
@@ -1238,6 +1242,7 @@ if (Meteor.isClient) {
             
             //{ key: 'Created', label: 'Created' },
             { key: 'Komesa', label: 'Komesa' },
+            { key: 'Season', label: 'Season' },
             { key: 'Marker', label: 'Marker' },
             { key: 'Style', label: 'Style' },
             { key: 'Fabric', label: 'Fabric' },
@@ -2849,16 +2854,28 @@ if (Meteor.isClient) {
         var linked = order.length;
         //console.log("is linked: " + linked);
 
-        if (linked > 1) {
-          Order.remove({_id: orderToDelete});
+      if (linked > 2 ){
 
-        } else {
-          // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
-          Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
-          //console.log("method_smanjizajedan: " + data);
-          });  
-          Order.remove({_id: orderToDelete});
-        }
+        Meteor.call('method_unlinkid', actual_id, function(err, data) {
+          console.log("method_unlinkid: " + data);
+        });
+
+        Order.update({_id: actual_id}, {$set: {Position: uniquecountSelectedPosition}}); 
+
+      } else if (linked == 2) {
+        
+        //remove Linked flag
+        Meteor.call('method_unlinkpoz', actualStatus, actualPosition, function(err, data) {
+          console.log("method_unlinkpoz: " + data);
+        });
+
+        Order.update({_id: actual_id}, {$set: {Position: uniquecountSelectedPosition}}); 
+
+      } else if (linked == 1) {
+        alert("No way!!! \nThis position have only one order! \n:P")
+      
+      }
+      
 
       } else {
         // Do nothing!
@@ -2906,15 +2923,15 @@ if (Meteor.isClient) {
       } else if (userEdit == "ms12") {
         userEditLoad = "MS 1-2";
       }
-      /*
+      
       // Dodaj load order u znavisnosti od korisnika 
       Meteor.call('method_loadOrder', actualPosition, actualStatus, userEditLoad, function(err, data) {
         //console.log("method_stavipozna0: " + data);
-      }); */
-
+      });
+      /*
       Meteor.call('method_loadOrderID', actual_id, userEditLoad, function(err, data) {
         //console.log("method_stavipozna0: " + data);
-      }); 
+      }); */
       
       rm_EditOrder.hide();
     },
@@ -2967,7 +2984,7 @@ if (Meteor.isClient) {
       }
 
       var spreadDate = new Date();
-      /*
+      
       // Izbrisi aktuelnu pozicuju, tj stavi poziciju na 0
       Meteor.call('method_stavipozna0', actualPosition, actualStatus, function(err, data) {
         //console.log("method_stavipozna0: " + data);
@@ -2977,7 +2994,7 @@ if (Meteor.isClient) {
       Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
         //console.log("method_smanjizajedan: " + data);
       });   
-      */
+      
       var actualPosition = 0;
       var selectedStatus = "CUT";
       
@@ -2986,14 +3003,14 @@ if (Meteor.isClient) {
 
       var selectedOperatorSpreader = Session.get("ses_selectOperatorSpreader");
       //console.log("selectedOperatorSpreader: " + selectedOperatorSpreader);
-      /*
+      
       Meteor.call('method_spreadOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperatorSpreader, function(err, data) {
         //console.log("method_spreadOrder: " + data);
-      });*/
-
+      });
+      /*
       Meteor.call('method_spreadOrderID', actual_id, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperatorSpreader, function(err, data) {
         //console.log("method_spreadOrder: " + data);
-      });
+      });*/
       
       //delete input_actuallaysers;
       rm_EditOrder.hide();
@@ -3031,7 +3048,7 @@ if (Meteor.isClient) {
       var cutDate = new Date();
 
       //Order.update({_id: orderToEdit},{$set: {Cut: userEditCut, CutDate: cutDate, Status: "Finished" }});
-      /*
+      
       // Izbrisi aktuelnu pozicuju, tj stavi poziciju na 0
       Meteor.call('method_stavipozna0', actualPosition, actualStatus, function(err, data) {
         //console.log("method_stavipozna0: " + data);
@@ -3041,7 +3058,7 @@ if (Meteor.isClient) {
       Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
         //console.log("method_smanjizajedan: " + data);
       }); 
-      */
+      
       var actualPosition = 0;
       var selectedStatus = "Finished";
       var uniquecountSelected = Session.get("ses_uniquecountPosF");
@@ -3050,14 +3067,15 @@ if (Meteor.isClient) {
       var selectedOperatorCutter = Session.get("ses_selectOperatorCutter");
       //console.log("selectedOperatorCutter: " + selectedOperatorCutter);
 
-      /*
+      
       Meteor.call('method_cutOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditCut, cutDate, selectedOperatorCutter, function(err, data) {
         //console.log("method_cutOrder: " + data);
-      });*/
+      });
 
+      /*
       Meteor.call('method_cutOrderID', actual_id, selectedStatus, uniquecountSelectedPosition, userEditCut, cutDate, selectedOperatorCutter, function(err, data) {
         //console.log("method_cutOrder: " + data);
-      });
+      });*/
 
       rm_EditOrder.hide();
     },
@@ -3212,21 +3230,40 @@ if (Meteor.isClient) {
       }
       //console.log("uniquecountSelected" + uniquecountSelected);
 
-      Meteor.call('method_unlinkpoz', actualStatus, actualPosition, function(err, data) {
-        console.log("method_unlinkpoz: " + data);
-      }); 
-
       var uniquecountSelectedPosition = uniquecountSelected + 1;
       //console.log("uniquecountSelectedPosition: " + uniquecountSelectedPosition);
 
       // Proveri da li postoji linkovana pozicija i vrati broj
       var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
       var linked = order.length;
-  
+
+      /* Old
       if (linked > 1 ){
         Order.update({_id: actual_id}, {$set: {Position: uniquecountSelectedPosition}});  
       } else {
         alert("No way!!! \nThis position have only one order! \n:P")
+      }*/
+
+       if (linked > 2 ){
+
+        Meteor.call('method_unlinkid', actual_id, function(err, data) {
+          console.log("method_unlinkid: " + data);
+        });
+
+        Order.update({_id: actual_id}, {$set: {Position: uniquecountSelectedPosition}}); 
+
+      } else if (linked == 2) {
+        
+        //remove Linked flag
+        Meteor.call('method_unlinkpoz', actualStatus, actualPosition, function(err, data) {
+          console.log("method_unlinkpoz: " + data);
+        });
+
+        Order.update({_id: actual_id}, {$set: {Position: uniquecountSelectedPosition}}); 
+
+      } else if (linked == 1) {
+        alert("No way!!! \nThis position have only one order! \n:P")
+      
       }
 
       rm_EditOrder.hide();      
@@ -3278,15 +3315,15 @@ if (Meteor.isClient) {
         alert("Actual status and Selected status are the same, \nselected order will be at last position \n:P")
       }
 
-      /*// Change status by position
+      // Change status by position
       Meteor.call('method_changeStatus', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, function(err, data) {
         //console.log("method_changeStatus: " + data);
-      }); */
+      }); 
 
-      // Change status by id
+      /* // Change status by id
       Meteor.call('method_changeStatusID', actual_id, selectedStatus, uniquecountSelectedPosition, function(err, data) {
         //console.log("method_changeStatus: " + data);
-      }); 
+      });*/ 
 
       // Smanji za jednu poziciju od aktuelne pozicije ispod tj pomeri za jednu poziciju gore sve ispod aktuelne
       Meteor.call('method_smanjizajedan', actualPosition, actualStatus, function(err, data) {
@@ -3369,6 +3406,8 @@ if (Meteor.isClient) {
             var skala = all[i]['SKALA marker'];
             var sektor = all[i]['Sector'];
             var pattern = all[i]['Pattern'];
+
+            var season = all[i]['Season'];
               
             /*
             if (status == "1" ){
@@ -3409,7 +3448,7 @@ if (Meteor.isClient) {
             /*}*/
 
             
-            Meteor.call('method_insertOrders', no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, function(err, data) {
+            Meteor.call('method_insertOrders', no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, season, function(err, data) {
               //console.log("method_insertOrders: " + data);
 
             });
@@ -3462,7 +3501,53 @@ if (Meteor.isClient) {
       }
       reader.readAsText(file_a);
       rm_ImportPlannedMarkers.hide();
-    }
+    },
+    'change #filesOrder': function (e) {
+      //alert("Ne radi jos")
+      //var files = e.target.files || e.dataTransfer.files;
+
+      var files_a = e.target.files;
+      //console.log("files_a:" + files_a);
+      var file_a = files_a[0];           
+      //console.log("file_a:" + file_a);
+
+      var reader = new FileReader();
+
+      reader.onload = function (e) { 
+        //alert("reader.onloadend");
+        var text = e.target.result;
+        //alert(text);
+        //var all = $.csv.toObjects(text);
+        var all = $.csv.toObjects(text, {
+            delimiter:";",
+            separator:',',
+        });
+
+          for (var i = 0; i < all.length; i++) {
+            //console.log(all[i]);
+
+            
+            var no  = Number(all[i]['No']);
+            //var bomconsperpcs = all[i]['BomConsPerPCS'];
+            //var materialallowance = all[i]['MaterialAllowance'];
+            //var bomconsperpcswithall = all[i]['BomConsPerPCSwithAll'];
+            //var bomcons = all[i]['BomCons'];
+            //var bomconswithall = all[i]['BomConswithAll'];
+            var  komesa = all[i]['Komesa'];
+            var  season = all[i]['Season'];
+
+            //console .log("No: "+ no + ", Season: " + season);
+            //console.log("No: "+ no + ",bomconsperpcs: "+ bomconsperpcs + ",materialallowance: "+ materialallowance + " , bomconsperpcswithall: " + bomconsperpcswithall + " , bomcons:" + bomcons + ", bomconswithall: " + bomconswithall);
+
+            Meteor.call('method_updateOrders', no, komesa, season /*, bomconsperpcs, materialallowance, bomconsperpcswithall, bomcons, bomconswithall*/, function(err, data) {
+              console.log("method_updateOrders: Done");
+            });
+            
+          } 
+      }
+      reader.readAsText(file_a);
+      rm_ImportPlannedMarkers.hide();
+    },
   });
 
   Template.tmp_ImportOrder.events({
@@ -3741,7 +3826,7 @@ if (Meteor.isClient) {
 
 
 // Meteor Methods on Client side
-Meteor.methods({
+  Meteor.methods({
 
   method_arrayofStatus: function() {
     statusarray = ["Not assigned","SP 1","SP 2","SP 3","MS 1","TRASH"];
@@ -3802,6 +3887,16 @@ Meteor.methods({
         
       }
     //return "Not found method_linkpoz";
+  },
+  method_unlinkid: function (selectedId){
+    var order = Order.find({_id: selectedId}).fetch();
+      for (var i = 0; i < order.length; i++) {
+        Order.update({ _id: order[i]._id},
+          {$set: {OrderLink: false}}
+        ); 
+        
+      }
+    return "Method_unlinkid";
   },
   method_unlinkpoz: function (actualStatus, selectedPosition){
     var order = Order.find({Position: selectedPosition, Status: actualStatus }).fetch();
@@ -4615,8 +4710,8 @@ if (Meteor.isServer) {
       }
       
       return "LengthSum fields are refreshed!";
-   },
-   method_insertOrders: function (no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern) {
+  },
+  method_insertOrders: function (no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, season) {
     
     var order = Order.find({Status: 'Not assigned'}).fetch();
     var posarray = [];
@@ -4639,7 +4734,7 @@ if (Meteor.isServer) {
     setPos = uniquecountPosNA;                             
     status = 'Not assigned';
 
-    Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern}, 
+    Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern, Season: season}, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
 
@@ -4656,8 +4751,28 @@ if (Meteor.isServer) {
         }
       }
     );
+  },
+  method_updateOrders: function (no, komesa, season) {
+    
+    var order = Order.find({No: no}).fetch();
+    for (var i = 0; i < order.length; i++) {
+      var id = order[i]._id;
+    }
 
-   }
+    Order.update({_id: id},
+      {
+        //$set: {BomConsPerPCS:bomconsperpcs , MaterialAllowance:materialallowance, BomConsPerPCSwithAll:bomconsperpcswithall, BomCons:bomcons, BomConswithAll:bomconswithall },
+        $set: {Season: season, Komesa: komesa},
+      }, 
+      function(err, numberAffected, rawResponse) {
+        if (numberAffected == false) {
+          console.log("method_updateOrders = False: " + no );
+        } else {
+          console.log("method_updateOrders = True: " + no );
+        }
+      }
+    )
+  },
   
   
 });
