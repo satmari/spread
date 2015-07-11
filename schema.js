@@ -352,7 +352,7 @@ Order.attachSchema(new SimpleSchema({
     },
     'LabelPrinted': {
         type: Boolean,
-        label: "Label Printed",
+        label: "Marker Printed",
         optional: true,
         defaultValue: false
     },

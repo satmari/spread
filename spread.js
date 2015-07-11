@@ -190,7 +190,8 @@ if (Meteor.isClient) {
       Meteor.subscribe('filter_spreaderm1');
       Session.set("ses_komesa_src", false);
     } else if (ses_loggedUserName == "label"){
-      Meteor.subscribe('filter_label', ses_DaysBefore, ses_DaysAfter);
+      //Meteor.subscribe('filter_label', ses_DaysBefore, ses_DaysAfter);
+      Meteor.subscribe('filter_label');
       Session.set("ses_komesa_src", false);
     } else if (ses_loggedUserName == "cons"){
       Meteor.subscribe('filter_cons', ses_DaysBefore, ses_DaysAfter);
@@ -1041,7 +1042,7 @@ if (Meteor.isClient) {
           },
           { key: 'CutOperator', label: 'Cut Operator'},
           { key: 'Consumption', label: 'Total Consumption' },
-          { key: 'LabelPrinted', label: 'LabelPrinted', hidden: true},
+          { key: 'LabelPrinted', label: 'MarkerPrinted'},
           { key: 'Comment', label: 'Comment' },
           { key: 'SkalaMarker', label: 'SkalaMarker', hidden: true},
           { key: 'Sector', label: 'Sector', hidden: true},
@@ -1254,7 +1255,7 @@ if (Meteor.isClient) {
           { key: 'CutOperator', label: 'Cut Operator'},
           //{ key: 'OrderLink', label: 'Linked' },
           { key: 'Consumption', label: 'Total Consumption' },
-          { key: 'LabelPrinted', label: 'LabelPrinted', hidden: true},
+          { key: 'LabelPrinted', label: 'MarkerPrinted', hidden: true},
           { key: 'Comment', label: 'Comment' },
           { key: 'SkalaMarker', label: 'SkalaMarker', hidden: true},
           { key: 'Sector', label: 'Sector', hidden: true},
@@ -1546,7 +1547,7 @@ if (Meteor.isClient) {
             //{ key: 'Created', label: 'Created' },
             { key: 'Komesa', label: 'Komesa' },
             { key: 'Marker', label: 'Marker' },
-            { key: 'Style', label: 'Style' },
+            /*{ key: 'Style', label: 'Style' },
             { key: 'Fabric', label: 'Fabric' },
             { key: 'ColorCode', label: 'Color Code' },
             { key: 'ColorDesc', label: 'Color Desc' },
@@ -1565,6 +1566,7 @@ if (Meteor.isClient) {
             //{ key: 'Extra', label: 'Extra (cm)' },
             //{ key: 'LengthSum', label: 'Length Sum (m)' },
             { key: 'Width', label: 'Width (cm)' },
+            */
             //{ key: 'S', label: 'S' },
             { key: 'S_Cut', label: 'S Cut'},
             //{ key: 'M', label: 'M' },
@@ -1604,7 +1606,7 @@ if (Meteor.isClient) {
             //{ key: 'OrderLink', label: 'Linked' },
             //{ key: 'Comment', label: 'Comment' },
             //{ key: 'Consumption', label: 'Consumption' },
-            { key: 'LabelPrinted', label: 'LabelPrinted' },
+            { key: 'LabelPrinted', label: 'MarkerPrinted' },
           ],
             //useFontAwesome: true,
             //group: 'Komesa', 
@@ -1726,7 +1728,7 @@ if (Meteor.isClient) {
             //{ key: 'OrderLink', label: 'Linked' },
             //{ key: 'Comment', label: 'Comment' },
             { key: 'Consumption', label: 'Total Consumption' },
-            //{ key: 'LabelPrinted', label: 'LabelPrinted' },
+            //{ key: 'LabelPrinted', label: 'MarkerPrinted' },
           ],
             //useFontAwesome: true,
             //group: 'Komesa', 
@@ -4632,20 +4634,23 @@ Meteor.methods({
     return Order.find({ Status: "CUT"});
   });
 
-  Meteor.publish("filter_label", function(Daysbefore, Daysafter){
+  Meteor.publish("filter_label", function(/*Daysbefore, Daysafter*/){
     return Order.find({
     $and: [
-      { $or: [
-          { Status: "CUT" },
-          { Status: "Finished" }
-        ]},
+      { /*$or: [
+          { */Status: "CUT" },
+          /*{ Status: "Finished" }
+        ]
+      },*/
       { $or: [ 
           { LabelPrinted: false },  
           { LabelPrinted: { $exists: false }}
-        ]},
+        ]
+      }/*,
       { $and: [ 
           {SpreadDate: {$gte: Daysbefore, $lt: Daysafter}}
-        ]},
+        ]
+      },*/
       ]
     })
   });
