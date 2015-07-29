@@ -1041,9 +1041,10 @@ if (Meteor.isClient) {
             }
           },
           { key: 'CutOperator', label: 'Cut Operator'},
+          { key: 'Comment', label: 'Comment' },
           { key: 'Consumption', label: 'Total Consumption' },
           { key: 'LabelPrinted', label: 'MarkerPrinted'},
-          { key: 'Comment', label: 'Comment' },
+          
           { key: 'SkalaMarker', label: 'SkalaMarker', hidden: true},
           { key: 'Sector', label: 'Sector', hidden: true},
           { key: 'Pattern', label: 'Pattern', hidden: true},
@@ -1253,10 +1254,11 @@ if (Meteor.isClient) {
             }
           },
           { key: 'CutOperator', label: 'Cut Operator'},
+          { key: 'Comment', label: 'Comment' },
           //{ key: 'OrderLink', label: 'Linked' },
           { key: 'Consumption', label: 'Total Consumption' },
           { key: 'LabelPrinted', label: 'MarkerPrinted', hidden: true},
-          { key: 'Comment', label: 'Comment' },
+          
           { key: 'SkalaMarker', label: 'SkalaMarker', hidden: true},
           { key: 'Sector', label: 'Sector', hidden: true},
           { key: 'Pattern', label: 'Pattern', hidden: true},
@@ -1361,7 +1363,7 @@ if (Meteor.isClient) {
             //{ key: 'L', label: 'L' },
             //{ key: 'Status', label: 'Status'},
             //{ key: 'Priority', label: 'Priority' },
-            { key: 'Load', label: 'Load'},
+            //{ key: 'Load', label: 'Load'},
             //{ key: 'Spread', label: 'Spread'},
             //{ key: 'Cut', label: 'Cut' },
             //{ key: 'OrderLink', label: 'Linked' },
@@ -1579,7 +1581,6 @@ if (Meteor.isClient) {
             //{ key: 'XXLonLayer', label: 'XXL per Layer'},
             //{ key: 'XXL', label: 'XXL Marker' },
             { key: 'XXL_Cut', label: 'XXL Cut'},
-            //{ key: 'Status', label: 'Status'},
             { key: 'Priority', label: 'Priority',  
               fn: function (value){
                 if (value == 2) {
@@ -1591,8 +1592,9 @@ if (Meteor.isClient) {
                 }
               }
             },
-            /*{ key: 'Load', label: 'Load'},*/
-            /*{ key: 'Spread', label: 'Spread'},*/
+            //{ key: 'Status', label: 'Status'},
+            //{ key: 'Load', label: 'Load'},
+            { key: 'Spread', label: 'Spread'},
             { key: 'SpreadDate', label: 'Spread Date', sort: 'descending' ,
              fn: function (value) {
               if (value){
