@@ -352,13 +352,54 @@ Order.attachSchema(new SimpleSchema({
     },
     'LabelPrinted': {
         type: Boolean,
-        label: "Label Printed",
+        label: "Marker Printed",
         optional: true,
         defaultValue: false
+    },
+    'BomConsPerPCS': {
+        type: Number,
+        label: "BOM Cons. [mt/pcs]",
+        optional: true,
+        decimal: true,
+        //min: 0,
+    },
+    'MaterialAllowance': {
+        type: Number,
+        label: "Material Allowance (DiBa) [%]",
+        optional: true,
+        decimal: false,
+        //min: 0
+    },
+    'BomConsPerPCSwithAll': {
+        type: Number,
+        label: "BOM Cons. Per PCS with All. [mt/pcs]",
+        optional: true,
+        decimal: true,
+        //min: 0,
+    },
+    'BomCons': {
+        type: Number,
+        label: "BOM Cons. [mt]",
+        optional: true,
+        decimal: true,
+        //min: 0
+    },
+    'BomConswithAll': {
+        type: Number,
+        label: "BOM Cons. with All [mt]",
+        optional: true,
+        decimal: true,
+        //min: 0
+    },
+    'Season': {
+        type: String,
+        label: "Season",
+        optional: true,
+        defaultValue: "",
+        max: 10
     }
-}));
 
-//Order.attachSchema(Schemas.OneOrder);
+}));
 
 //If this is not possible or you don't care to validate the object's properties, use the 
 //blackbox: true
@@ -367,6 +408,8 @@ Order.attachSchema(new SimpleSchema({
 
 /* Potrebno 
 No
+Position
+Status
 Date
 Created
 Komesa
@@ -392,7 +435,12 @@ M_Cut
 L
 LonLayer
 L_Cut
-Status
+XL
+XLonLayer
+XL_Cut
+XXL
+XXLonLayer
+XXL_Cut
 Priority
 Load
 Spread
@@ -408,6 +456,12 @@ Sector
 Pattern
 Consumption
 LabelPrinted
+BomConsPerPCS
+MaterialAllowance
+BomConsPerPCSwithAll
+BomCons
+BomConswithAll
+Season
 */
 
 Operators = new Meteor.Collection("operators");
@@ -453,4 +507,85 @@ Operators.attachSchema(new SimpleSchema({
             }
         }
     }
+
+}));
+
+Table_capacity = new Meteor.Collection("table_capacity");
+Table_capacity.attachSchema(new SimpleSchema({
+    'Date': {
+        type: String,
+        label: "Date",
+        optional: false,
+    },
+    'Time': {
+        type: String,
+        label: "Time",
+        optional: false,
+    },
+    'Markers': {
+        type: Number,
+        label: "Markers",
+        optional: false,
+        decimal: false, 
+        min: 0
+    },
+    'Orders': {
+        type: Number,
+        label: "Orders",
+        optional: false,
+        decimal: false, 
+        min: 0
+    },
+    'CreationDate': {
+        type: Date,
+        label: "CreationDate",
+        autoValue: function() {
+            if (this.isInsert) {
+                return new Date;
+            } else if (this.isUpsert) {
+                return {$setOnInsert: new Date};
+            } else {
+                this.unset();
+            }
+        }
+    }
+    
+}));
+
+Bom = new Meteor.Collection("bom");
+Bom.attachSchema(new SimpleSchema({
+    'Commessa': {
+        type: String,
+        label: "Commessa",
+        unique: true,
+        optional: false,
+    },
+    'BomConsPerPCS': {
+        type: Number,
+        label: "BOM Cons. [mt/pcs]",
+        optional: false,
+        decimal: true,
+        min: 0,
+    },
+    'MaterialAllowance': {
+        type: Number,
+        label: "Material Allowance (DiBa) [%]",
+        optional: false,
+        decimal: true,
+        min: 0
+    },
+    'CreationDate': {
+        type: Date,
+        label: "Creation/Update Date",
+        autoValue: function() {
+            if (this.isInsert) {
+                return new Date;
+            } else if (this.isUpsert) {
+                return {$setOnInsert: new Date};
+            } else {
+                this.unset();
+            }
+        }
+    }
+    
 }));

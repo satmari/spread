@@ -30,7 +30,7 @@
 
   <div class="navbar-header">
     <!--<span class="glyphicon glyphicon-scissors"></span> -->
-    <a class="navbar-brand" href="#">Cutting application 
+    <a class="navbar-brand" href="https://trello.com/b/HpMZFqcs/cutting-application" target="_blank">Cutting application 
     </a>
     
     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
@@ -53,12 +53,19 @@
     <ul class="nav navbar-nav">
       <li><a href="#">|</a></li>
     </ul>
+    <ul class="nav navbar-nav">
+      <li><a href="https://trello.com/b/HpMZFqcs/cutting-application" target="_blank">App info</a></li>
+    </ul>
+    <ul class="nav navbar-nav">
+      <li><a href="#">|</a></li>
+    </ul>
     
     <ul class="nav navbar-nav"><li class="active">
        <div class="navbar-form">
         <!--<button id="new_order" class="btn btn-default">Add new order</button> 
         <button id="import_orders_analytics" class="btn btn-default">Import orders from Analytics</button>-->
         <button id="import_from_planned_markers" class="btn btn-default">Import from Planned Markers</button>
+        <button id="import_from_consumption" class="btn btn-default">Import from Consumption</button>
         <button id="export_orders" class="btn btn-info">Export order</button> 
         <button id="import_orders" class="btn btn-info">Import order</button>
         <button id="refresh_sum" class="btn btn-success">Refresh Meters Req</button>
@@ -153,9 +160,9 @@
         <div class="form-group" style="border: 1px solid #000; border-radius: 5px; margin-left: 10px;">
           <!--<span style="color: white">Filter Order Date : </span>
           <input type="date" id="filterOrderDate" class="form-control" placeholder="Filter Order Date"/>-->
-          <span style="color: white; margin-left: 10px; margin-right: 10px;">Filter Order Range (Finished): </span>
-          <input type="date" id="filterOrderDateBefore" class="form-control" placeholder="Filter Order Date Before"/> <span style="color: white"> - </span>
-          <input type="date" id="filterOrderDateAfter" class="form-control" placeholder="Filter Order Date After"/>
+          <span style="color: white; margin-left: 10px; margin-right: 10px;">Date Filter (Finished <span style="font-size:xx-small;">(CutDate)</span> or inTrash <span style="font-size:xx-small;">(OrderDate)</span>): </span>
+          <input type="date" id="filterOrderDateBefore" class="form-control"> <span style="color: white"> - </span>
+          <input type="date" id="filterOrderDateAfter" class="form-control">
           <button id="btnfilterOrderDateStart" class="btn btn-default">
             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
           </button>
@@ -212,33 +219,66 @@
     </ul>
 
   {{/if}}
-
+  <!--
   {{#if isLabel}}
     <ul class="nav navbar-nav">
       <div class="navbar-form">
       <div class="form-group" style="border: 1px solid #000; border-radius: 5px; margin-left: 10px;">
         <span style="color: white; margin-left: 10px; margin-right: 10px;">Filter Order Range (Spread Date): </span>
-        <input type="date" id="filterOrderDateBefore" class="form-control" placeholder="Filter Order Date Before"/> <span style="color: white"> - </span>
-        <input type="date" id="filterOrderDateAfter" class="form-control" placeholder="Filter Order Date After"/>
+        <input type="date" id="filterOrderDateBefore" class="form-control" /> <span style="color: white"> - </span>
+        <input type="date" id="filterOrderDateAfter" class="form-control" />
         <button id="btnfilterOrderDateStart" class="btn btn-default">
           <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
         </button>
+        
+        <button id="btnRefresh" class="btn btn-default">
+          <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+        </button>
+        
       </div>
       </div>  
     </ul>
   {{/if}}
-
+  -->
 
   {{#if isCons}}
     <ul class="nav navbar-nav">
       <div class="navbar-form">
       <div class="form-group" style="border: 1px solid #000; border-radius: 5px; margin-left: 10px;">
+        <button id="import_from_consumption" class="btn btn-default">Import from Consumption</button>
         <span style="color: white; margin-left: 10px; margin-right: 10px;">Filter Order Range (Spread Date): </span>
-        <input type="date" id="filterOrderDateBefore" class="form-control" placeholder="Filter Order Date Before"/> <span style="color: white"> - </span>
-        <input type="date" id="filterOrderDateAfter" class="form-control" placeholder="Filter Order Date After"/>
+        <input type="date" id="filterOrderDateBefore" class="form-control" /> <span style="color: white"> - </span>
+        <input type="date" id="filterOrderDateAfter" class="form-control" />
         <button id="btnfilterOrderDateStart" class="btn btn-default">
           <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
         </button>
+        <!--
+        <button id="btnRefresh" class="btn btn-default">
+          <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+        </button>
+        -->
+      </div>
+      </div>  
+    </ul>
+  {{/if}}
+
+  {{#if isDiba}}
+    <ul class="nav navbar-nav">
+      <div class="navbar-form">
+      <div class="form-group" style="border: 1px solid #000; border-radius: 5px; margin-left: 10px;">
+        <button id="update_order_and_bom" class="btn btn-default">Import/Update form CSV file</button>
+        <button id="newcommessa" class="btn btn-default">Add New Commessa</button>
+        <!--
+        <span style="color: white; margin-left: 10px; margin-right: 10px;">Filter Order Range (Spread Date): </span>
+        <input type="date" id="filterOrderDateBefore" class="form-control" /> <span style="color: white"> - </span>
+        <input type="date" id="filterOrderDateAfter" class="form-control" />
+        <button id="btnfilterOrderDateStart" class="btn btn-default">
+          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+        </button>
+        <button id="btnRefresh" class="btn btn-default">
+          <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+        </button>
+        -->
       </div>
       </div>  
     </ul>
@@ -296,16 +336,53 @@
 
 <template name="reactiveTebleList">
   <div>
-   {{#if isAdmin}}
-    <h3>Order table - <span style="color: red; font-size: 20px">{{filter}}</span></h3>
+  {{#if isAdmin}}
+    <h3>Order table - <span style="color: red; font-size: 20px">{{filter}}</span><br />
+    <span style="color: grey; font-size: 16px">Orders (lines): {{markersintable}}</span>
+    <span style="color: grey; font-size: 16px">, Markers: {{markersintableuniq}}</span>
+    
+    <!--{{#if isStatusFandB}}
+      <br />
+      <span style="color: grey; font-size: 16px">All Orders (lines): {{allmarkersintable}}</span>
+      <span style="color: grey; font-size: 16px">All Markers: {{allmarkersintableuniq}}</span>
+    {{/if}}-->
+
+    {{#if isStatusNotAssigned}}
+    <br />
+      <span style="color: grey; font-size: 16px"> Find Orders (lines): {{allmarkersintable}}</span>
+      <!--<span style="color: grey; font-size: 16px"> , Find Markers: {{allmarkersintableuniq}}</span>-->
+    <br />
+    <div class="input-group" style="width:500px">
+      <!--<span class="input-group-addon">Search Commesa</span>-->
+      <!--<span class="input-group-btn cancel">
+        <button class="btn btn-info" type="submit" id="komesa_src_btn_cancel">Show all</button>
+      </span>-->
+      <input type="text" class="form-control" id="komesa_src_val" placeholder="Search komesa">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="submit" id="komesa_src_btn">Search</button>
+      </span>
+    </div>
+    {{/if}}
+
+    </h3>
     {{> reactiveTable collection=orders settings=settingsAdmin}}
   {{/if}}
 
   {{#if isUserGuest}}
-    <h3>Order table - <span style="color: red; font-size: 20px">{{filter}}</span></h3>
+    <h3>Order table - <span style="color: red; font-size: 20px">{{filter}}</span><br />
+    <span style="color: grey; font-size: 16px">Orders (lines): {{markersintable}}</span>
+    <span style="color: grey; font-size: 16px">, Markers: {{markersintableuniq}}</span>
+
+    <!--{{#if isStatusFandB}}
+      <br />
+      <span style="color: grey; font-size: 16px">All Orders (lines): {{allmarkersintable}}</span>
+      <span style="color: grey; font-size: 16px">All Markers: {{allmarkersintableuniq}}</span>
+    {{/if}}-->
+
+    </h3>
     {{> reactiveTable collection=orders settings=settingsGuest}}
   {{/if}}
-
+  
   {{#if isUserSp}}
     <!--<h3>Order table</h3>-->
     {{> reactiveTable collection=orders settings=settingsUserSp}}
@@ -324,6 +401,11 @@
   {{#if isUserCons}}
     <h3>Order table</h3>
     {{> reactiveTable collection=orders settings=settingsUserCons}}
+  {{/if}}
+
+  {{#if isUserDiba}}
+    <h3>Commessa table</h3>
+    {{> reactiveTable collection=bom settings=settingsUserDiba}}
   {{/if}}
 
   </div>
@@ -387,9 +469,16 @@
                       <div>
                         <button type="submit" id="changestatus" class="btn btn-info btn-sm">Change Status</button>  
                       </div>
+
+                      <br />
+                       <hr />
+
+                      <div>
+                        <button type="submit" id="refreshConsOrder" class="btn btn-default btn-sm">Refresh Consumption fields for Order</button>  
+                      </div>
               <hr />
               <big><b>Order Information</b></big><br />
-              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" autosave=true doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,XL,XXL,SpreadDate,SpreadOperator,CutDate,CutOperator,Status,Position,OrderLink"}}
+              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" autosave=true doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,XL,XXL,SpreadDate,SpreadOperator,CutDate,CutOperator,Status,Position,OrderLink,SkalaMarker,Sector,Pattern,Consumption,BomConsPerPCS,MaterialAllowance,BomConsPerPCSwithAll,BomCons,BomConswithAll"}}
 
               <!--<div class="">
                 <br />
@@ -506,7 +595,7 @@
                     <hr />
                     <tr>
                       <td>
-                        <a href="#" id="printOrder" class="btn btn-success btn-lg btn-block">Label Printed</a>
+                        <a href="#" id="printOrder" class="btn btn-success btn-lg btn-block">Marker Printed</a>
                       </td>
                     </tr>
                   </tbody>
@@ -567,6 +656,24 @@
   </div>
 </template>
 
+<template name="tmp_ImportConsumption">
+    <div>
+    <p>Insert from CSV file <b>(Consumption file)</b>:</p> 
+    <input type="file" id="files_consumption" name="files[]" enctype="multipart/form-data" />
+    <br />
+    <!--<button id="insert_csv_file">Insert form CSV file</button>-->
+    <br />
+    <hr />
+  </div><!--
+  <div>
+    <p>Paste Your CSV code <b>(Planned Markers file)</b>:</p> 
+      <textarea id="csv3" class="text" style="width:100%; height:200px;"></textarea>
+      <br />
+      <button id="insert_csv_text">Import from CSV code</button>
+      <br />
+  </div>-->
+</template>
+
 <template name="tmp_ImportOrder">
   <div>
     <p>Import orders from CSV file:</p> 
@@ -600,8 +707,8 @@
     <div>
       <p>Copy CSV code (Order list): </p>
       <textarea id="textarea_json" class="text" style="width:100%; height:200px;">
-_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;PcsBundle;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;XL;XLonLayer;XL_Cut;XXL;XXLonLayer;XXL_Cut;Priority;Load;Spread;SpreadDate;SpreadOperator;Cut;CutDate;CutOperator;Comment;OrderLink;SkalaMarker;Sector;Pattern;Consumption;LabelPrinted
-{{#each order}}{{_id}};{{No}};{{Position}};{{Status}};{{formatDate Date "short"}};{{formatDate Created "long"}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{formaColorDesc ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{formatNumber Length}};{{Extra}};{{formatNumber LengthSum}};{{PcsBundle}};{{Width}};{{S}};{{SonLayer}};{{S_Cut}};{{M}};{{MonLayer}};{{M_Cut}};{{L}};{{LonLayer}};{{L_Cut}};{{XL}};{{XLonLayer}};{{XL_Cut}};{{XXL}};{{XXLonLayer}};{{XXL_Cut}};{{Priority}};{{Load}};{{Spread}};{{formatDate SpreadDate "short"}};{{SpreadOperator}};{{Cut}};{{formatDate CutDate "short"}};{{CutOperator}};{{Comment}};{{OrderLink}};{{SkalaMarker}};{{Sector}};{{Pattern}};{{Consumption}};{{LabelPrinted}}
+_id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;PcsBundle;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;XL;XLonLayer;XL_Cut;XXL;XXLonLayer;XXL_Cut;Priority;Load;Spread;SpreadDate;SpreadOperator;Cut;CutDate;CutOperator;Comment;OrderLink;SkalaMarker;Sector;Pattern;Consumption;LabelPrinted;BomConsPerPCS;MaterialAllowance;BomConsPerPCSwithAll;BomCons;BomConswithAll;Season
+{{#each order}}{{_id}};{{No}};{{Position}};{{Status}};{{formatDate Date "short"}};{{formatDate Created "long"}};{{Komesa}};{{Marker}};{{Style}};{{Fabric}};{{formaColorDesc ColorCode}};{{ColorDesc}};{{Bagno}};{{Layers}};{{LayersActual}};{{formatNumber Length}};{{Extra}};{{formatNumber LengthSum}};{{PcsBundle}};{{Width}};{{S}};{{SonLayer}};{{S_Cut}};{{M}};{{MonLayer}};{{M_Cut}};{{L}};{{LonLayer}};{{L_Cut}};{{XL}};{{XLonLayer}};{{XL_Cut}};{{XXL}};{{XXLonLayer}};{{XXL_Cut}};{{Priority}};{{Load}};{{Spread}};{{formatDate SpreadDate "short"}};{{SpreadOperator}};{{Cut}};{{formatDate CutDate "short"}};{{CutOperator}};{{Comment}};{{OrderLink}};{{SkalaMarker}};{{Sector}};{{Pattern}};{{Consumption}};{{LabelPrinted}};{{BomConsPerPCS}};{{MaterialAllowance}};{{BomConsPerPCSwithAll}};{{BomCons}};{{BomConswithAll}};{{Season}}
 {{/each}}</textarea>
       <!--<textarea id="textarea_json" class="text" style="width:100%; height:200px;">
 _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDesc;Bagno;Layers;LayersActual;Length;Extra;LengthSum;Width;S;SonLayer;S_Cut;M;MonLayer;M_Cut;L;LonLayer;L_Cut;Priority;Load;Spread;SpreadDate;Cut;CutDate;Comment;OrderLink
@@ -923,4 +1030,52 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
 
 <template name="tmp_NewOperators">
   {{> quickForm collection="Operators" id="insertOperatorsForm" type="insert" buttonContent="Add Operator" omitFields="Created"}}
+</template>
+
+<template name="tmp_NewCommessa">
+  {{> quickForm collection="Bom" id="insertBomForm" type="insert" buttonContent="Add Commessa" omitFields="CreationDate"}}
+</template>
+
+<template name="tmp_EditCommessa">
+ <div class="container">
+      <div class="row" style="width:550px">
+          <div>
+            <button type="submit" id="refreshConsCommessa" class="btn btn-info btn-sm">Refresh all Markers with this Commessa</button>  
+          </div>
+          <br />
+          <hr >
+          <br />
+          <div>
+          {{#autoForm collection="Bom" id="editBomForm" type="update" autosave=true doc=editingDoc }}
+              <fieldset>
+               {{> afQuickField name='Commessa'}} 
+               {{> afQuickField name='BomConsPerPCS'}}
+               {{> afQuickField name='MaterialAllowance'}}
+              </fieldset>
+          {{/autoForm}}
+          </div>
+
+      </div>
+ </div>
+</template>
+
+<template name="tmp_UpdateOrderandBOM">
+  <div>
+    <p>UPDATE ORDER from CSV file:</p> 
+    <input type="file" id="filesOrder" name="files[]" enctype="multipart/form-data" />
+    <br />
+    <!--<button id="insert-csv-from-code">Import from CSV file</button>-->
+    <br />
+    <hr />
+  </div>
+
+  <div>
+    <p>Import BOM form CSV file:</p> 
+    <input type="file" id="filesBOM" name="files[]" enctype="multipart/form-data" disabled/>
+    <br />
+    <!--<button id="insert-csv-from-code">Import from CSV file</button>-->
+    <br />
+    <hr />
+  </div>
+  
 </template>
