@@ -1040,7 +1040,7 @@ if (Meteor.isClient) {
               }
             }
           },
-          { key: 'CutOperator', label: 'Cut Operator'},
+          { key: 'CutOperator', label: 'Cut Operator'}, 
           { key: 'Comment', label: 'Comment' },
           { key: 'Consumption', label: 'Total Consumption' },
           { key: 'LabelPrinted', label: 'MarkerPrinted'},
