@@ -2306,15 +2306,9 @@ if (Meteor.isClient) {
         for (var i = 0; i < order.length; i++) {
           var SpreadOperatorBeforeChangeShiftNow = order[i].SpreadOperatorBeforeChangeShift;
         }
-        console.log(SpreadOperatorBeforeChangeShiftNow);
+        //console.log(SpreadOperatorBeforeChangeShiftNow);
         return SpreadOperatorBeforeChangeShiftNow;
-        /*
-        if (SpreadOperatorBeforeChangeShiftNow == null) {
-          return false; 
-        } else {
-          return true;
-        }
-        */
+        
       },
 
   });
