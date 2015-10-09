@@ -111,6 +111,20 @@ Order.attachSchema(new SimpleSchema({
         decimal: true, 
         min: 0
     },
+    'LayersBeforeChangeShift': {
+        type: Number,
+        label: "Layers Before Change Shift",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'LayersAfterChangeShift': {
+        type: Number,
+        label: "Layers After Change Shift",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
     'Length': {
         type: Number,
         label: "Length",
@@ -286,6 +300,13 @@ Order.attachSchema(new SimpleSchema({
     'SpreadOperator': {
         type: String,
         label: "Spread Operator",
+        optional: true,
+        defaultValue: "",
+        max: 50
+    },
+    'SpreadOperatorBeforeChangeShift': {
+        type: String,
+        label: "Spread Operator Before Change Shift",
         optional: true,
         defaultValue: "",
         max: 50
