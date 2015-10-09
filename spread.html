@@ -67,7 +67,7 @@
         <button id="import_from_planned_markers" class="btn btn-default">Import from Planned Markers</button>
         <button id="import_from_consumption" class="btn btn-default">Import from Consumption</button>
         <button id="export_orders" class="btn btn-info">Export order</button> 
-        <button id="import_orders" class="btn btn-info">Import order</button>
+        <!--<button id="import_orders" class="btn btn-info">Import order</button>-->
         <!--<button id="refresh_sum" class="btn btn-success">Refresh Meters Req</button>-->
         <button id="statistics" class="btn btn-warning">Statistics</button>
       </div></li>
@@ -516,18 +516,23 @@
                     {{else}}
                                         
                       {{#autoForm collection="Order" id="editOrderForm" type="update" autosave=true doc=editingDoc }}
-                        <fieldset>
+                        <div>
                           {{> afQuickField name='LayersActual'}}
                           {{> afQuickField name='Comment'}}
-                        </fieldset>
+                        </div>
+                        <div id="LayersBeforeChangeShift">
+                          {{> afQuickField name='LayersBeforeChangeShift'}}
+                        </div>  
                       {{/autoForm}}
-
-                      <hr />
-                      <tr>
-                        <td>
-                          <a href="#" id="spreadOrder" class="btn btn-info btn-lg btn-block"> Spread Order</a>
-                        </td>
-                      </tr>
+                      
+                      <a href="#" id="spreadOrder" class="btn btn-info btn-lg btn-block"> Spread Order</a>
+                      {{#if alredyPartiallySpread}}
+                      <br />
+                      <p>* Marker is already partially spread</p> 
+                      {{else}}
+                      <a href="#" id="spreadPartiallyOrder" class="btn btn-default btn-lg btn-block"> Spread Partially Order</a>
+                      {{/if}}
+                      <a href="#" id="confirmspreadPartiallyOrder" class="btn btn-success btn-lg btn-block"> Confirm Spread Partially Order</a>
 
                     {{/if}}
                 {{/if}}

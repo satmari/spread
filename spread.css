@@ -11,11 +11,16 @@
 .navbar-default {
   /*background-color: #BE3636 !important;*/
 }
+#LayersBeforeChangeShift {
+  visibility: hidden;
+}
+#confirmspreadPartiallyOrder {
+  visibility: hidden;
+}
 html {
   /*overflow-y: scroll;*/
   overflow-x: auto;
 }
-
 tbody .No {
   /*border-left: 1px solid #fff !important;
   border-right: 1px solid #fff !important;
@@ -23,7 +28,6 @@ tbody .No {
   font-size: 16px;
   font-weight: bold;
 }
-
 body {
   /*background: url("/background/subtle_white_feathers.png") repeat;*/
   background: url("/background/gord3.jpg") no-repeat center center fixed; 
@@ -32,7 +36,6 @@ body {
   -o-background-size: cover;
   background-size: cover;
 }
-
 .operator {
   position: absolute;
   color: white;

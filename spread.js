@@ -926,6 +926,24 @@ if (Meteor.isClient) {
               };
             }
           },
+          { key: 'LayersBeforeChangeShift', label: 'Layers Before Change Shift',
+            fn: function (value){
+              if (value == 0) {
+                return "";
+              } else {
+                return value ;
+              };
+            }
+          },
+          { key: 'LayersAfterChangeShift', label: 'Layers After Change Shift',
+            fn: function (value){
+              if (value == 0) {
+                return "";
+              } else {
+                return value ;
+              };
+            }
+          },
           { key: 'Length', label: 'Length (m)', 
               fn: function  (value){
                 var v = Number(value);
@@ -1344,6 +1362,16 @@ if (Meteor.isClient) {
                 };
               }
             },
+            { key: 'LayersBeforeChangeShift', label: 'Layers Before Change Shift',
+              fn: function (value){
+                if (value == 0) {
+                  return "";
+                } else {
+                  return value ;
+                };
+              }
+            },
+            { key: 'SpreadOperatorBeforeChangeShift', label: 'Spread Operator Before Change Shift' },
             { key: 'Length', label: 'Length (m)', 
               fn: function  (value){
                 var v = Number(value);
@@ -1992,7 +2020,6 @@ if (Meteor.isClient) {
   Template.tmp_EditOrder.helpers({
       editingDoc: function editingDocHelper() {
         return Order.findOne({_id: Session.get("selectedDocId")});
-        
       },
       isUserAdmin: function() {
         var userId = Meteor.userId();
@@ -2272,36 +2299,23 @@ if (Meteor.isClient) {
         } else {
           return true;
         }
-      }
-
-      /*isSpreaded: function () {
-        var ses = Session.get("selectedDocId")
+      },
+      alredyPartiallySpread: function (){
+        var ses = Session.get("selectedDocId");
         var order = Order.find({_id: ses}).fetch();
         for (var i = 0; i < order.length; i++) {
-          var Spreaded = order[i].Spread;
+          var SpreadOperatorBeforeChangeShiftNow = order[i].SpreadOperatorBeforeChangeShift;
         }
-
-        console.log("Spreaded: " + Spreaded);
-        if (Spreaded) {
-          return false;
+        console.log(SpreadOperatorBeforeChangeShiftNow);
+        return SpreadOperatorBeforeChangeShiftNow;
+        /*
+        if (SpreadOperatorBeforeChangeShiftNow == null) {
+          return false; 
         } else {
           return true;
         }
-      },*/
-
-      /*Comment: function() {
-        var editingDoc = Session.get("selectedDocId");
-        if (editingDoc) {
-            var editingDocAll = Order.find({_id: editingDoc}).fetch();
-            
-            for (var i = 0; i < editingDocAll.length; i++) {
-              var commentEditing = editingDocAll[0].Comment;
-              //console.log(commentEditing);
-            }
-            //console.log("in Comment: " + editingDocAll.Comment);
-            return commentEditing;
-        }
-      }*/
+        */
+      },
 
   });
 
@@ -3110,11 +3124,13 @@ if (Meteor.isClient) {
           var XLonLayer = order[i].XLonLayer;
           var XXLonLayer = order[i].XXLonLayer;
           var layers = order[i].Layers;
-          var layersactual = order[i].LayersActual;
           */
+          var layersactual = order[i].LayersActual;
+          var layersbeforechangeshift = order[i].LayersBeforeChangeShift;
           var actualPosition = order[i].Position;
           var actualStatus = order[i].Status;
           var actual_id = order[i]._id;
+
       }
 
       var userEdit = Session.get("ses_loggedUserName");
@@ -3165,14 +3181,52 @@ if (Meteor.isClient) {
       var selectedOperatorSpreader = Session.get("ses_selectOperatorSpreader");
       //console.log("selectedOperatorSpreader: " + selectedOperatorSpreader);
 
-      Meteor.call('method_spreadOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperatorSpreader, function(err, data) {
+      Meteor.call('method_spreadOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperatorSpreader, layersbeforechangeshift, function(err, data) {
         //console.log("method_spreadOrder: " + data);
       });
       
       //delete input_actuallaysers;
       rm_EditOrder.hide();
     },
+    'click #spreadPartiallyOrder': function (e,t){
+      $('#spreadOrder').hide();
+      $('#spreadPartiallyOrder').hide();
+      
+      $('#confirmspreadPartiallyOrder').css('visibility', 'visible');
+      $('#LayersBeforeChangeShift').css('visibility', 'visible');
 
+      //---------For temporary period between (problem of minus nothing)
+      var orderToEdit = Session.get("selectedDocId");
+      //console.log("orderToEdit: " + orderToEdit);
+
+      var order = Order.find({_id: orderToEdit}).fetch();
+      for (var i = 0; i < order.length; i++) {
+        var actualPosition = order[i].Position;
+        var actualStatus = order[i].Status;
+        var actual_id = order[i]._id;
+      }
+      var orderToEdit = actual_id;
+      Order.update({_id: orderToEdit},{$set: {LayersBeforeChangeShift: 0}});
+      //--------
+
+    },
+    'click #confirmspreadPartiallyOrder': function (e,t) {
+      var orderToEdit = Session.get("selectedDocId");
+      //console.log("orderToEdit: " + orderToEdit);
+
+      var order = Order.find({_id: orderToEdit}).fetch();
+      for (var i = 0; i < order.length; i++) {
+        var actualPosition = order[i].Position;
+        var actualStatus = order[i].Status;
+        var actual_id = order[i]._id;
+      }
+      var orderToEdit = actual_id;
+
+      var selectedOperatorSpreader = Session.get("ses_selectOperatorSpreader");
+      Order.update({_id: orderToEdit},{$set: {SpreadOperatorBeforeChangeShift: selectedOperatorSpreader }});
+
+      rm_EditOrder.hide();
+    },
     'click #cutOrder': function (){
 
       var orderToEdit = Session.get("selectedDocId");
@@ -4390,7 +4444,7 @@ Meteor.methods({
       }
     return "Not found method_loadOrder";
   }, 
-  method_spreadOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperatorSpreader) {
+  method_spreadOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperatorSpreader, layersbeforechangeshift) {
     var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
       for (var i = 0; i < order.length; i++) {
         var oreder_id = order[i]._id;
@@ -4455,8 +4509,10 @@ Meteor.methods({
         var XL_Cut = XL;
         var XXL_Cut = XXL;
 
+        var layersafterchangeshift = LayersToCount - layersbeforechangeshift;
+
         Order.update({ _id: order[i]._id},
-          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Spread: userEditSpread, SpreadDate: spreadDate, S: S, M: M, L: L, XL: XL, XXL: XXL, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut, XL_Cut: XL_Cut, XXL_Cut: XXL_Cut, SpreadOperator: selectedOperatorSpreader}},
+          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Spread: userEditSpread, SpreadDate: spreadDate, S: S, M: M, L: L, XL: XL, XXL: XXL, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut, XL_Cut: XL_Cut, XXL_Cut: XXL_Cut, SpreadOperator: selectedOperatorSpreader, LayersAfterChangeShift:layersafterchangeshift}},
           //{$inc: {Position: -1}}, 
           {multi: true}
         ); 
