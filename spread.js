@@ -926,24 +926,8 @@ if (Meteor.isClient) {
               };
             }
           },
-          { key: 'LayersBeforeChangeShift', label: 'Layers Before Change Shift',
-            fn: function (value){
-              if (value == 0) {
-                return "";
-              } else {
-                return value ;
-              };
-            }
-          },
-          { key: 'LayersAfterChangeShift', label: 'Layers After Change Shift',
-            fn: function (value){
-              if (value == 0) {
-                return "";
-              } else {
-                return value ;
-              };
-            }
-          },
+          { key: 'LayersBeforeChangeShift', label: 'Layers Before Change Shift'},
+          { key: 'LayersAfterChangeShift', label: 'Layers After Change Shift'},
           { key: 'Length', label: 'Length (m)', 
               fn: function  (value){
                 var v = Number(value);
@@ -1048,6 +1032,7 @@ if (Meteor.isClient) {
             }
           },
           { key: 'SpreadOperator', label: 'Spread Operator'},
+          { key: 'SpreadOperatorBeforeChangeShift', label: 'Spread Operator Before Change Shift'},
           { key: 'Cut', label: 'Cut' },
           { key: 'CutDate', label: 'Cut Date',
              fn: function (value) {
@@ -1157,6 +1142,8 @@ if (Meteor.isClient) {
               };
             }
           },
+          { key: 'LayersBeforeChangeShift', label: 'Layers Before Change Shift'},
+          { key: 'LayersAfterChangeShift', label: 'Layers After Change Shift'},
           { key: 'Length', label: 'Length (m)', 
               fn: function  (value){
                 var v = Number(value);
@@ -1362,16 +1349,8 @@ if (Meteor.isClient) {
                 };
               }
             },
-            { key: 'LayersBeforeChangeShift', label: 'Layers Before Change Shift',
-              fn: function (value){
-                if (value == 0) {
-                  return "";
-                } else {
-                  return value ;
-                };
-              }
-            },
-            { key: 'SpreadOperatorBeforeChangeShift', label: 'Spread Operator Before Change Shift' },
+            { key: 'LayersBeforeChangeShift', label: 'Layers Before Change Shift'},
+            { key: 'SpreadOperatorBeforeChangeShift', label: 'Spread Operator Before Change Shift'},
             { key: 'Length', label: 'Length (m)', 
               fn: function  (value){
                 var v = Number(value);
@@ -2308,7 +2287,6 @@ if (Meteor.isClient) {
         }
         //console.log(SpreadOperatorBeforeChangeShiftNow);
         return SpreadOperatorBeforeChangeShiftNow;
-        
       },
 
   });
@@ -3120,7 +3098,6 @@ if (Meteor.isClient) {
           var layers = order[i].Layers;
           */
           var layersactual = order[i].LayersActual;
-          var layersbeforechangeshift = order[i].LayersBeforeChangeShift;
           var actualPosition = order[i].Position;
           var actualStatus = order[i].Status;
           var actual_id = order[i]._id;
@@ -3173,9 +3150,8 @@ if (Meteor.isClient) {
       var uniquecountSelectedPosition = uniquecountSelected + 1;
 
       var selectedOperatorSpreader = Session.get("ses_selectOperatorSpreader");
-      //console.log("selectedOperatorSpreader: " + selectedOperatorSpreader);
-
-      Meteor.call('method_spreadOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperatorSpreader, layersbeforechangeshift, function(err, data) {
+      
+      Meteor.call('method_spreadOrder', actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperatorSpreader, function(err, data) {
         //console.log("method_spreadOrder: " + data);
       });
       
@@ -4438,13 +4414,14 @@ Meteor.methods({
       }
     return "Not found method_loadOrder";
   }, 
-  method_spreadOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperatorSpreader, layersbeforechangeshift) {
+  method_spreadOrder: function (actualPosition, actualStatus, selectedStatus, uniquecountSelectedPosition, userEditSpread, spreadDate, selectedOperatorSpreader) {
     var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
       for (var i = 0; i < order.length; i++) {
         var oreder_id = order[i]._id;
         var layers = order[i].Layers;
         var layersactual = order[i].LayersActual;
-
+        var layersbeforechangeshift = order[i].LayersBeforeChangeShift;
+        
         if (layersactual) {
           var LayersToCount = layersactual;
         } else {

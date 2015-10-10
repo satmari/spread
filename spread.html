@@ -526,14 +526,15 @@
                       {{/autoForm}}
                       
                       <a href="#" id="spreadOrder" class="btn btn-info btn-lg btn-block"> Spread Order</a>
+                      
                       {{#if alredyPartiallySpread}}
-                      <br />
-                      <p>* Marker is already partially spread</p> 
+                        <br />
+                        <p>Marker is already partially spread</p> 
                       {{else}}
-                      <a href="#" id="spreadPartiallyOrder" class="btn btn-default btn-lg btn-block"> Spread Partially Order</a>
+                        <a href="#" id="spreadPartiallyOrder" class="btn btn-default btn-lg btn-block"> Spread Partially Order</a>
                       {{/if}}
-                      <a href="#" id="confirmspreadPartiallyOrder" class="btn btn-success btn-lg btn-block"> Confirm Spread Partially Order</a>
 
+                        <a href="#" id="confirmspreadPartiallyOrder" class="btn btn-success btn-lg btn-block"> Confirm Spread Partially Order</a>
                     {{/if}}
                 {{/if}}
                   </tbody>
