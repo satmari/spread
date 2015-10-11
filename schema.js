@@ -123,7 +123,7 @@ Order.attachSchema(new SimpleSchema({
         label: "Layers After Change Shift",
         optional: true,
         decimal: true, 
-        min: 0
+        min: -100
     },
     'Length': {
         type: Number,
