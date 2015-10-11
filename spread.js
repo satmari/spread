@@ -1350,7 +1350,7 @@ if (Meteor.isClient) {
               }
             },
             { key: 'LayersBeforeChangeShift', label: 'Layers Before Change Shift'},
-            { key: 'SpreadOperatorBeforeChangeShift', label: 'Spread Operator Before Change Shift'},
+            /*{ key: 'SpreadOperatorBeforeChangeShift', label: 'Spread Operator Before Change Shift'},*/
             { key: 'Length', label: 'Length (m)', 
               fn: function  (value){
                 var v = Number(value);
