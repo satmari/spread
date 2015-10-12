@@ -926,8 +926,6 @@ if (Meteor.isClient) {
               };
             }
           },
-          { key: 'LayersBeforeChangeShift', label: 'Layers Before Change Shift'},
-          { key: 'LayersAfterChangeShift', label: 'Layers After Change Shift'},
           { key: 'Length', label: 'Length (m)', 
               fn: function  (value){
                 var v = Number(value);
@@ -1031,8 +1029,11 @@ if (Meteor.isClient) {
               }
             }
           },
+          
           { key: 'SpreadOperator', label: 'Spread Operator'},
           { key: 'SpreadOperatorBeforeChangeShift', label: 'Spread Operator Before Change Shift'},
+          { key: 'LayersBeforeChangeShift', label: 'Layers Before Change Shift'},
+          { key: 'LayersAfterChangeShift', label: 'Layers After Change Shift'},
           { key: 'Cut', label: 'Cut' },
           { key: 'CutDate', label: 'Cut Date',
              fn: function (value) {
@@ -1044,10 +1045,8 @@ if (Meteor.isClient) {
             }
           },
           { key: 'CutOperator', label: 'Cut Operator'}, 
-          { key: 'Comment', label: 'Comment' },
           { key: 'Consumption', label: 'Total Consumption' },
           { key: 'LabelPrinted', label: 'MarkerPrinted'},
-          
           { key: 'SkalaMarker', label: 'SkalaMarker', hidden: true},
           { key: 'Sector', label: 'Sector', hidden: true},
           { key: 'Pattern', label: 'Pattern', hidden: true},
@@ -4479,6 +4478,12 @@ Meteor.methods({
         var L_Cut = L;
         var XL_Cut = XL;
         var XXL_Cut = XXL;
+
+        if (layersbeforechangeshift) {
+          layersbeforechangeshift = layersbeforechangeshift
+        } else {
+          layersbeforechangeshift = 0;
+        }
 
         var layersafterchangeshift = LayersToCount - layersbeforechangeshift;
 
