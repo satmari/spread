@@ -1029,7 +1029,7 @@ if (Meteor.isClient) {
               }
             }
           },
-          
+
           { key: 'SpreadOperator', label: 'Spread Operator'},
           { key: 'SpreadOperatorBeforeChangeShift', label: 'Spread Operator Before Change Shift'},
           { key: 'LayersBeforeChangeShift', label: 'Layers Before Change Shift'},
@@ -1348,7 +1348,7 @@ if (Meteor.isClient) {
                 };
               }
             },
-            { key: 'LayersBeforeChangeShift', label: 'Layers Before Change Shift'},
+            { key: 'LayersBeforeChangeShift', label: 'Partial Layers'},
             /*{ key: 'SpreadOperatorBeforeChangeShift', label: 'Spread Operator Before Change Shift'},*/
             { key: 'Length', label: 'Length (m)', 
               fn: function  (value){
