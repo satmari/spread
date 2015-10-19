@@ -1006,6 +1006,7 @@ if (Meteor.isClient) {
               }
             }
           },
+          { key: 'Comment', label: 'Comment' },
           { key: 'Load', label: 'Load',
             /*fn: function (value){ 
               if (value == true) {
@@ -1029,7 +1030,6 @@ if (Meteor.isClient) {
               }
             }
           },
-
           { key: 'SpreadOperator', label: 'Spread Operator'},
           { key: 'SpreadOperatorBeforeChangeShift', label: 'Spread Operator Before Change Shift'},
           { key: 'LayersBeforeChangeShift', label: 'Layers Before Change Shift'},
@@ -1223,6 +1223,7 @@ if (Meteor.isClient) {
               }
             }
           },
+          { key: 'Comment', label: 'Comment' },
           { key: 'Load', label: 'Load',
             /*fn: function (value){ 
               if (value == true) {
@@ -1258,11 +1259,8 @@ if (Meteor.isClient) {
             }
           },
           { key: 'CutOperator', label: 'Cut Operator'},
-          { key: 'Comment', label: 'Comment' },
-          //{ key: 'OrderLink', label: 'Linked' },
           { key: 'Consumption', label: 'Total Consumption' },
           { key: 'LabelPrinted', label: 'MarkerPrinted', hidden: true},
-          
           { key: 'SkalaMarker', label: 'SkalaMarker', hidden: true},
           { key: 'Sector', label: 'Sector', hidden: true},
           { key: 'Pattern', label: 'Pattern', hidden: true},

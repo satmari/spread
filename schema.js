@@ -71,19 +71,19 @@ Order.attachSchema(new SimpleSchema({
         type: String,
         label: "Style",
         optional: true,
-        max: 10
+        max: 20
     },
     'Fabric': {
         type: String,
         label: "Fabric",
         optional: true,
-        max: 10
+        max: 20
     },
     'ColorCode': {
         type: String,
         label: "ColorCode",
         optional: true,
-        max: 10
+        max: 20
     },
     'ColorDesc': {
         type: String,
