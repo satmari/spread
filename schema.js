@@ -59,7 +59,7 @@ Order.attachSchema(new SimpleSchema({
         type: String,
         label: "Komesa",
         optional: false,
-        max: 10
+        max: 20
     },
     'Marker': {
         type: String,
@@ -71,25 +71,25 @@ Order.attachSchema(new SimpleSchema({
         type: String,
         label: "Style",
         optional: true,
-        max: 10
+        max: 20
     },
     'Fabric': {
         type: String,
         label: "Fabric",
         optional: true,
-        max: 10
+        max: 20
     },
     'ColorCode': {
         type: String,
         label: "ColorCode",
         optional: true,
-        max: 10
+        max: 20
     },
     'ColorDesc': {
         type: String,
         label: "ColorDesc",
         optional: true,
-        max: 30
+        max: 50
     },
     'Bagno': {
         type: String,
@@ -110,6 +110,20 @@ Order.attachSchema(new SimpleSchema({
         optional: true,
         decimal: true, 
         min: 0
+    },
+    'LayersBeforeChangeShift': {
+        type: Number,
+        label: "Layers Before Change Shift",
+        optional: true,
+        decimal: true, 
+        min: 0
+    },
+    'LayersAfterChangeShift': {
+        type: Number,
+        label: "Layers After Change Shift",
+        optional: true,
+        decimal: true, 
+        min: -100
     },
     'Length': {
         type: Number,
@@ -286,6 +300,13 @@ Order.attachSchema(new SimpleSchema({
     'SpreadOperator': {
         type: String,
         label: "Spread Operator",
+        optional: true,
+        defaultValue: "",
+        max: 50
+    },
+    'SpreadOperatorBeforeChangeShift': {
+        type: String,
+        label: "Spread Operator Before Change Shift",
         optional: true,
         defaultValue: "",
         max: 50
