@@ -3882,12 +3882,13 @@ if (Meteor.isClient) {
             //var bomconsperpcswithall = all[i]['BomConsPerPCSwithAll'];
             //var bomcons = all[i]['BomCons'];
             //var bomconswithall = all[i]['BomConswithAll'];
-            var  season = all[i]['Season'];
+            //var  season = all[i]['Season'];
+            var  colorcode = all[i]['ColorCode'];
 
             //console .log("No: "+ no + ", Season: " + season);
             //console.log("No: "+ no + ",bomconsperpcs: "+ bomconsperpcs + ",materialallowance: "+ materialallowance + " , bomconsperpcswithall: " + bomconsperpcswithall + " , bomcons:" + bomcons + ", bomconswithall: " + bomconswithall);
 
-            Meteor.call('method_updateOrders', no, season /*, bomconsperpcs, materialallowance, bomconsperpcswithall, bomcons, bomconswithall*/, function(err, data) {
+            Meteor.call('method_updateOrders', no, colorcode /*, bomconsperpcs, materialallowance, bomconsperpcswithall, bomcons, bomconswithall*/, function(err, data) {
               console.log("method_updateOrders: Done");
             });
             
@@ -4809,7 +4810,7 @@ Meteor.methods({
       return "LengthSum fields are refreshed!";
   },
   // update Order (Only first time)
-  method_updateOrders: function (no, season) {
+  method_updateOrders: function (no, colorcode) {
     
     var order = Order.find({No: no}).fetch();
     for (var i = 0; i < order.length; i++) {
@@ -4819,7 +4820,8 @@ Meteor.methods({
     Order.update({_id: id},
       {
         //$set: {BomConsPerPCS:bomconsperpcs , MaterialAllowance:materialallowance, BomConsPerPCSwithAll:bomconsperpcswithall, BomCons:bomcons, BomConswithAll:bomconswithall },
-        $set: {Season: season},
+        //$set: {Season: season},
+        $set: {ColorCode: colorcode},
       }, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
