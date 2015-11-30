@@ -1001,6 +1001,8 @@ if (Meteor.isClient) {
                 return "High";
               } else if (value == 3) {
                 return "Top Priority" ;
+              } else if (value == 4) {
+                 return "On Cutter";
               } else {
                 return "Normal" ;
               }
@@ -1217,9 +1219,11 @@ if (Meteor.isClient) {
               if (value == 2) {
                 return "High";
               } else if (value == 3) {
-                return "Top Priority" ;
+                return "Top Priority";
+              } else if (value == 4) {
+                 return "On Cutter";
               } else {
-                return "Normal" ;
+                return "Normal";
               }
             }
           },
@@ -1470,9 +1474,11 @@ if (Meteor.isClient) {
                 if (value == 2) {
                   return "High";
                 } else if (value == 3) {
-                 return "Top Priority" ;
+                 return "Top Priority";
+                } else if (value == 4) {
+                 return "On Cutter";
                 } else {
-                 return "Normal" ;
+                 return "Normal";
                 }
               }
             },
@@ -1508,7 +1514,8 @@ if (Meteor.isClient) {
             } else if (priority == 3) {
               return 'danger';  // red
               //active, success, info, warning, danger
-
+            } else if (priority == 4) {
+              return '';  // info
             } else if (status == 'CUT') {
               return 'info';    // dark blue
             } else if (load) {
@@ -3249,6 +3256,23 @@ if (Meteor.isClient) {
         //console.log("method_cutOrder: " + data);
       });
 
+      rm_EditOrder.hide();
+    },
+
+    'click #onCutter': function (){
+      var orderToEdit = Session.get("selectedDocId");
+      //console.log("orderToEdit: " + orderToEdit);
+
+      var order = Order.find({_id: orderToEdit}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          
+          //var actualPosition = order[i].Position;
+          //var actualStatus = order[i].Status;
+          //var actual_id = order[i]._id;
+      }
+
+      Order.update({_id: orderToEdit},{$set: {Priority: 4 }});
+      
       rm_EditOrder.hide();
     },
 

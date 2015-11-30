@@ -275,7 +275,7 @@ Order.attachSchema(new SimpleSchema({
         label: "Priority",
         optional: false,
         defaultValue: 1,
-        allowedValues: [1, 2, 3],
+        allowedValues: [1, 2, 3, 4],
         max: 10
     },
     'Load': {
