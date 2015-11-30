@@ -3405,7 +3405,7 @@ if (Meteor.isClient) {
        
 
       var uniquecountSelectedPosition = uniquecountSelected + 1;
-      //console.log("uniquecountSelectedPosition: " + uniquecountSelectedPosition);
+      console.log("uniquecountSelectedPosition: " + uniquecountSelectedPosition);
 
       // Proveri da li postoji linkovana pozicija i vrati broj
       var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
