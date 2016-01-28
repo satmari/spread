@@ -3973,10 +3973,12 @@ if (Meteor.isClient) {
           for (var i = 0; i < all.length; i++) {
             //console.log(all[i]);
 
-            var no = all[i]['No'];
+            var no = Number(all[i]['No']);
             var lengthsum  = Number(all[i]['LengthSum']);
-            
+            //var lengthsum  = all[i]['LengthSum'];
+
             //console.log("No: "+no+" LengthSum: "+lengthsum);
+
             Meteor.call('method_updateLenghtSum', no, lengthsum, function(err, data) {
               console.log("method_updateLenghtSum: Done");
             });
@@ -4906,10 +4908,11 @@ Meteor.methods({
   method_updateLenghtSum: function (no, lengthsum) {
 
     var order = Order.find({No: no}).fetch();
+
     for (var i = 0; i < order.length; i++) {
       var id = order[i]._id;
     }
-    console.log("No: "+no+" LengthSum: "+lengthsum);
+    //console.log("Id: "+id+" No: "+no+" LengthSum: "+lengthsum);
 
     Order.update({_id: id},
       {
@@ -4918,9 +4921,9 @@ Meteor.methods({
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
           console.log("method_updateLenghtSum = False: " + no );
-        } /*else {
+        } else {
           console.log("method_updateLenghtSum = True: " + no );
-        }*/
+        }
       }
     )
   },
