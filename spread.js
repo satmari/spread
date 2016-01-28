@@ -3953,8 +3953,42 @@ if (Meteor.isClient) {
       }
       reader.readAsText(file_a);
       rm_UpdateOrderandBOM.hide();
+    },
+    'change #filesLenghtSum': function (e) {
+
+      var files_a = e.target.files;
+      var file_a = files_a[0];           
+      var reader = new FileReader();
+
+      reader.onload = function (e) { 
+        //alert("reader.onloadend");
+        var text = e.target.result;
+        //alert(text);
+        //var all = $.csv.toObjects(text);
+        var all = $.csv.toObjects(text, {
+            delimiter:";",
+            separator:',',
+        });
+
+          for (var i = 0; i < all.length; i++) {
+            //console.log(all[i]);
+
+            var no = all[i]['No'];
+            var lengthsum  = Number(all[i]['LengthSum']);
+            
+            //console.log("No: "+no+" LengthSum: "+lengthsum);
+            Meteor.call('method_updateLenghtSum', no, lengthsum, function(err, data) {
+              console.log("method_updateLenghtSum: Done");
+            });
+          } 
+      }
+      reader.readAsText(file_a);
+      rm_UpdateOrderandBOM.hide();
     }
+  
   });
+
+  
 
   Template.tmp_ExportOrder.helpers({
     order: function() {
@@ -4866,6 +4900,27 @@ Meteor.methods({
         } else {
           console.log("method_insertBOM = True:  " + commessa);
         }
+      }
+    )
+  },
+  method_updateLenghtSum: function (no, lengthsum) {
+
+    var order = Order.find({No: no}).fetch();
+    for (var i = 0; i < order.length; i++) {
+      var id = order[i]._id;
+    }
+    console.log("No: "+no+" LengthSum: "+lengthsum);
+
+    Order.update({_id: id},
+      {
+        $set: {LengthSum: lengthsum},
+      }, 
+      function(err, numberAffected, rawResponse) {
+        if (numberAffected == false) {
+          console.log("method_updateLenghtSum = False: " + no );
+        } /*else {
+          console.log("method_updateLenghtSum = True: " + no );
+        }*/
       }
     )
   },
