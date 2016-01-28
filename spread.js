@@ -4440,14 +4440,24 @@ Meteor.methods({
     var order = Order.find({Position: actualPosition, Status: actualStatus }).fetch();
       for (var i = 0; i < order.length; i++) {
         var oreder_id = order[i]._id;
+        
+        var layersbeforechangeshift = order[i].LayersBeforeChangeShift;
+        var length = order[i].Length;
+        var extra = order[i].Extra;
         var layers = order[i].Layers;
         var layersactual = order[i].LayersActual;
-        var layersbeforechangeshift = order[i].LayersBeforeChangeShift;
-        
+
         if (layersactual) {
           var LayersToCount = layersactual;
         } else {
           var LayersToCount = layers;
+        }
+
+        var sum = Number((length + (extra/100)) * LayersToCount);
+        var sumf =sum.toFixed(2);
+       
+        if (sumf == "NaN") {
+          sumf = 0;
         }
 
         if (order[i].SonLayer) {
@@ -4511,7 +4521,7 @@ Meteor.methods({
         var layersafterchangeshift = LayersToCount - layersbeforechangeshift;
 
         Order.update({ _id: order[i]._id},
-          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Spread: userEditSpread, SpreadDate: spreadDate, S: S, M: M, L: L, XL: XL, XXL: XXL, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut, XL_Cut: XL_Cut, XXL_Cut: XXL_Cut, SpreadOperator: selectedOperatorSpreader, LayersAfterChangeShift:layersafterchangeshift}},
+          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Spread: userEditSpread, SpreadDate: spreadDate, S: S, M: M, L: L, XL: XL, XXL: XXL, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut, XL_Cut: XL_Cut, XXL_Cut: XXL_Cut, SpreadOperator: selectedOperatorSpreader, LayersAfterChangeShift:layersafterchangeshift, LengthSum:sumf}},
           //{$inc: {Position: -1}}, 
           {multi: true}
         ); 
@@ -4788,11 +4798,6 @@ Meteor.methods({
         var extra = Number(order_all[i].Extra);
         var layers = Number(order_all[i].Layers);
         var layersactual = Number(order_all[i].LayersActual);
-        var sonlayer = Number(order_all[i].SonLayer);
-        var monlayer = Number(order_all[i].MonLayer);
-        var lonlayer = Number(order_all[i].LonLayer);
-        var xlonlayer = Number(order_all[i].XLonLayer);
-        var xxlonlayer = Number(order_all[i].XXLonLayer);
 
         if (layersactual || (layersactual != 0)) {
           LayersToCount = layersactual;
@@ -4807,16 +4812,9 @@ Meteor.methods({
           sumf = 0;
         }
 
-        //S M L XL XXL
-        var Snew = Number(sonlayer * LayersToCount);
-        var Mnew = Number(monlayer * LayersToCount);
-        var Lnew = Number(lonlayer * LayersToCount);
-        var XLnew = Number(xlonlayer * LayersToCount);
-        var XXLnew = Number(xxlonlayer * LayersToCount);
-
         Order.update({_id: order_all[i]._id},
           {
-            $set: { LengthSum: sumf /*, S: Snew, M: Mnew, L: Lnew, XL: XLnew, XXL: XXLnew */},
+            $set: { LengthSum: sumf},
           }, 
           {
             multi: true,
