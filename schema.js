@@ -151,6 +151,13 @@ Order.attachSchema(new SimpleSchema({
                 return result;
         }*/
     },
+    'UsableLength': {
+        type: Number,
+        label: "UsableLength (cm)",
+        optional: true, 
+        decimal: false, 
+        min: 0
+    },
     'PcsBundle': {
         type: Number,
         label: "Nr. Pcs Bundle",
