@@ -939,7 +939,7 @@ if (Meteor.isClient) {
                 return v.toFixed(2);
               }
           },
-          { key: 'UsableLength', label: 'UsableLength (cm)' },
+          { key: 'UsableLength', label: 'Usable Length (cm)' },
                     /*{ key: 'PcsBundle', label: 'Nr. Pcs Bundle',
             fn: function (value){
               if (value == 0) {

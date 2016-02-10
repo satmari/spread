@@ -135,6 +135,11 @@ tbody .S_Cut,tbody .M_Cut,tbody .L_Cut, tbody .XL_Cut, tbody .XXL_Cut, tbody .Ko
   padding: 0px 15px !important;
 }
 
+.modal-footer {
+  margin-top: 0px !important;
+  padding: 10px !important;
+}
+
 html {
   font-family: sans-serif;
   -ms-text-size-adjust: 100%;
