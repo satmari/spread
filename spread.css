@@ -126,6 +126,20 @@ tbody .S_Cut,tbody .M_Cut,tbody .L_Cut, tbody .XL_Cut, tbody .XXL_Cut, tbody .Ko
 .table-hover > tbody > tr.default:hover > td {
   
 }
+
+.table > tbody > tr.ploca > td {
+  color: #000;
+  background-color: #D4B8B8 !important;
+  border-top: 1px solid #555;
+  /*border-color: #2077b2 !important;*/
+  /* load #A3CFEC */
+  /* spread #285E81 */
+}
+.table-hover > tbody > tr.ploca:hover > td {
+  color: #000;
+  background-color: #AD8D8D !important;
+}
+
 .container {
   width: 575px !important; 
 }

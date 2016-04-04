@@ -1004,6 +1004,8 @@ if (Meteor.isClient) {
                 return "Top Priority" ;
               } else if (value == 4) {
                  return "On Cutter";
+              } else if (value == 5) {
+                 return "Ploca";
               } else {
                 return "Normal" ;
               }
@@ -1088,6 +1090,8 @@ if (Meteor.isClient) {
               return 'warning'; // orange
             } else if (priority == 3) {
               return 'danger';  // red
+            } else if (priority == 5) {
+              return 'ploca'; 
               //active, success, info, warning, danger
             } else {
 
@@ -1223,6 +1227,8 @@ if (Meteor.isClient) {
                 return "Top Priority";
               } else if (value == 4) {
                  return "On Cutter";
+              } else if (value == 5) {
+                 return "Ploca";
               } else {
                 return "Normal";
               }
@@ -1298,6 +1304,8 @@ if (Meteor.isClient) {
               return 'warning'; // orange
             } else if (priority == 3) {
               return 'danger';  // red
+            } else if (priority == 5) {
+              return 'ploca'; 
               //active, success, info, warning, danger
             } else {
 
@@ -1399,6 +1407,8 @@ if (Meteor.isClient) {
               return 'warning'; // orange
             } else if (priority == 3) {
               return 'danger';  // red
+            } else if (priority == 5) {
+              return 'ploca'; 
               //active, success, info, warning, danger
             } else {
 
@@ -1478,6 +1488,8 @@ if (Meteor.isClient) {
                  return "Top Priority";
                 } else if (value == 4) {
                  return "On Cutter";
+                } else if (value == 5) {
+                 return "Ploca";
                 } else {
                  return "Normal";
                 }
@@ -1517,6 +1529,8 @@ if (Meteor.isClient) {
               //active, success, info, warning, danger
             } else if (priority == 4) {
               return '';  // info
+            } else if (priority == 5) {
+              return 'ploca'; 
             } else if (status == 'CUT') {
               return 'info';    // dark blue
             } else if (load) {
@@ -1599,6 +1613,8 @@ if (Meteor.isClient) {
                   return "High";
                 } else if (value == 3) {
                  return "Top Priority" ;
+                } else if (value == 5) {
+                 return "Ploca" ;
                 } else {
                  return "Normal" ;
                 }
@@ -5197,7 +5213,7 @@ Meteor.methods({
   // Time Interval
 
   var timeLeft = function() {
-  var order = Order.find({Status: "CUT"}).fetch();
+  var order = Order.find({Status: "CUT", Priority: { $lt: 5 }}).fetch();
   var posarray = [];
   for (var i = 0; i < order.length; i++) {
     pos = order[i].Position;
