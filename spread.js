@@ -4003,6 +4003,46 @@ if (Meteor.isClient) {
       }
       reader.readAsText(file_a);
       rm_UpdateOrderandBOM.hide();
+    },
+    'change #filesTableCapacity': function (e) {
+
+      var files_a = e.target.files;
+      var file_a = files_a[0];           
+      var reader = new FileReader();
+
+      reader.onload = function (e) { 
+        //alert("reader.onloadend");
+        var text = e.target.result;
+        //alert(text);
+        //var all = $.csv.toObjects(text);
+        var all = $.csv.toObjects(text, {
+            delimiter:";",
+            separator:',',
+        });
+
+          for (var i = 0; i < all.length; i++) {
+            //console.log(all[i]);
+
+            //var no = Number(all[i]['No']);
+            //var lengthsum  = Number(all[i]['LengthSum']);
+            //var lengthsum  = all[i]['LengthSum'];
+            var id = all[i]['_id'];
+            //var date = all[i]['Date'];
+            //var time = all[i]['Time'];
+            var markers = Number(all[i]['Markers']);
+            var orders = Number(all[i]['Orders']);
+
+            //console.log("id: "+ id +", Marker: "+ markers + " , Orders: "+ orders);
+            //console.log("Date: "+ date + ", Time: " + time +", Marker: "+ markers + " , Orders: "+ orders);
+            
+            Meteor.call('method_updateTableCapacity', id, markers, orders, function(err, data) {
+              console.log("method_updateTableCapacity: Done");
+            });
+            
+          } 
+      }
+      reader.readAsText(file_a);
+      rm_UpdateOrderandBOM.hide();
     }
   
   });
@@ -4943,6 +4983,31 @@ Meteor.methods({
         }
       }
     )
+  },
+  method_updateTableCapacity: function ( id, markers, orders) {
+
+    //var capacity = Table_capacity.find({Date: date, Time: time }).fetch();
+    var capacity = Table_capacity.find({_id: id }).fetch();
+    //console.log(capacity);
+
+    for (var i = 0; i < capacity.length; i++) {
+      var id = capacity[i]._id;
+      //console.log("id: "+ id +", Marker: "+ markers + " , Orders: "+ orders);
+    }
+    
+    Table_capacity.update({_id: id},
+      {
+        $set: {Markers: markers, Orders: orders},
+      }, 
+      function(err, numberAffected, rawResponse) {
+        if (numberAffected == false) {
+          console.log("method_updateTableCapacity = False: " + id );
+        } else {
+          console.log("method_updateTableCapacity = True: " + id );
+        }
+      }
+    )
+    
   },
   method_updateConsumption: function (no, consumption) {
 
