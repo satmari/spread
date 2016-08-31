@@ -627,6 +627,10 @@ if (Meteor.isClient) {
     'change #selectOperatorSpreader': function (e, t) {
       var selectOperatorSpreader = $('#selectOperatorSpreader').find(":selected").text();
       Session.set("ses_selectOperatorSpreader", selectOperatorSpreader);
+
+      // ses_DaysBefore, ses_DaysAfter
+      
+
       $('.select_operator_spreader').hide();
       $('#changeOperatorSpreader').show();
     },
@@ -1039,6 +1043,10 @@ if (Meteor.isClient) {
           { key: 'SpreadOperatorBeforeChangeShift', label: 'Spread Operator Before Change Shift'},
           { key: 'LayersBeforeChangeShift', label: 'Layers Before Change Shift'},
           { key: 'LayersAfterChangeShift', label: 'Layers After Change Shift'},
+          { key: 'T_Usable_Width', label: 'Theoretical Usable Width (cm)'},
+          { key: 'SpreadingMethod', label: 'Spreading Method'},
+          { key: 'Stimulation_Before', label: 'Stimulation BeforeChangeShift'},
+          { key: 'Stimulation_After', label: 'Stimulation AfterChangeShift'},
           { key: 'Cut', label: 'Cut' },
           { key: 'CutDate', label: 'Cut Date',
              fn: function (value) {
@@ -3622,7 +3630,10 @@ if (Meteor.isClient) {
             var pattern = all[i]['Pattern'];
 
             var season = all[i]['Season'];
-               
+
+            var spreadingmethod = all[i]['SpreadingMethod'];
+            var t_usable_width = Number(all[i]['T_Usable_Width']);
+                          
             /*
             if (status == "1" ){
               status = 'SP 1';
@@ -3661,7 +3672,7 @@ if (Meteor.isClient) {
               //setPos = 999;
             /*}*/
 
-            Meteor.call('method_insertOrders', no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, season, function(err, data) {
+            Meteor.call('method_insertOrders', no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, season, spreadingmethod, t_usable_width, function(err, data) {
               console.log("method_insertOrders: " + data);
               //console.log("err: " + err);
               
@@ -4535,6 +4546,7 @@ Meteor.methods({
         var oreder_id = order[i]._id;
         
         var layersbeforechangeshift = order[i].LayersBeforeChangeShift;
+        var spreadmethod = order[i].SpreadingMethod;
         var length = order[i].Length;
         var extra = order[i].Extra;
         var layers = order[i].Layers;
@@ -4605,16 +4617,30 @@ Meteor.methods({
         var XL_Cut = XL;
         var XXL_Cut = XXL;
 
-        if (layersbeforechangeshift) {
-          layersbeforechangeshift = layersbeforechangeshift
+        if (spreadmethod == 'MF') {
+          var tezina = 1.15;
         } else {
-          layersbeforechangeshift = 0;
+          var tezina = 1;
+        }
+
+        if (layersbeforechangeshift) {
+          var layersbeforechangeshift = layersbeforechangeshift;
+          
+          var stimulation_before1 = Number((length + (extra/100)) * layersbeforechangeshift * tezina);
+          var stimulation_before = stimulation_before1.toFixed(2);
+
+        } else {
+          var layersbeforechangeshift = 0;
+          var stimulation_before = 0;
         }
 
         var layersafterchangeshift = LayersToCount - layersbeforechangeshift;
 
+        var stimulation_after1 = Number((length + (extra/100)) * layersafterchangeshift * tezina);
+        var stimulation_after = stimulation_after1.toFixed(2);
+
         Order.update({ _id: order[i]._id},
-          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Spread: userEditSpread, SpreadDate: spreadDate, S: S, M: M, L: L, XL: XL, XXL: XXL, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut, XL_Cut: XL_Cut, XXL_Cut: XXL_Cut, SpreadOperator: selectedOperatorSpreader, LayersAfterChangeShift:layersafterchangeshift, LengthSum:sumf}},
+          {$set: {Position: uniquecountSelectedPosition, Status: selectedStatus, Spread: userEditSpread, SpreadDate: spreadDate, S: S, M: M, L: L, XL: XL, XXL: XXL, S_Cut: S_Cut, M_Cut: M_Cut, L_Cut: L_Cut, XL_Cut: XL_Cut, XXL_Cut: XXL_Cut, SpreadOperator: selectedOperatorSpreader, LayersAfterChangeShift:layersafterchangeshift, LengthSum:sumf, Stimulation_Before:stimulation_before, Stimulation_After:stimulation_after}},
           //{$inc: {Position: -1}}, 
           {multi: true}
         ); 
@@ -4691,7 +4717,7 @@ Meteor.methods({
         var unique = result[0].length;
         return unique;
   },
-  method_insertOrders: function (no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, season) {
+  method_insertOrders: function (no, setPos, orderdate, komesa, marker, style, fabric, colorcode ,colordesc, bagno, layers, actuallayers, length, extra, lengthsum, pcsbundle, width, s, sonlayer, m, monlayer, l, lonlayer, xl, xlonlayer, xxl, xxlonlayer, status, skala, sektor, pattern, season, spreadingmethod, t_usable_width) {
     
     var order = Order.find({Status: 'Not assigned'}).fetch();
     var posarray = [];
@@ -4739,7 +4765,10 @@ Meteor.methods({
       bomconsperpcswithall = 0;
     }
 
-    Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern, BomConsPerPCS: bomconsperpcs, MaterialAllowance: bommatall, BomConsPerPCSwithAll: bomconsperpcswithall, Season: season}, 
+    var spreadingmethod;
+    var t_usable_width;
+
+    Order.insert({No: no, Position: setPos , Date: orderdate, Komesa: komesa, Marker: marker, Style: style, Fabric: fabric, ColorCode: colorcode, ColorDesc: colordesc, Bagno: bagno, Layers: layers, LayersActual: actuallayers, Length: length, Extra: extra, LengthSum: lengthsum, PcsBundle: pcsbundle, Width: width, S: s, SonLayer: sonlayer, M: m, MonLayer: monlayer, L: l, LonLayer: lonlayer, XL: xl, XLonLayer: xlonlayer, XXL: xxl, XXLonLayer: xxlonlayer, Status: status, SkalaMarker: skala, Sector: sektor, Pattern: pattern, BomConsPerPCS: bomconsperpcs, MaterialAllowance: bommatall, BomConsPerPCSwithAll: bomconsperpcswithall, Season: season, SpreadingMethod:spreadingmethod, T_Usable_Width:t_usable_width}, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
           //console.log("method_insertOrders = False:  " + no);

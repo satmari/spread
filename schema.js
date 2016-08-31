@@ -425,7 +425,36 @@ Order.attachSchema(new SimpleSchema({
         optional: true,
         defaultValue: "",
         max: 10
+    },
+    'SpreadingMethod': {
+        type: String,
+        label: "SpreadingMethod",
+        optional: true,
+        defaultValue: "",
+        max: 20
+    },
+    'T_Usable_Width': {
+        type: Number,
+        label: "Theoretical Usable Width",
+        optional: true,
+        decimal: true,
+        //min: 0
+    },
+    'Stimulation_After': {
+        type: Number,
+        label: "Stimulation AfterChangeShift",
+        optional: true,
+        decimal: true,
+        //min: 0
+    },
+    'Stimulation_Before': {
+        type: Number,
+        label: "Stimulation BeforeChangeShift",
+        optional: true,
+        decimal: true,
+        //min: 0
     }
+
 
 }));
 
