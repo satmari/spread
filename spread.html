@@ -184,7 +184,7 @@
 
   {{#if isSp}}
     <ul class="nav navbar-nav">
-       <div class="navbar-form select_operator_spreader"><span style="color:#b4bcc2;font-size:16px">Select operator: </span>
+      <div class="navbar-form select_operator_spreader"><span style="color:#b4bcc2;font-size:16px">Select operator: </span>
           <select class="form-control selectpicker" id="selectOperatorSpreader" title="Select operator">
                 <option></option>
              {{#each operatorSelectSpreader}}
@@ -293,6 +293,9 @@
   {{else}}
     
     {{#if OperatorSelectedSpreader}}
+      <ul class="nav navbar-nav operatoreff">
+        <h3 style="color:white; font-size: 20px;" > <small> Operator metters: </small>{{OperatorSelectedSpreaderEff}} </h3>
+      </ul>
       <ul class="nav navbar-nav operator">
         <h3 style="color:white; font-size: 20px;" > <small> Operator: </small>{{OperatorSelectedSpreader}} </h3>
       </ul>

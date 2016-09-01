@@ -78,9 +78,11 @@ if (Meteor.isClient) {
 
     if (selectOperatorSpreader) {
       $('.select_operator_spreader').hide();
+      $('.select_operator_spreader_eff').hide();
       $('#changeOperatorSpreader').show();
     } else {
       $('.select_operator_spreader').show();
+      $('.select_operator_spreader_eff').show();
       $('#selectOperatorSpreader').val($('#selectOperatorSpreader option:first').val());
       $('#changeOperatorSpreader').hide();
     }
@@ -233,9 +235,11 @@ if (Meteor.isClient) {
 
     if (selectOperatorSpreader) {
       $('.select_operator_spreader').hide();
+      $('.select_operator_spreader_eff').hide();
       $('#changeOperatorSpreader').show();
     } else {
       $('.select_operator_spreader').show();
+      $('.select_operator_spreader_eff').show();
       $('#selectOperatorSpreader').val($('#selectOperatorSpreader option:first').val());
       $('#changeOperatorSpreader').hide();
     }
@@ -407,6 +411,27 @@ if (Meteor.isClient) {
     OperatorSelectedSpreader: function () {
       var operator = Session.get("ses_selectOperatorSpreader");
       return operator;
+    },
+    OperatorSelectedSpreaderEff: function () {
+      var operator = Session.get("ses_selectOperatorSpreader");
+      console.log(operator);
+
+      var ses_DaysBefore = Session.get("ses_DaysBefore");
+      var ses_DaysAfter = Session.get("ses_DaysAfter");
+
+      //console.log(ses_DaysBefore);
+      //console.log(ses_DaysAfter);
+      
+      Meteor.call('method_operatorCount', operator , ses_DaysBefore, ses_DaysAfter, function(err,data) {
+          Session.set('ses_operatorCount', data); 
+          //console.log(data);
+      });
+
+
+      var ses_operatorCount = Session.get("ses_operatorCount");
+      console.log(ses_operatorCount);
+
+      return ses_operatorCount;
     },
     OperatorSelectedCutter: function () {
       var operator = Session.get("ses_selectOperatorCutter");
@@ -628,10 +653,8 @@ if (Meteor.isClient) {
       var selectOperatorSpreader = $('#selectOperatorSpreader').find(":selected").text();
       Session.set("ses_selectOperatorSpreader", selectOperatorSpreader);
 
-      // ses_DaysBefore, ses_DaysAfter
-      
-
       $('.select_operator_spreader').hide();
+      $('.select_operator_spreader_eff').hide();
       $('#changeOperatorSpreader').show();
     },
 
@@ -645,6 +668,7 @@ if (Meteor.isClient) {
     'click #changeOperatorSpreader' : function (e, t) {
       Session.set("ses_selectOperatorSpreader", "");
       $('.select_operator_spreader').show();
+      $('.select_operator_spreader_eff').show();
       $('#selectOperatorSpreader').val($('#selectOperatorSpreader option:first').val());
       $('#changeOperatorSpreader').hide();
     },
@@ -1391,7 +1415,9 @@ if (Meteor.isClient) {
             //{ key: 'Load', label: 'Load'},
             //{ key: 'Spread', label: 'Spread'},
             //{ key: 'Cut', label: 'Cut' },
-            //{ key: 'OrderLink', label: 'Linked' },
+            //{ key: 'OrderLink', label: 'Linked' }, //
+            { key: 'T_Usable_Width', label: 'Theor Width (cm)' },
+            { key: 'SpreadingMethod', label: 'Method' },
             { key: 'Comment', label: 'Comment' },
           ],
             //useFontAwesome: true,
@@ -4778,6 +4804,44 @@ Meteor.methods({
       }
     )
   },
+  method_operatorCount: function (operator , ses_DaysBefore, ses_DaysAfter) {
+    var total_after = 0;
+    var total_before = 0;
+
+    // Before
+    var order_before = Order.find({
+      $and: [
+        {
+          SpreadOperatorBeforeChangeShift: operator,
+          SpreadDate: {$gte: ses_DaysBefore, $lt: ses_DaysAfter}
+        }
+      ]
+    }).fetch();
+    
+    for (var i = 0; i < order_before.length; i++) {
+      var total_before = total_before + order_before[i].Stimulation_Before;
+    }
+
+    // After
+    var order_after = Order.find({
+      $and: [
+        {
+          SpreadOperator: operator,
+          SpreadDate: {$gte: ses_DaysBefore, $lt: ses_DaysAfter}
+        }
+      ]
+    }).fetch();
+    
+    for (var i = 0; i < order_after.length; i++) {
+      var total_after = total_after + order_after[i].Stimulation_After;
+    }
+
+    var total_t  = total_after + total_before;
+    var total = total_t.toFixed(2);
+
+    return total;
+  },
+
 
 });
 

@@ -41,14 +41,21 @@ body {
   color: white;
   font-size: 20px;
   top: 0px;
-  right: 300px
+  right: 500px;
+}
+.operatoreff {
+  position: absolute;
+  color: white;
+  font-size: 20px;
+  top: 0px;
+  right: 200px;
 }
 .machine {
   position: absolute;
   color: white;
   font-size: 20px;
   top: 0px;
-  right: 20px
+  right: 20px;
 }
 
 tbody .S_Cut,tbody .M_Cut,tbody .L_Cut, tbody .XL_Cut, tbody .XXL_Cut, tbody .Komesa {
