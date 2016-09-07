@@ -4041,7 +4041,7 @@ if (Meteor.isClient) {
       reader.readAsText(file_a);
       rm_UpdateOrderandBOM.hide();
     },
-    'change #filesTableCapacity': function (e) {
+    'change #filesTable': function (e) {
 
       var files_a = e.target.files;
       var file_a = files_a[0];           
@@ -4060,20 +4060,23 @@ if (Meteor.isClient) {
           for (var i = 0; i < all.length; i++) {
             //console.log(all[i]);
 
-            //var no = Number(all[i]['No']);
+            var no = Number(all[i]['No']);
             //var lengthsum  = Number(all[i]['LengthSum']);
             //var lengthsum  = all[i]['LengthSum'];
-            var id = all[i]['_id'];
+            //var id = all[i]['_id'];
             //var date = all[i]['Date'];
             //var time = all[i]['Time'];
-            var markers = Number(all[i]['Markers']);
-            var orders = Number(all[i]['Orders']);
+            //var markers = Number(all[i]['Markers']);
+            //var orders = Number(all[i]['Orders']);
+
+            var t_usable_width = Number(all[i]['T_Usable_Width']);
+            var spreadoperatorbeforechangeshift = all[i]['SpreadOperatorBeforeChangeShift'];
 
             //console.log("id: "+ id +", Marker: "+ markers + " , Orders: "+ orders);
             //console.log("Date: "+ date + ", Time: " + time +", Marker: "+ markers + " , Orders: "+ orders);
             
-            Meteor.call('method_updateTableCapacity', id, markers, orders, function(err, data) {
-              console.log("method_updateTableCapacity: Done");
+            Meteor.call('method_updateTable', no, t_usable_width, spreadoperatorbeforechangeshift, function(err, data) {
+              console.log("method_updateTable: Done");
             });
             
           } 
@@ -5077,26 +5080,23 @@ Meteor.methods({
       }
     )
   },
-  method_updateTableCapacity: function ( id, markers, orders) {
+  method_updateTable: function ( no, t_usable_width, spreadoperatorbeforechangeshift) {
 
-    //var capacity = Table_capacity.find({Date: date, Time: time }).fetch();
-    var capacity = Table_capacity.find({_id: id }).fetch();
-    //console.log(capacity);
+    var order = Order.find({No: no}).fetch();
 
-    for (var i = 0; i < capacity.length; i++) {
-      var id = capacity[i]._id;
-      //console.log("id: "+ id +", Marker: "+ markers + " , Orders: "+ orders);
+    for (var i = 0; i < order.length; i++) {
+      var id = order[i]._id;
     }
-    
-    Table_capacity.update({_id: id},
+
+    Order.update({_id: id},
       {
-        $set: {Markers: markers, Orders: orders},
+        $set: {T_Usable_Width: t_usable_width, SpreadOperatorBeforeChangeShift: spreadoperatorbeforechangeshift},
       }, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
-          console.log("method_updateTableCapacity = False: " + id );
+          console.log("method_update = False: " + no );
         } else {
-          console.log("method_updateTableCapacity = True: " + id );
+          console.log("method_update = True: " + no );
         }
       }
     )
