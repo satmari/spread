@@ -1204,7 +1204,8 @@ if (Meteor.isClient) {
               };
             }
           },*/
-          //{ key: 'Width', label: 'Width (cm)' },
+          { key: 'Width', label: 'Width (cm)' },
+          { key: 'T_Usable_Width', label: 'Theoretical Usable Width (cm)'},
           { key: 'SonLayer', label: 'S per Layer'},
           { key: 'S', label: 'S Tot' },
           { key: 'S_Cut', label: 'S Cut'},
@@ -4069,13 +4070,21 @@ if (Meteor.isClient) {
             //var markers = Number(all[i]['Markers']);
             //var orders = Number(all[i]['Orders']);
 
-            var t_usable_width = Number(all[i]['T_Usable_Width']);
-            var spreadoperatorbeforechangeshift = all[i]['SpreadOperatorBeforeChangeShift'];
+            //var t_usable_width = Number(all[i]['T_Usable_Width']);
+            //var spreadoperatorbeforechangeshift = all[i]['BomConsPerPCS'];
+
+            var bomConsPerPCS = Number(all[i]['BomConsPerPCS']);
+            var materialAllowance = Number(all[i]['MaterialAllowance']);
+            var bomConsPerPCSwithAll = Number(all[i]['BomConsPerPCSwithAll']);
+            var bomCons = Number(all[i]['BomCons']);
+            var bomConswithAll = Number(all[i]['BomConswithAll']);
+            
+
 
             //console.log("id: "+ id +", Marker: "+ markers + " , Orders: "+ orders);
             //console.log("Date: "+ date + ", Time: " + time +", Marker: "+ markers + " , Orders: "+ orders);
             
-            Meteor.call('method_updateTable', no, t_usable_width, spreadoperatorbeforechangeshift, function(err, data) {
+            Meteor.call('method_updateTable', no, bomConsPerPCS, materialAllowance, bomConsPerPCSwithAll, bomCons, bomConswithAll, function(err, data) {
               console.log("method_updateTable: Done");
             });
             
@@ -5080,7 +5089,7 @@ Meteor.methods({
       }
     )
   },
-  method_updateTable: function ( no, t_usable_width, spreadoperatorbeforechangeshift) {
+  method_updateTable: function (no, bomConsPerPCS, materialAllowance, bomConsPerPCSwithAll, bomCons, bomConswithAll) {
 
     var order = Order.find({No: no}).fetch();
 
@@ -5090,7 +5099,13 @@ Meteor.methods({
 
     Order.update({_id: id},
       {
-        $set: {T_Usable_Width: t_usable_width, SpreadOperatorBeforeChangeShift: spreadoperatorbeforechangeshift},
+        $set: {
+              BomConsPerPCS: bomConsPerPCS, 
+              MaterialAllowance: materialAllowance, 
+              BomConsPerPCSwithAll: bomConsPerPCSwithAll, 
+              BomCons: bomCons,
+              BomConswithAll: bomConswithAll
+              },
       }, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {

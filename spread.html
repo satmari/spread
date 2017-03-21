@@ -480,7 +480,7 @@
                       </div>
               <hr />
               <big><b>Order Information</b></big><br />
-              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" autosave=true doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,XL,XXL,SpreadDate,SpreadOperator,CutDate,CutOperator,Status,Position,OrderLink,SkalaMarker,Sector,Pattern,Consumption,BomConsPerPCS,MaterialAllowance,BomConsPerPCSwithAll,BomCons,BomConswithAll,Stimulation_After,Stimulation_Before"}}
+              {{> quickForm collection="Order" id="editOrderForm" type="update" buttonContent="Save Order" autosave=true doc=editingDoc omitFields="No,LengthSum,Created,S,M,L,XL,XXL,SpreadDate,SpreadOperator,CutDate,CutOperator,Status,OrderLink,SkalaMarker,Sector,Pattern,Consumption,BomConsPerPCS,MaterialAllowance,BomConsPerPCSwithAll,BomCons,BomConswithAll,Stimulation_After,Stimulation_Before"}}
 
               <!--<div class="">
                 <br />
@@ -1093,10 +1093,10 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
   </div>
 
   <div>
-    <p>Update Table</p> 
+    <p>Update Order Table</p> 
     <input type="file" id="filesTable" name="files[]" enctype="multipart/form-data" />
     <br />
-    <!--<button id="insert-csv-from-code">Import from CSV file</button>-->
+    <button id="insert-csv-from-code">Import from CSV file</button>
     <br />
     <hr />
   </div>
