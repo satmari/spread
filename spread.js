@@ -1587,7 +1587,7 @@ if (Meteor.isClient) {
             //{ key: '_id', label: '_ID' },
             { key: 'No', label: 'No'},
             /*{ key: 'Position', label: 'Pos'},*/
-            { key: 'OrderLink', label: 'Linked',
+            /*{ key: 'OrderLink', label: 'Linked',
               fn: function (value){
                 if (value == true) {
                   return "Linked";
@@ -1595,7 +1595,7 @@ if (Meteor.isClient) {
                   return "" ;
                 };
               }
-            },
+            },*/
             /*{ key: 'Date', label: 'Date',
               fn: function (value) {
                 if (value){
@@ -1609,12 +1609,12 @@ if (Meteor.isClient) {
             
             //{ key: 'Created', label: 'Created' },
             { key: 'Komesa', label: 'Komesa' },
-            { key: 'Marker', label: 'Marker' },
-            /*{ key: 'Style', label: 'Style' },
-            { key: 'Fabric', label: 'Fabric' },
+            /*{ key: 'Marker', label: 'Marker' },*/
+            { key: 'Style', label: 'Style' },
+            /*{ key: 'Fabric', label: 'Fabric' },*/
             { key: 'ColorCode', label: 'Color Code' },
             { key: 'ColorDesc', label: 'Color Desc' },
-            { key: 'Bagno', label: 'Bagno' },
+            /*{ key: 'Bagno', label: 'Bagno' },*/
             //{ key: 'Layers', label: 'Layers' },
             { key: 'LayersActual', label: 'Layers Actual',
               fn: function (value){
@@ -1625,11 +1625,10 @@ if (Meteor.isClient) {
                 };
               }
             },
-            { key: 'Length', label: 'Length(m)' },
+            //{ key: 'Length', label: 'Length(m)' },
             //{ key: 'Extra', label: 'Extra (cm)' },
             //{ key: 'LengthSum', label: 'Length Sum (m)' },
-            { key: 'Width', label: 'Width (cm)' },
-            */
+            //{ key: 'Width', label: 'Width (cm)' },
             //{ key: 'S', label: 'S' },
             { key: 'S_Cut', label: 'S Cut'},
             //{ key: 'M', label: 'M' },
@@ -1639,7 +1638,7 @@ if (Meteor.isClient) {
             //{ key: 'XLonLayer', label: 'XL per Layer'},
             //{ key: 'XL', label: 'XL Marker' },
             { key: 'XL_Cut', label: 'XL Cut'},
-            //{ key: 'XXLonLayer', label: 'XXL per Layer'},
+            //{ key: 'XXLonLayer', label: 'XXL on Layer'},
             //{ key: 'XXL', label: 'XXL Marker' },
             { key: 'XXL_Cut', label: 'XXL Cut'},
             { key: 'Priority', label: 'Priority',  
@@ -1657,7 +1656,7 @@ if (Meteor.isClient) {
             },
             //{ key: 'Status', label: 'Status'},
             //{ key: 'Load', label: 'Load'},
-            { key: 'Spread', label: 'Spread'},
+            //{ key: 'Spread', label: 'Spread'},
             { key: 'SpreadDate', label: 'Spread Date', sort: 'descending' ,
              fn: function (value) {
               if (value){
@@ -3335,8 +3334,8 @@ if (Meteor.isClient) {
       var order = Order.find({_id: orderToEdit}).fetch();
         for (var i = 0; i < order.length; i++) {
           
-          var actualPosition = order[i].Position;
-          var actualStatus = order[i].Status;
+          // var actualPosition = order[i].Position;
+          // var actualStatus = order[i].Status;
           var actual_id = order[i]._id;
       }
 
@@ -4073,18 +4072,20 @@ if (Meteor.isClient) {
             //var t_usable_width = Number(all[i]['T_Usable_Width']);
             //var spreadoperatorbeforechangeshift = all[i]['BomConsPerPCS'];
 
-            var bomConsPerPCS = Number(all[i]['BomConsPerPCS']);
-            var materialAllowance = Number(all[i]['MaterialAllowance']);
-            var bomConsPerPCSwithAll = Number(all[i]['BomConsPerPCSwithAll']);
-            var bomCons = Number(all[i]['BomCons']);
-            var bomConswithAll = Number(all[i]['BomConswithAll']);
+            // var bomConsPerPCS = Number(all[i]['BomConsPerPCS']);
+            // var materialAllowance = Number(all[i]['MaterialAllowance']);
+            // var bomConsPerPCSwithAll = Number(all[i]['BomConsPerPCSwithAll']);
+            //var bomCons = Number(all[i]['BomCons']);
+            //var bomConswithAll = Number(all[i]['BomConswithAll']);
+
+            //var labelPrinted = all[i]['LabelPrinted'];
             
 
 
             //console.log("id: "+ id +", Marker: "+ markers + " , Orders: "+ orders);
             //console.log("Date: "+ date + ", Time: " + time +", Marker: "+ markers + " , Orders: "+ orders);
             
-            Meteor.call('method_updateTable', no, bomConsPerPCS, materialAllowance, bomConsPerPCSwithAll, bomCons, bomConswithAll, function(err, data) {
+            Meteor.call('method_updateTable', no, function(err, data) {
               console.log("method_updateTable: Done");
             });
             
@@ -4902,11 +4903,11 @@ Meteor.methods({
   Meteor.publish("filter_label", function(/*Daysbefore, Daysafter*/){
     return Order.find({
     $and: [
-      { /*$or: [
-          { */Status: "CUT" },
-          /*{ Status: "Finished" }
+      { $or: [
+          { Status: "CUT" },
+          { Status: "Finished" }
         ]
-      },*/
+      },
       { $or: [ 
           { LabelPrinted: false },  
           { LabelPrinted: { $exists: false }}
@@ -5089,7 +5090,7 @@ Meteor.methods({
       }
     )
   },
-  method_updateTable: function (no, bomConsPerPCS, materialAllowance, bomConsPerPCSwithAll, bomCons, bomConswithAll) {
+  method_updateTable: function (no) {
 
     var order = Order.find({No: no}).fetch();
 
@@ -5100,11 +5101,12 @@ Meteor.methods({
     Order.update({_id: id},
       {
         $set: {
-              BomConsPerPCS: bomConsPerPCS, 
-              MaterialAllowance: materialAllowance, 
-              BomConsPerPCSwithAll: bomConsPerPCSwithAll, 
-              BomCons: bomCons,
-              BomConswithAll: bomConswithAll
+              // BomConsPerPCS: bomConsPerPCS, 
+              // MaterialAllowance: materialAllowance, 
+              // BomConsPerPCSwithAll: bomConsPerPCSwithAll, 
+              // BomCons: bomCons,
+              // BomConswithAll: bomConswithAll
+              LabelPrinted : true
               },
       }, 
       function(err, numberAffected, rawResponse) {
