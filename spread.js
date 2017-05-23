@@ -1631,16 +1631,51 @@ if (Meteor.isClient) {
             //{ key: 'Width', label: 'Width (cm)' },
             //{ key: 'S', label: 'S' },
             { key: 'S_Cut', label: 'S Cut'},
+            {
+              key: 'S_Cut', label: 'S Bundle',
+              fn: function(value) {
+                var v = Number(value)/60;
+                return v.toFixed(1);
+              }
+            },
             //{ key: 'M', label: 'M' },
             { key: 'M_Cut', label: 'M Cut'},
+            {
+              key: 'M_Cut', label: 'M Bundle',
+              fn: function(value) {
+                var v = Number(value)/60;
+                return v.toFixed(1);
+              }
+            },
             //{ key: 'L', label: 'L' },
             { key: 'L_Cut', label: 'L Cut'},
+            {
+              key: 'L_Cut', label: 'L Bundle',
+              fn: function(value) {
+                var v = Number(value)/60;
+                return v.toFixed(1);
+              }
+            },
             //{ key: 'XLonLayer', label: 'XL per Layer'},
             //{ key: 'XL', label: 'XL Marker' },
             { key: 'XL_Cut', label: 'XL Cut'},
+            {
+              key: 'XL_Cut', label: 'XL Bundle',
+              fn: function(value) {
+                var v = Number(value)/60;
+                return v.toFixed(1);
+              }
+            },
             //{ key: 'XXLonLayer', label: 'XXL on Layer'},
             //{ key: 'XXL', label: 'XXL Marker' },
             { key: 'XXL_Cut', label: 'XXL Cut'},
+            {
+              key: 'XXL_Cut', label: 'XXL Bundle',
+              fn: function(value) {
+                var v = Number(value)/60;
+                return v.toFixed(1);
+              }
+            },
             { key: 'Priority', label: 'Priority',  
               fn: function (value){
                 if (value == 2) {
@@ -4912,11 +4947,11 @@ Meteor.methods({
           { LabelPrinted: false },  
           { LabelPrinted: { $exists: false }}
         ]
-      }/*,
+      },
       { $and: [ 
-          {SpreadDate: {$gte: Daysbefore, $lt: Daysafter}}
+          {Priority: { $ne: 5}}
         ]
-      },*/
+      },
       ]
     })
   });

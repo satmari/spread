@@ -59,7 +59,7 @@ Order.attachSchema(new SimpleSchema({
         type: String,
         label: "Komesa",
         optional: false,
-        max: 10
+        max: 20
     },
     'Marker': {
         type: String,
