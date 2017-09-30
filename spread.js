@@ -4107,20 +4107,22 @@ if (Meteor.isClient) {
             //var t_usable_width = Number(all[i]['T_Usable_Width']);
             //var spreadoperatorbeforechangeshift = all[i]['BomConsPerPCS'];
 
-            // var bomConsPerPCS = Number(all[i]['BomConsPerPCS']);
-            // var materialAllowance = Number(all[i]['MaterialAllowance']);
-            // var bomConsPerPCSwithAll = Number(all[i]['BomConsPerPCSwithAll']);
-            //var bomCons = Number(all[i]['BomCons']);
-            //var bomConswithAll = Number(all[i]['BomConswithAll']);
+            var bomConsPerPCS = Number(all[i]['BomConsPerPCS']);
+            var materialAllowance = Number(all[i]['MaterialAllowance']);
+            var bomConsPerPCSwithAll = Number(all[i]['BomConsPerPCSwithAll']);
+            var bomCons = Number(all[i]['BomCons']);
+            var bomConswithAll = Number(all[i]['BomConswithAll']);
 
             //var labelPrinted = all[i]['LabelPrinted'];
             
-
-
             //console.log("id: "+ id +", Marker: "+ markers + " , Orders: "+ orders);
             //console.log("Date: "+ date + ", Time: " + time +", Marker: "+ markers + " , Orders: "+ orders);
             
-            Meteor.call('method_updateTable', no, function(err, data) {
+            //Meteor.call('method_updateTable', no, function(err, data) {
+            //  console.log("method_updateTable: Done");
+            //});
+
+            Meteor.call('method_updateTable', no, bomConsPerPCS, materialAllowance, bomConsPerPCSwithAll, bomCons, bomConswithAll, function(err, data) {
               console.log("method_updateTable: Done");
             });
             
@@ -5125,7 +5127,7 @@ Meteor.methods({
       }
     )
   },
-  method_updateTable: function (no) {
+  method_updateTable: function (no, bomConsPerPCS, materialAllowance, bomConsPerPCSwithAll, bomCons, bomConswithAll) {
 
     var order = Order.find({No: no}).fetch();
 
@@ -5136,12 +5138,12 @@ Meteor.methods({
     Order.update({_id: id},
       {
         $set: {
-              // BomConsPerPCS: bomConsPerPCS, 
-              // MaterialAllowance: materialAllowance, 
-              // BomConsPerPCSwithAll: bomConsPerPCSwithAll, 
-              // BomCons: bomCons,
-              // BomConswithAll: bomConswithAll
-              LabelPrinted : true
+               BomConsPerPCS: bomConsPerPCS, 
+               MaterialAllowance: materialAllowance, 
+               BomConsPerPCSwithAll: bomConsPerPCSwithAll, 
+               BomCons: bomCons,
+               BomConswithAll: bomConswithAll
+              //LabelPrinted : true
               },
       }, 
       function(err, numberAffected, rawResponse) {
