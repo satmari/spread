@@ -528,6 +528,7 @@
                       {{/autoForm}}
                       
                       <a href="#" id="spreadOrder" class="btn btn-info btn-lg btn-block"> Spread Order</a>
+                      <a href="#" id="spreadHalfmarker" class="btn btn-warning btn-lg btn-block"> Half Spread Order</a>
                       
                       {{#if alredyPartiallySpread}}
                         <br />
@@ -537,6 +538,8 @@
                       {{/if}}
 
                         <a href="#" id="confirmspreadPartiallyOrder" class="btn btn-success btn-lg btn-block"> Confirm Spread Partially Order</a>
+
+
                     {{/if}}
                 {{/if}}
                   </tbody>
@@ -580,7 +583,7 @@
                   </tbody>
                 </table>
             {{/if}}
-
+ 
             {{#if isUserLabel}}
                 <table class="table" style="width:550px"> 
                   <tbody>
@@ -600,7 +603,13 @@
                     <hr />
                     <tr>
                       <td>
+                      
+                      {{#if ifStatusCut}}
                         <a href="#" id="printOrder" class="btn btn-success btn-lg btn-block">Marker Printed</a>
+                      {{else}}
+                        Marker je na polagacu
+                      {{/if}}
+
                       </td>
                     </tr>
                   </tbody>

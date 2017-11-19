@@ -880,7 +880,7 @@ if (Meteor.isClient) {
           {Status: filter},
           {Komesa: komesa_src}
           ]
-        }).fetch();
+        }).fetch(); 
 
         var posarray = [];
         for (var i = 0; i < order.length; i++) {
@@ -1034,6 +1034,8 @@ if (Meteor.isClient) {
                  return "On Cutter";
               } else if (value == 5) {
                  return "Ploca";
+              } else if (value == 6) {
+                 return "Half marker";
               } else {
                 return "Normal" ;
               }
@@ -1262,6 +1264,8 @@ if (Meteor.isClient) {
                  return "On Cutter";
               } else if (value == 5) {
                  return "Ploca";
+              } else if (value == 6) {
+                 return "Half marker";
               } else {
                 return "Normal";
               }
@@ -1418,7 +1422,23 @@ if (Meteor.isClient) {
             //{ key: 'OrderLink', label: 'Linked' }, //
             { key: 'T_Usable_Width', label: 'Theor Width (cm)' },
             { key: 'SpreadingMethod', label: 'Method' },
-            { key: 'Priority', label: 'Priority' },
+            { key: 'Priority', label: 'Priority', 
+              fn: function (value){
+                if (value == 2) {
+                  return "High";
+                } else if (value == 3) {
+                  return "Top Priority";
+                } else if (value == 4) {
+                   return "On Cutter";
+                } else if (value == 5) {
+                   return "Ploca";
+                } else if (value == 6) {
+                   return "Half marker";
+                } else {
+                  return "Normal";
+                }
+              }
+            },
             { key: 'Comment', label: 'Comment' },
           ],
             //useFontAwesome: true,
@@ -1525,6 +1545,8 @@ if (Meteor.isClient) {
                  return "On Cutter";
                 } else if (value == 5) {
                  return "Ploca";
+                } else if (value == 6) {
+                 return "Half marker";
                 } else {
                  return "Normal";
                 }
@@ -1681,14 +1703,19 @@ if (Meteor.isClient) {
                 if (value == 2) {
                   return "High";
                 } else if (value == 3) {
-                 return "Top Priority" ;
+                 return "Top Priority";
+                } else if (value == 4) {
+                 return "On Cutter";
                 } else if (value == 5) {
-                 return "Ploca" ;
+                 return "Ploca";
+                } else if (value == 6) {
+                 return "Half marker";
                 } else {
-                 return "Normal" ;
+                 return "Normal";
                 }
               }
             },
+
             //{ key: 'Status', label: 'Status'},
             //{ key: 'Load', label: 'Load'},
             //{ key: 'Spread', label: 'Spread'},
@@ -2378,6 +2405,23 @@ if (Meteor.isClient) {
         //console.log(SpreadOperatorBeforeChangeShiftNow);
         return SpreadOperatorBeforeChangeShiftNow;
       },
+      ifStatusCut: function (){
+        var ses = Session.get("selectedDocId");
+        var order = Order.find({_id: ses}).fetch();
+        for (var i = 0; i < order.length; i++) {
+          var Status = order[i].Status;
+        }
+        
+        if (Status == "CUT") {
+          return true;
+        } else {
+          return  false;
+        };
+
+        //console.log(ifStatusCut);
+        //return ifStatusCut;
+      },
+
 
   });
 
@@ -3261,13 +3305,11 @@ if (Meteor.isClient) {
 
       var order = Order.find({_id: orderToEdit}).fetch();
       for (var i = 0; i < order.length; i++) {
-        var actualPosition = order[i].Position;
-        var actualStatus = order[i].Status;
         var actual_id = order[i]._id;
       }
       var orderToEdit = actual_id;
       Order.update({_id: orderToEdit},{$set: {LayersBeforeChangeShift: 0}});
-      //--------
+      
 
     },
     'click #confirmspreadPartiallyOrder': function (e,t) {
@@ -3276,14 +3318,26 @@ if (Meteor.isClient) {
 
       var order = Order.find({_id: orderToEdit}).fetch();
       for (var i = 0; i < order.length; i++) {
-        var actualPosition = order[i].Position;
-        var actualStatus = order[i].Status;
         var actual_id = order[i]._id;
       }
       var orderToEdit = actual_id;
 
       var selectedOperatorSpreader = Session.get("ses_selectOperatorSpreader");
       Order.update({_id: orderToEdit},{$set: {SpreadOperatorBeforeChangeShift: selectedOperatorSpreader }});
+
+      rm_EditOrder.hide();
+    },
+    'click #spreadHalfmarker': function (e,t) {
+      var orderToEdit = Session.get("selectedDocId");
+      //console.log("orderToEdit: " + orderToEdit);
+
+      var order = Order.find({_id: orderToEdit}).fetch();
+      for (var i = 0; i < order.length; i++) {
+        var actual_id = order[i]._id;
+      }
+      var orderToEdit = actual_id;
+
+      Order.update({_id: orderToEdit},{$set: {Priority: 6 }});
 
       rm_EditOrder.hide();
     },
@@ -4939,23 +4993,42 @@ Meteor.methods({
 
   Meteor.publish("filter_label", function(/*Daysbefore, Daysafter*/){
     return Order.find({
-    $and: [
-      { $or: [
-          { Status: "CUT" },
-          { Status: "Finished" }
+
+    $or: [
+      { 
+        $and: [
+          { $or: [
+              { Status: "CUT" },
+              { Status: "Finished" }
+            ]
+          },
+          { $or: [ 
+              { LabelPrinted: false },  
+              { LabelPrinted: { $exists: false }}
+            ]
+          },
+          { $and: [ 
+              {Priority: { $ne: 5}}
+            ]
+          },
         ]
-      },
-      { $or: [ 
-          { LabelPrinted: false },  
-          { LabelPrinted: { $exists: false }}
+      }, 
+      {
+        $and: [
+          { $or: [ 
+              {Priority: 6}
+            ]
+          },
+          { $or: [ 
+              { LabelPrinted: false },  
+              { LabelPrinted: { $exists: false }}
+              ]
+          }
         ]
-      },
-      { $and: [ 
-          {Priority: { $ne: 5}}
-        ]
-      },
-      ]
+      }
+    ]  
     })
+
   });
 
   Meteor.publish("filter_cons", function(Daysbefore, Daysafter){
