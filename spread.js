@@ -2412,7 +2412,7 @@ if (Meteor.isClient) {
           var Status = order[i].Status;
         }
         
-        if (Status == "CUT") {
+        if ((Status == "CUT") || (Status == "Finished")) {
           return true;
         } else {
           return  false;
@@ -4083,13 +4083,14 @@ if (Meteor.isClient) {
           for (var i = 0; i < all.length; i++) {
             //console.log(all[i]);
 
+            var id = all[i]['_id'];
             var commessa = all[i]['Commessa'];
-            var bomconsperpcs  = Number(all[i]['BomConsPerPCS']);
-            var materialallowance = Number(all[i]['MaterialAllowance']);
+            //var bomconsperpcs  = Number(all[i]['BomConsPerPCS']);
+            //var materialallowance = Number(all[i]['MaterialAllowance']);
 
             //console.log("commessa: "+ commessa+ ", bomconsperpcs: "+ bomconsperpcs+ ", materialallowance: "+ materialallowance);
 
-            Meteor.call('method_insertBOM', commessa, bomconsperpcs, materialallowance, function(err, data) {
+            Meteor.call('method_insertBOM', id, commessa, function(err, data) {
               console.log("method_insertBOM: Done");
             });
           } 
@@ -4097,7 +4098,7 @@ if (Meteor.isClient) {
       reader.readAsText(file_a);
       rm_UpdateOrderandBOM.hide();
     },
-    'change #filesLenghtSum': function (e) {
+    'change #filesOrderbyId': function (e) {
 
       var files_a = e.target.files;
       var file_a = files_a[0];           
@@ -4116,14 +4117,25 @@ if (Meteor.isClient) {
           for (var i = 0; i < all.length; i++) {
             //console.log(all[i]);
 
-            var no = Number(all[i]['No']);
-            var lengthsum  = Number(all[i]['LengthSum']);
+            //
+            var id = all[i]['_id'];
+            var commessa = all[i]['Komesa'];
+            var layersactual = Number(all[i]['LayersActual']);
+            var bomconsperpcs = Number(all[i]['BomConsPerPCS']);
+            var materialallowance = Number(all[i]['MaterialAllowance']);
+            var bomconsperpcswithall = Number(all[i]['BomConsPerPCSwithAll']);
+            var bomcons = Number(all[i]['BomCons']);
+            var bomconswithall = Number(all[i]['BomConswithAll']);
+            
+
+            //var no = Number(all[i]['No']);
+            //var lengthsum  = Number(all[i]['LengthSum']);
             //var lengthsum  = all[i]['LengthSum'];
 
-            //console.log("No: "+no+" LengthSum: "+lengthsum);
+            //console.log("id: "+id+" komesa: "+commessa);
 
-            Meteor.call('method_updateLenghtSum', no, lengthsum, function(err, data) {
-              console.log("method_updateLenghtSum: Done");
+            Meteor.call('method_updateOrderbyId', id, commessa, layersactual, bomconsperpcs, materialallowance, bomconsperpcswithall, bomcons, bomconswithall, function(err, data) {
+              console.log("method_updateOrderbyId: Done");
             });
           } 
       }
@@ -4161,13 +4173,15 @@ if (Meteor.isClient) {
             //var t_usable_width = Number(all[i]['T_Usable_Width']);
             //var spreadoperatorbeforechangeshift = all[i]['BomConsPerPCS'];
 
-            var bomConsPerPCS = Number(all[i]['BomConsPerPCS']);
-            var materialAllowance = Number(all[i]['MaterialAllowance']);
-            var bomConsPerPCSwithAll = Number(all[i]['BomConsPerPCSwithAll']);
-            var bomCons = Number(all[i]['BomCons']);
-            var bomConswithAll = Number(all[i]['BomConswithAll']);
+            //var bomConsPerPCS = Number(all[i]['BomConsPerPCS']);
+            //var materialAllowance = Number(all[i]['MaterialAllowance']);
+            //var bomConsPerPCSwithAll = Number(all[i]['BomConsPerPCSwithAll']);
+            //var bomCons = Number(all[i]['BomCons']);
+            //var bomConswithAll = Number(all[i]['BomConswithAll']);
 
             //var labelPrinted = all[i]['LabelPrinted'];
+
+            var komesa = all[i]['Komesa'];
             
             //console.log("id: "+ id +", Marker: "+ markers + " , Orders: "+ orders);
             //console.log("Date: "+ date + ", Time: " + time +", Marker: "+ markers + " , Orders: "+ orders);
@@ -4176,7 +4190,7 @@ if (Meteor.isClient) {
             //  console.log("method_updateTable: Done");
             //});
 
-            Meteor.call('method_updateTable', no, bomConsPerPCS, materialAllowance, bomConsPerPCSwithAll, bomCons, bomConswithAll, function(err, data) {
+            Meteor.call('method_updateTable', no, komesa, function(err, data) {
               console.log("method_updateTable: Done");
             });
             
@@ -5164,10 +5178,16 @@ Meteor.methods({
     )
   },
   // insert in Bom table only first time
-  method_insertBOM: function (commessa, bomconsperpcs, materialallowance) {
+  method_insertBOM: function (id, commessa) {
 
     //console.log("commessa: "+ commessa+ ", bomconsperpcs: "+ bomconsperpcs+ ", materialallowance: "+ materialallowance);
+    /*var bom = Bom.find({No: no}).fetch();
 
+    for (var i = 0; i < bom.length; i++) {
+      var id = bom[i]._id;
+    }
+    */
+    /*
     Bom.insert({Commessa: commessa, BomConsPerPCS: bomconsperpcs , MaterialAllowance: materialallowance}, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
@@ -5177,30 +5197,65 @@ Meteor.methods({
         }
       }
     )
-  },
-  method_updateLenghtSum: function (no, lengthsum) {
-
-    var order = Order.find({No: no}).fetch();
-
-    for (var i = 0; i < order.length; i++) {
-      var id = order[i]._id;
-    }
-    //console.log("Id: "+id+" No: "+no+" LengthSum: "+lengthsum);
-
-    Order.update({_id: id},
+    */
+    Bom.update({_id: id},
       {
-        $set: {LengthSum: lengthsum},
+        $set: {Commessa: commessa},
       }, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
-          console.log("method_updateLenghtSum = False: " + no );
+          console.log("method_insertBOM = False: " + commessa );
         } else {
-          console.log("method_updateLenghtSum = True: " + no );
+          console.log("method_insertBOM = True: " + commessa );
         }
       }
     )
+
+
+
   },
-  method_updateTable: function (no, bomConsPerPCS, materialAllowance, bomConsPerPCSwithAll, bomCons, bomConswithAll) {
+  method_updateOrderbyId: function (id, commessa, layersactual, bomconsperpcs, materialallowance, bomconsperpcswithall, bomcons, bomconswithall) {
+
+    //var order = Order.find({No: no}).fetch();
+
+    //for (var i = 0; i < order.length; i++) {
+    //  var id = order[i]._id;
+    //}
+    //console.log("Id: "+id+" Komesa: "+commessa);
+
+    
+    Order.update({_id: id},
+      {
+        /*
+        $set: {Komesa: commessa},
+        $set: {LayersActual: layersactual},
+        $set: {BomConsPerPCS: bomconsperpcs},
+        $set: {MaterialAllowance: materialallowance},
+        $set: {BomConsPerPCSwithAll: bomconsperpcswithall},
+        $set: {BomCons: bomcons},
+        $set: {BomConswithAll: bomconswithall}
+        */
+        $set: {Komesa: commessa,
+              LayersActual: layersactual,
+              BomConsPerPCS: bomconsperpcs,
+              MaterialAllowance: materialallowance,
+              BomConsPerPCSwithAll: bomconsperpcswithall,
+              BomCons: bomcons,
+              BomConswithAll: bomconswithall
+
+        }
+      }, 
+      function(err, numberAffected, rawResponse) {
+        if (numberAffected == false) {
+          console.log("method_updateOrderbyId = False: " + id );
+        } else {
+          console.log("method_updateOrderbyId = True: " + id );
+        }
+      }
+    )
+    
+  },
+  method_updateTable: function (no, komesa) {
 
     var order = Order.find({No: no}).fetch();
 
@@ -5211,20 +5266,23 @@ Meteor.methods({
     Order.update({_id: id},
       {
         $set: {
-               BomConsPerPCS: bomConsPerPCS, 
-               MaterialAllowance: materialAllowance, 
-               BomConsPerPCSwithAll: bomConsPerPCSwithAll, 
-               BomCons: bomCons,
-               BomConswithAll: bomConswithAll
+               //BomConsPerPCS: bomConsPerPCS, 
+               //MaterialAllowance: materialAllowance, 
+               //BomConsPerPCSwithAll: bomConsPerPCSwithAll, 
+               //BomCons: bomCons,
+               //BomConswithAll: bomConswithAll
               //LabelPrinted : true
+              Komesa : komesa
               },
       }, 
       function(err, numberAffected, rawResponse) {
-        if (numberAffected == false) {
-          console.log("method_update = False: " + no );
-        } else {
+        /*if (numberAffected == false) {
+          */
+          console.log("method_update: " + no );
+        
+        /*} else {
           console.log("method_update = True: " + no );
-        }
+        }*/
       }
     )
     
@@ -5242,9 +5300,9 @@ Meteor.methods({
       }, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
-          console.log("method_updateConsumption = False: " + no );
+          //console.log("method_updateConsumption = False: " + no );
         } else {
-          console.log("method_updateConsumption = True: " + no );
+          //console.log("method_updateConsumption = True: " + no );
         }
       }
     )
