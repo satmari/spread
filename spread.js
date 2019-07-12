@@ -1456,12 +1456,12 @@ if (Meteor.isClient) {
               return 'info';    // dark blue
             } else if (load) {
               return 'load';    // greey
-            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
-              return 'active';  // light blue
             } else if (priority == 2) {
               return 'warning'; // orange
             } else if (priority == 3) {
               return 'danger';  // red
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
+              return 'active';  // light blue
             } else if (priority == 5) {
               return 'ploca'; 
               //active, success, info, warning, danger
@@ -3568,7 +3568,7 @@ if (Meteor.isClient) {
 
        
 
-      var uniquecountSelectedPosition = uniquecountSelected + 1;
+      var uniquecountSelectedPosition = uniquecountSelected +2;
       console.log("uniquecountSelectedPosition: " + uniquecountSelectedPosition);
 
       // Proveri da li postoji linkovana pozicija i vrati broj
@@ -3639,7 +3639,7 @@ if (Meteor.isClient) {
       }
       //console.log("uniquecountSelected" + uniquecountSelected);
 
-      var uniquecountSelectedPosition = uniquecountSelected + 1;
+      var uniquecountSelectedPosition = uniquecountSelected +2;
       //console.log("uniquecountSelectedPosition: " + uniquecountSelectedPosition);
 
       if (actualStatus == selectedStatus) {
@@ -3778,7 +3778,7 @@ if (Meteor.isClient) {
 
               */
               var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
-              var uniquecountPosNA = uniquecountPosNA + 1;
+              var uniquecountPosNA = uniquecountPosNA +2;
               Session.set("ses_uniquecountPosNA", uniquecountPosNA);
               //console.log("set ses_uniquecountPosNA: " + uniquecountPosNA);
 
@@ -4877,7 +4877,7 @@ Meteor.methods({
     }
     
     //var uniquecountPosNA = Session.get("ses_uniquecountPosNA");
-    var uniquecountPosNA = largest + 1;
+    var uniquecountPosNA = largest +2;
     //Session.set("ses_uniquecountPosNA", uniquecountPosNA);
     //console.log("uniquecountPosNA: " + uniquecountPosNA);
 
@@ -4964,6 +4964,7 @@ Meteor.methods({
 });
 
 // Publish Client side
+  /*
   Meteor.publish("filter_orderAll", function(){
     return Order.find();
   });
@@ -5002,10 +5003,31 @@ Meteor.methods({
   });
 
   Meteor.publish("filter_cutter", function(){
-    return Order.find({ Status: "CUT"});
+    //return Order.find({ Status: "CUT"});
+    /*
+    return Order.find({ 
+    $or: [
+              { Status: "CUT" },
+              {Priority: 6}
+          ]
+    })*/
+/*
+  return Order.find({
+
+    $or: [
+      { 
+         $or: [{ Status: "CUT" }]
+      },
+      {
+        $and: [{Priority: 6},
+               {Status: {$ne: "Finished"}}]
+      }]
+    })
+
   });
 
-  Meteor.publish("filter_label", function(/*Daysbefore, Daysafter*/){
+  Meteor.publish("filter_label", function(/*Daysbefore, Daysafter*//*){
+    
     return Order.find({
 
     $or: [
@@ -5102,8 +5124,10 @@ Meteor.methods({
   });
 
   Meteor.publish("filter_allOperators", function(){
-    return Operators.find();
-});
+    //return Operators.find();
+    return Operators.find({Status: 'Active'});
+  });
+  */
 
 
 // Meteor Server side
@@ -5420,7 +5444,7 @@ Meteor.methods({
 });
  
 // Publish Server side 
-  /*
+  
   Meteor.publish("filter_orderAll", function(){
     return Order.find();
   });
@@ -5459,25 +5483,60 @@ Meteor.methods({
   });
 
   Meteor.publish("filter_cutter", function(){
-    return Order.find({ Status: "CUT"});
+    //return Order.find({ Status: "CUT"});
+    
+  return Order.find({
+
+    $or: [
+      { 
+         $or: [{ Status: "CUT" }]
+      },
+      {
+        $and: [{Priority: 6},
+               {Status: {$ne: "Finished"}}]
+      }]
+    })
+
   });
 
-  Meteor.publish("filter_label", function(Daysbefore, Daysafter){
+  Meteor.publish("filter_label", function(/*Daysbefore, Daysafter*/){
     return Order.find({
-    $and: [
-      { $or: [
-          { Status: "CUT" },
-          { Status: "Finished" }
-        ]},
-      { $or: [ 
-          { LabelPrinted: false },  
-          { LabelPrinted: { $exists: false }}
-        ]},
-      { $and: [ 
-          {SpreadDate: {$gte: Daysbefore, $lt: Daysafter}}
-        ]},
-      ]
+
+    $or: [
+      { 
+        $and: [
+          { $or: [
+              { Status: "CUT" },
+              { Status: "Finished" }
+            ]
+          },
+          { $or: [ 
+              { LabelPrinted: false },  
+              { LabelPrinted: { $exists: false }}
+            ]
+          },
+          { $and: [ 
+              {Priority: { $ne: 5}}
+            ]
+          },
+        ]
+      }, 
+      {
+        $and: [
+          { $or: [ 
+              {Priority: 6}
+            ]
+          },
+          { $or: [ 
+              { LabelPrinted: false },  
+              { LabelPrinted: { $exists: false }}
+              ]
+          }
+        ]
+      }
+    ]  
     })
+
   });
 
   Meteor.publish("filter_cons", function(Daysbefore, Daysafter){
@@ -5537,9 +5596,10 @@ Meteor.methods({
   });
 
   Meteor.publish("filter_allOperators", function(){
-    return Operators.find();
+    //return Operators.find();
+    return Operators.find({Status: 'Active'});
   });
-  */
+  
 
   Operators.allow({   
     update: function () {
