@@ -115,23 +115,30 @@
           </button>-->
 
           <label class="btn btn-default">
-            <input type="radio" name="options" id="sp1"> Spreader 1 
+            <input type="radio" name="options" id="sp1"> SP 1 
           </label>
           <!--<button type="radio" class="btn btn-default" id="sp1">SP 1 
             <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
           </button>-->
 
           <label class="btn btn-default ">
-            <input type="radio" name="options" id="sp2"> Spreader 2 
+            <input type="radio" name="options" id="sp2"> SP 2 
           </label>
           <!--<button type="radio" class="btn btn-default" id="sp1">SP 2 
             <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
           </button>-->
 
           <label class="btn btn-default ">
-            <input type="radio" name="options" id="sp3"> Spreader 3 
+            <input type="radio" name="options" id="sp3"> SP 3 
           </label>
-          <!--<button type="radio" class="btn btn-default" id="sp1">SP 2 
+          <!--<button type="radio" class="btn btn-default" id="sp3">SP 3
+            <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
+          </button>-->
+
+          <label class="btn btn-default ">
+            <input type="radio" name="options" id="sp4"> SP 4
+          </label>
+          <!--<button type="radio" class="btn btn-default" id="sp1">SP 4
             <span class="glyphicon glyphicon-road" aria-hidden="true"></span>
           </button>-->
 
@@ -898,6 +905,44 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
         </tbody>
       </table>
       <hr />
+      <p><b>Stastistic for - Spreader 4</b></p>
+      
+      Assigned orders to Spreader 4: {{SP4noRolls}}
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Load orders</th>
+            <th>Load meters</th>
+            <th>Spread orders</th>
+            <th>Spread meters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Shift 1</td>
+            <td>{{SP4noLoadRollsShift1}}</td>
+            <td>{{SP4LoadMetShift1}}</td>
+            <td>{{SP4noSpreadRollsShift1}}</td>
+            <td>{{SP4SpreadMetShift1}}</td>
+          </tr>
+          <tr>
+            <td>Shift 2</td>
+            <td>{{SP4noLoadRollsShift2}}</td>
+            <td>{{SP4LoadMetShift2}}</td>
+            <td>{{SP4noSpreadRollsShift2}}</td>
+            <td>{{SP4SpreadMetShift2}}</td>
+          </tr>
+          <tr>
+            <td>Shift 3</td>
+            <td>{{SP4noLoadRollsShift3}}</td>
+            <td>{{SP4LoadMetShift3}}</td>
+            <td>{{SP4noSpreadRollsShift3}}</td>
+            <td>{{SP4SpreadMetShift3}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <hr />
       <p><b>Stastistic for - Manual Spreader 1</b></p>
       
       Assigned orders to Manual Spreader 1: {{MS1noRolls}}
@@ -1078,7 +1123,7 @@ _id;No;Position;Status;Date;Created;Komesa;Marker;Style;Fabric;ColorCode;ColorDe
     <p>UPDATE ORDER from CSV file:</p> 
     <input type="file" id="filesOrder" name="files[]" enctype="multipart/form-data" />
     <br />
-    <!--<button id="insert-csv-from-code">Import from CSV file</button>-->
+    <button id="insert-csv-from-code">Import from CSV file</button>
     <br />
     <hr />
   </div>

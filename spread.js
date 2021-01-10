@@ -188,6 +188,10 @@ if (Meteor.isClient) {
       //Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
       Meteor.subscribe('filter_spreader3');
       Session.set("ses_komesa_src", false);
+    } else if ((ses_loggedUserName == "sp41") || (ses_loggedUserName == "sp42") || (ses_loggedUserName == "sp43")){
+      //Meteor.subscribe('spreader2', Session.get("ses_datefilter"));
+      Meteor.subscribe('filter_spreader4');
+      Session.set("ses_komesa_src", false);  
     } else if ((ses_loggedUserName == "ms11") || (ses_loggedUserName == "ms12")){
       Meteor.subscribe('filter_spreaderm1');
       Session.set("ses_komesa_src", false);
@@ -269,6 +273,10 @@ if (Meteor.isClient) {
         //console.log("method_uniquecountPosSp3: " + data);
         Session.set("ses_uniquecountPosSp3", data);
       });
+      Meteor.call('method_uniquecountPosSp4', function(err, data) {
+        //console.log("method_uniquecountPosSp4: " + data);
+        Session.set("ses_uniquecountPosSp4", data);
+      });
       Meteor.call('method_uniquecountPosMs1', function(err, data) {
         //console.log("method_uniquecountPosMs1: " + data);
         Session.set("ses_uniquecountPosMs1", data);
@@ -308,7 +316,7 @@ if (Meteor.isClient) {
       var userId = Meteor.userId();
       if (userId) {
         var User = Meteor.users.findOne({_id: userId});
-        if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33") || (User.username == "ms11") || (User.username == "ms12")) {
+        if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33") || (User.username == "sp41") || (User.username == "sp42") || (User.username == "sp43") || (User.username == "ms11") || (User.username == "ms12")) {
           return true;
         } else {
           return false;  
@@ -372,7 +380,7 @@ if (Meteor.isClient) {
 
       if (userId) {
         var User = Meteor.users.findOne({_id: userId});
-        if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33")) {
+        if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33") || (User.username == "sp41") || (User.username == "sp42") || (User.username == "sp43")) {
           var operators = Operators.find({Status: "Active", Machine: "Spreader"}).fetch();
 
         } else if ((User.username == "ms11") || (User.username == "ms12")) { 
@@ -489,6 +497,10 @@ if (Meteor.isClient) {
        Meteor.call('method_uniquecountPosSp3', function(err, data) {
         Session.set("ses_uniquecountPosSp3", data);
         //console.log("method_uniquecountPosSp3: " + data);
+      });
+       Meteor.call('method_uniquecountPosSp4', function(err, data) {
+        Session.set("ses_uniquecountPosSp4", data);
+        //console.log("method_uniquecountPosSp4: " + data);
       });
       Meteor.call('method_uniquecountPosMs1', function(err, data) {
         Session.set("ses_uniquecountPosMs1", data);
@@ -623,6 +635,12 @@ if (Meteor.isClient) {
       Session.set("ses_komesa_src", false);
     },
 
+    'change #sp4': function  (e, t) {
+      Session.set("ses_statusfilter", "SP 4");
+      //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
+      Session.set("ses_komesa_src", false);
+    },
+
     'change #ms1': function  (e, t) {
       Session.set("ses_statusfilter", "MS 1");
       //console.log("ses_statusfilter: " + Session.get("ses_statusfilter"));
@@ -743,7 +761,7 @@ if (Meteor.isClient) {
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33") || (User.username == "ms11") || (User.username == "ms12")){
+          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33") || (User.username == "sp41") || (User.username == "sp42") || (User.username == "sp43") || (User.username == "ms11") || (User.username == "ms12")){
             return true;
           } else {
             return false;  
@@ -916,6 +934,7 @@ if (Meteor.isClient) {
           //{ key: '_id', label: '_ID' },
           { key: 'Position', label: 'Pos' , sort: 'ascending'},
           { key: 'No', label: 'No', /*sort: 'descending' */},
+          { key: 'Pattern', label: 'SAP No' },
           { key: 'OrderLink', label: 'Linked',
            fn: function (value){
               if (value == true) {
@@ -1003,6 +1022,9 @@ if (Meteor.isClient) {
               }
               else if (value == "SP 3") {
                 return "SP 3";
+              }
+              else if (value == "SP 4") {
+                return "SP 4";
               }
               else if (value == "MS 1") {
                 return "MS 1";
@@ -1118,7 +1140,7 @@ if (Meteor.isClient) {
               return 'info';    // dark blue
             } else if (load) {
               return 'load';    // greey
-            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "SP 4") || (status == "MS 1")) {
               return 'active';  // light blue
             } else if (priority == 2) {
               return 'warning'; // orange
@@ -1144,6 +1166,7 @@ if (Meteor.isClient) {
           //{ key: '_id', label: '_ID' },
           { key: 'Position', label: 'Pos' , sort: 'ascending'},
           { key: 'No', label: 'No', /*sort: 'descending' */},
+          { key: 'Pattern', label: 'SAP No' },
           { key: 'OrderLink', label: 'Linked',
            fn: function (value){
               if (value == true) {
@@ -1233,6 +1256,9 @@ if (Meteor.isClient) {
               }
               else if (value == "SP 3") {
                 return "SP 3";
+              }
+              else if (value == "SP 4") {
+                return "SP 4";
               }
               else if (value == "MS 1") {
                 return "MS 1";
@@ -1335,7 +1361,7 @@ if (Meteor.isClient) {
               return 'info';    // dark blue
             } else if (load) {
               return 'load';    // greey
-            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "SP 4") || (status == "MS 1")) {
               return 'active';  // light blue
             } else if (priority == 2) {
               return 'warning'; // orange
@@ -1359,6 +1385,7 @@ if (Meteor.isClient) {
             //{ key: '_id', label: '_ID' },
             { key: 'Position', label: 'Pos' , sort: 'ascending'},
             { key: 'No', label: 'No' },
+            { key: 'Pattern', label: 'SAP No' },
             { key: 'OrderLink', label: 'Linked',
               fn: function (value){
                 if (value == true) {
@@ -1460,7 +1487,7 @@ if (Meteor.isClient) {
               return 'warning'; // orange
             } else if (priority == 3) {
               return 'danger';  // red
-            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "SP 4") || (status == "MS 1")) {
               return 'active';  // light blue
             } else if (priority == 5) {
               return 'ploca'; 
@@ -1479,6 +1506,7 @@ if (Meteor.isClient) {
           fields: [
             //{ key: '_id', label: '_ID' },
             { key: 'No', label: 'No'},
+            { key: 'Pattern', label: 'SAP No' },
             { key: 'Position', label: 'Pos'},
             { key: 'OrderLink', label: 'Linked',
               fn: function (value){
@@ -1592,7 +1620,7 @@ if (Meteor.isClient) {
               return 'info';    // dark blue
             } else if (load) {
               return 'load';    // greey
-            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "SP 4") || (status == "MS 1")) {
               return 'active';  // light blue
             } else {
 
@@ -1608,6 +1636,7 @@ if (Meteor.isClient) {
           fields: [
             //{ key: '_id', label: '_ID' },
             { key: 'No', label: 'No'},
+            { key: 'Pattern', label: 'SAP No' },
             /*{ key: 'Position', label: 'Pos'},*/
             /*{ key: 'OrderLink', label: 'Linked',
               fn: function (value){
@@ -1756,7 +1785,7 @@ if (Meteor.isClient) {
               return 'info';    // dark blue
             } else if (load) {
               return 'load';    // greey
-            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "SP 4") || (status == "MS 1")) {
               return 'active';  // light blue
             } else {
 
@@ -1772,6 +1801,7 @@ if (Meteor.isClient) {
           fields: [
             //{ key: '_id', label: '_ID' },
             { key: 'No', label: 'No'},
+            { key: 'Pattern', label: 'SAP No' },
             /*{ key: 'Position', label: 'Pos'},*/
             { key: 'OrderLink', label: 'Linked',
               fn: function (value){
@@ -1878,7 +1908,7 @@ if (Meteor.isClient) {
               return 'info';    // dark blue
             } else if (load) {
               return 'load';    // greey
-            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
+            } else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "SP 4") || (status == "MS 1")) {
               return 'active';  // light blue
             } else {
 
@@ -1919,7 +1949,7 @@ if (Meteor.isClient) {
               //return 'info';    // dark blue
             //} else if (load) {
               //return 'load';    // greey
-            //} else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "MS 1")) {
+            //} else if ((status == "SP 1") || (status == "SP 2") || (status == "SP 3") || (status == "SP 4") || (status == "MS 1")) {
               //return 'active';  // light blue
             //} else {
 
@@ -1965,6 +1995,10 @@ if (Meteor.isClient) {
           Meteor.call('method_uniquecountPosSp3', function(err, data) {
             //console.log("method_uniquecountPosSp3: " + data);
             Session.set("ses_uniquecountPosSp3", data);
+          });
+          Meteor.call('method_uniquecountPosSp4', function(err, data) {
+            //console.log("method_uniquecountPosSp4: " + data);
+            Session.set("ses_uniquecountPosSp4", data);
           });
           Meteor.call('method_uniquecountPosMs1', function(err, data) {
             //console.log("method_uniquecountPosMs1: " + data);
@@ -2143,7 +2177,7 @@ if (Meteor.isClient) {
         var userId = Meteor.userId();
         if (userId) {
             var User = Meteor.users.findOne({_id: userId});
-          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33") || (User.username == "ms11") || (User.username == "ms12")){
+          if ((User.username == "sp11") || (User.username == "sp12") || (User.username == "sp13") || (User.username == "sp21") || (User.username == "sp22") || (User.username == "sp23") || (User.username == "sp31") || (User.username == "sp32") || (User.username == "sp33") || (User.username == "sp41") || (User.username == "sp42") || (User.username == "sp43") || (User.username == "ms11") || (User.username == "ms12")){
             return true;
           } else {
             return false;  
@@ -2248,6 +2282,7 @@ if (Meteor.isClient) {
             {label: "SP 1", value: "SP 1"},
             {label: "SP 2", value: "SP 2"},
             {label: "SP 3", value: "SP 3"},
+            {label: "SP 4", value: "SP 4"},
             {label: "MS 1", value: "MS 1"},
             {label: "TRASH", value: "TRASH"}
             ]
@@ -2339,6 +2374,19 @@ if (Meteor.isClient) {
 
           return uniqarrayofPosSp3;
 
+        } else if (click_id_status == 'SP 4'){
+          
+          Meteor.call('method_arrayofPosSp4', function(err,data) {
+            var arrayofPosSp4 = data;
+            Session.set('ses_arrayofPosSp4', arrayofPosSp4);
+            //console.log("ses_arrayofPosSp4: " + arrayofPosSp4);
+          });
+          var uniqarrayofPosSp4 = $.makeArray($(Session.get('ses_arrayofPosSp4')).filter(function(i,itm){ 
+            return i == $(Session.get('ses_arrayofPosSp4')).index(itm);
+          }));
+
+          return uniqarrayofPosSp4;
+
         } else if (click_id_status == 'MS 1'){
 
           Meteor.call('method_arrayofPosMs1', function(err,data) {
@@ -2380,7 +2428,7 @@ if (Meteor.isClient) {
       },
       isSPfilter: function (){
         var statusFilter = Session.get("ses_statusfilter");
-        if ((statusFilter == "SP 1") || (statusFilter == "SP 2") || (statusFilter == "SP 3") || (statusFilter == "MS 1") || (statusFilter == "Not assigned")) {
+        if ((statusFilter == "SP 1") || (statusFilter == "SP 2") || (statusFilter == "SP 3") || (statusFilter == "SP 4") || (statusFilter == "MS 1") || (statusFilter == "Not assigned")) {
           return true;
         } else {
           return false;
@@ -2735,6 +2783,10 @@ if (Meteor.isClient) {
       var order = Order.find({Status: "SP 3"});
       return order.count();
     },
+    SP4noRolls: function (){
+      var order = Order.find({Status: "SP 4"});
+      return order.count();
+    },
     MS1noRolls: function (){
       var order = Order.find({Status: "MS 1"});
       return order.count();
@@ -2773,6 +2825,18 @@ if (Meteor.isClient) {
     },
     SP3noLoadRollsShift3: function (){
       var order = Order.find({Load: "SP 3-3"});
+      return order.count();
+    },
+    SP4noLoadRollsShift1: function (){
+      var order = Order.find({Load: "SP 4-1"});
+      return order.count();
+    },
+    SP4noLoadRollsShift2: function (){
+      var order = Order.find({Load: "SP 4-2"});
+      return order.count();
+    },
+    SP4noLoadRollsShift3: function (){
+      var order = Order.find({Load: "SP 4-3"});
       return order.count();
     },
     MS1noLoadRollsShift1: function (){
@@ -2817,6 +2881,18 @@ if (Meteor.isClient) {
     },
     SP3noSpreadRollsShift3: function (){
       var order = Order.find({Spread: "SP 3-3"});
+      return order.count();
+    },
+    SP4noSpreadRollsShift1: function (){
+      var order = Order.find({Spread: "SP 4-1"});
+      return order.count();
+    },
+    SP4noSpreadRollsShift2: function (){
+      var order = Order.find({Spread: "SP 4-2"});
+      return order.count();
+    },
+    SP4noSpreadRollsShift3: function (){
+      var order = Order.find({Spread: "SP 4-3"});
       return order.count();
     },
     MS1noSpreadRollsShift1: function (){
@@ -2941,6 +3017,36 @@ if (Meteor.isClient) {
       sum = sum.toFixed(2);
       return sum;
     },
+    SP4LoadMetShift1: function (){
+      var order = Order.find({Load: "SP 4-1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    SP4LoadMetShift2: function (){
+      var order = Order.find({Load: "SP 4-2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    SP4LoadMetShift3: function (){
+      var order = Order.find({Load: "SP 4-3"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
     MS1LoadMetShift1: function (){
       var order = Order.find({Load: "MS 1-1"}).fetch();
       var sum = 0;
@@ -3043,6 +3149,36 @@ if (Meteor.isClient) {
     },
     SP3SpreadMetShift3: function (){
       var order = Order.find({Spread: "SP 3-3"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    SP4SpreadMetShift1: function (){
+      var order = Order.find({Spread: "SP 4-1"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    SP4SpreadMetShift2: function (){
+      var order = Order.find({Spread: "SP 4-2"}).fetch();
+      var sum = 0;
+      for (var i = 0; i < order.length; i++) {
+        sum += order[i].LengthSum;
+      }
+      sum = Number(sum);
+      sum = sum.toFixed(2);
+      return sum;
+    },
+    SP4SpreadMetShift3: function (){
+      var order = Order.find({Spread: "SP 4-3"}).fetch();
       var sum = 0;
       for (var i = 0; i < order.length; i++) {
         sum += order[i].LengthSum;
@@ -3203,6 +3339,12 @@ if (Meteor.isClient) {
         userEditLoad = "SP 3-2";
       } else if (userEdit == "sp33") {
         userEditLoad = "SP 3-3";
+      } else if (userEdit == "sp41") {
+        userEditLoad = "SP 4-1";
+      } else if (userEdit == "sp42") {
+        userEditLoad = "SP 4-2";
+      } else if (userEdit == "sp43") {
+        userEditLoad = "SP 4-3";
       } else if (userEdit == "ms11") {
         userEditLoad = "MS 1-1";
       } else if (userEdit == "ms12") {
@@ -3259,6 +3401,12 @@ if (Meteor.isClient) {
         var userEditSpread = "SP 3-2";
       } else if (userEdit == "sp33") {
         var userEditSpread = "SP 3-3";
+      } else if (userEdit == "sp41") {
+        var userEditSpread = "SP 4-1";
+      } else if (userEdit == "sp42") {
+        var userEditSpread = "SP 4-2";
+      } else if (userEdit == "sp43") {
+        var userEditSpread = "SP 4-3";
       } else if (userEdit == "ms11") {
         var userEditSpread = "MS 1-1";
       } else if (userEdit == "ms12") {
@@ -3554,6 +3702,9 @@ if (Meteor.isClient) {
       } else if (actualStatus == "SP 3"){
         var uniquecountPosSp3 = Session.get("ses_uniquecountPosSp3");
         var uniquecountSelected = uniquecountPosSp3;
+      } else if (actualStatus == "SP 4"){
+        var uniquecountPosSp4 = Session.get("ses_uniquecountPosSp4");
+        var uniquecountSelected = uniquecountPosSp4;
       } else if (actualStatus == "MS 1"){
         var uniquecountPosMs1 = Session.get("ses_uniquecountPosMs1");
         var uniquecountSelected = uniquecountPosMs1;
@@ -3622,6 +3773,9 @@ if (Meteor.isClient) {
       } else if (selectedStatus == "SP 3"){
         var uniquecountPosSp3 = Session.get("ses_uniquecountPosSp3");
         var uniquecountSelected = uniquecountPosSp3;
+      } else if (selectedStatus == "SP 4"){
+        var uniquecountPosSp4 = Session.get("ses_uniquecountPosSp4");
+        var uniquecountSelected = uniquecountPosSp4;
       } else if (selectedStatus == "MS 1"){
         var uniquecountPosMs1 = Session.get("ses_uniquecountPosMs1");
         var uniquecountSelected = uniquecountPosMs1;
@@ -3769,6 +3923,12 @@ if (Meteor.isClient) {
               Session.set("ses_uniquecountPosSp3", uniquecountPosSp3);
               setPos = uniquecountPosSp3;     
             } else if (status == "4" ){
+              status = 'SP 4';
+              var uniquecountPosSp4 = Session.get("ses_uniquecountPosSp4");
+              var uniquecountPosSp4 = uniquecountPosSp4 + 1;
+              Session.set("ses_uniquecountPosSp4", uniquecountPosSp4);
+              setPos = uniquecountPosSp4;
+            } else if (status == "4" ){
               status = 'MS 1';
               var uniquecountPosMs1 = Session.get("ses_uniquecountPosMs1");
               var uniquecountPosMs1 = uniquecountPosMs1 + 1;
@@ -3871,7 +4031,8 @@ if (Meteor.isClient) {
           for (var i = 0; i < all.length; i++) {
             //console.log(all[i]);
 
-            var no  = Number(all[i]['No']);
+            //var no  = Number(all[i]['No']);
+            var no  = all[i]['No'];
             var consumption1 = Number(all[i]['Total Consumption']);
             var consumption = consumption1.toFixed(2);
 
@@ -4019,7 +4180,7 @@ if (Meteor.isClient) {
 
   Template.tmp_UpdateOrderandBOM.events({
     'change #filesOrder': function (e) {
-      //alert("Ne radi jos")
+      //alert("Ne radi jos")0
       //var files = e.target.files || e.dataTransfer.files;
 
       var files_a = e.target.files;
@@ -4050,16 +4211,16 @@ if (Meteor.isClient) {
             //var bomcons = all[i]['BomCons'];
             //var bomconswithall = all[i]['BomConswithAll'];
             //var  season = all[i]['Season'];
-            var  colorcode = all[i]['ColorCode'];
+            var  pattern = all[i]['Pattern'];
 
-            //console .log("No: "+ no + ", Season: " + season);
+            console .log("No: "+ no + ", Pattern: " + pattern);
             //console.log("No: "+ no + ",bomconsperpcs: "+ bomconsperpcs + ",materialallowance: "+ materialallowance + " , bomconsperpcswithall: " + bomconsperpcswithall + " , bomcons:" + bomcons + ", bomconswithall: " + bomconswithall);
 
-            Meteor.call('method_updateOrders', no, colorcode /*, bomconsperpcs, materialallowance, bomconsperpcswithall, bomcons, bomconswithall*/, function(err, data) {
-              console.log("method_updateOrders: Done");
+            Meteor.call('method_updateOrders', no, pattern, function(err, data) {
+              //console.log("method_updateOrders: Done");
             });
             
-          } 
+          }
       }
       reader.readAsText(file_a);
       rm_UpdateOrderandBOM.hide();
@@ -4396,7 +4557,7 @@ if (Meteor.isClient) {
 Meteor.methods({
 
   method_arrayofStatus: function() {
-    statusarray = ["Not assigned","SP 1","SP 2","SP 3","MS 1","TRASH"];
+    statusarray = ["Not assigned","SP 1","SP 2","SP 3","SP 4","MS 1","TRASH"];
     return statusarray;
   },
   method_uniquecountPosTRASH: function() {
@@ -4457,6 +4618,20 @@ Meteor.methods({
   },
   method_uniquecountPosSp3: function() {
     var order = Order.find({Status: 'SP 3'}).fetch();
+    var posarray = [];
+    for (var i = 0; i < order.length; i++) {
+        pos = order[i].Position;
+        posarray.push(pos);
+    }
+    if (isNaN(posarray[0])) {
+      return 0;
+    } else {
+      var largest = Math.max.apply(null, posarray);
+      return largest;
+    }
+  },
+  method_uniquecountPosSp4: function() {
+    var order = Order.find({Status: 'SP 4'}).fetch();
     var posarray = [];
     for (var i = 0; i < order.length; i++) {
         pos = order[i].Position;
@@ -4547,6 +4722,18 @@ Meteor.methods({
   },
   method_arrayofPosSp3: function() {
     var order = Order.find({Status: 'SP 3'}).fetch();
+      var posarray = [];
+
+      for (var i = 0; i < order.length; i++) {
+        id = order[i]._Id;
+        pos = order[i].Position;
+        posarray.push(pos);
+      }
+    posarray.sort(function(a, b){return a-b});
+    return posarray;
+  },
+  method_arrayofPosSp4: function() {
+    var order = Order.find({Status: 'SP 4'}).fetch();
       var posarray = [];
 
       for (var i = 0; i < order.length; i++) {
@@ -4998,6 +5185,10 @@ Meteor.methods({
     return Order.find({ Status: "SP 3"});
   });
 
+  Meteor.publish("filter_spreader4", function(){
+    return Order.find({ Status: "SP 4"});
+  });
+
   Meteor.publish("filter_spreaderm1", function(){
     return Order.find({ Status: "MS 1"});
   });
@@ -5179,27 +5370,29 @@ Meteor.methods({
       return "LengthSum fields are refreshed!";
   },
   // update Order (Only first time)
-  method_updateOrders: function (no, colorcode) {
-    
+  method_updateOrders: function (no, pattern) {
+    //console .log("No: "+ no + ", Pattern: " + pattern);
+     
     var order = Order.find({No: no}).fetch();
     for (var i = 0; i < order.length; i++) {
       var id = order[i]._id;
     }
 
+    //console .log("No: "+ no + ", Pattern: " + pattern + ",id :" + id);
+    
     Order.update({_id: id},
       {
-        //$set: {BomConsPerPCS:bomconsperpcs , MaterialAllowance:materialallowance, BomConsPerPCSwithAll:bomconsperpcswithall, BomCons:bomcons, BomConswithAll:bomconswithall },
-        //$set: {Season: season},
-        $set: {ColorCode: colorcode},
+        $set: {Pattern: pattern},
       }, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
-          console.log("method_updateOrders = False: " + no );
+          console.log("method_updateOrders = False: " + pattern );
         } else {
-          console.log("method_updateOrders = True: " + no );
+          console.log("method_updateOrders = True: " + pattern );
         }
       }
     )
+    
   },
   // insert in Bom table only first time
   method_insertBOM: function (id, commessa) {
@@ -5312,24 +5505,32 @@ Meteor.methods({
     
   },
   method_updateConsumption: function (no, consumption) {
-
+    /*
     var order = Order.find({No: no}).fetch();
     for (var i = 0; i < order.length; i++) {
       var id = order[i]._id;
+    }*/
+
+    var order = Order.find({Pattern: no}).fetch();
+    for (var i = 0; i < order.length; i++) {
+      var id = order[i]._id;
+      console.log("Pattern: " + no );
     }
 
+    
     Order.update({_id: id},
       {
         $set: {Consumption:consumption},
       }, 
       function(err, numberAffected, rawResponse) {
         if (numberAffected == false) {
-          //console.log("method_updateConsumption = False: " + no );
+          console.log("method_updateConsumption = False: " + no );
         } else {
-          //console.log("method_updateConsumption = True: " + no );
+          console.log("method_updateConsumption = True: " + no );
         }
       }
     )
+    
   },
   method_refreshConsOrder: function (orderToEdit) {
 
@@ -5476,6 +5677,10 @@ Meteor.methods({
 
   Meteor.publish("filter_spreader3", function(){
     return Order.find({ Status: "SP 3"});
+  });
+
+  Meteor.publish("filter_spreader4", function(){
+    return Order.find({ Status: "SP 4"});
   });
 
   Meteor.publish("filter_spreaderm1", function(){
@@ -5683,6 +5888,9 @@ var sp23 = "";  // 232323
 var sp31 = "";  // 313131
 var sp32 = "";  // 323232 
 var sp33 = "";  // 333333
+var sp41 = "";  // 414141
+var sp42 = "";  // 424242 
+var sp43 = "";  // 444444
 var cut1 = "";  // c1c1c1 //Gordon
 var cut2 = "";  // c2c2c2 //Gordon
 var mor1 = "";  // m1m1m1 //Zalli
@@ -5704,7 +5912,7 @@ var diba = "";  // dddddd
 // Zalli
 // export MONGO_URL=mongodb://172.27.57.181:27017/spread 
 
-// STATUS = ['Not assigned','SP 1','SP 2','SP 3','CUT','Finished']
+// STATUS = ['Not assigned','SP 1','SP 2','SP 3','SP 4','CUT','Finished']
 
 // meteor add accounts-base
 // meteor add accounts-password
